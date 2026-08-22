@@ -27,16 +27,16 @@
     <view class="card mt16"><view class="sub" style="color: #1A1918;">{{v.caseBrief}}</view></view>
   </view>
 
-  <view class="mt48">
+  <view wx:if="{{hasWords}}" class="mt48">
     <text class="kicker">证词翻译</text>
-    <view class="card mt16">
-      <view class="faint">她说</view>
+    <view wx:if="{{v.herWord}}" class="card mt16">
+      <view class="faint">先开口的那位说</view>
       <view style="font-size: 30rpx; font-weight: 500;" class="mt8">{{v.herWord}}</view>
       <view class="faint mt16">经翻译，实为</view>
       <view class="sub mt8" style="color: #1A1918;">{{v.herMeaning}}</view>
     </view>
-    <view class="card mt24">
-      <view class="faint">他的沉默</view>
+    <view wx:if="{{v.hisWord}}" class="card mt24">
+      <view class="faint">后应诉的那位说</view>
       <view style="font-size: 30rpx; font-weight: 500;" class="mt8">{{v.hisWord}}</view>
       <view class="faint mt16">经翻译，实为</view>
       <view class="sub mt8" style="color: #1A1918;">{{v.hisMeaning}}</view>
@@ -72,18 +72,18 @@
     </view>
   </view>
 
-  <view class="mt48">
+  <view wx:if="{{hasSteps}}" class="mt48">
     <text class="kicker">和解执行令</text>
-    <view class="card mt16 row" style="gap: 24rpx;">
+    <view wx:if="{{v.herStep}}" class="card mt16 row" style="gap: 24rpx;">
       <view class="col grow">
-        <view class="faint">她的台阶 · 复制发给他</view>
+        <view class="faint">先开口的那位 · 可以这样说</view>
         <view class="sub mt8" style="color: #1A1918;">{{v.herStep}}</view>
       </view>
       <view class="pill pill-honey" bindtap="copyStep" data-text="{{v.herStep}}">复制</view>
     </view>
-    <view class="card mt24 row" style="gap: 24rpx;">
+    <view wx:if="{{v.hisStep}}" class="card mt24 row" style="gap: 24rpx;">
       <view class="col grow">
-        <view class="faint">他的台阶 · 复制发给她</view>
+        <view class="faint">后应诉的那位 · 可以这样说</view>
         <view class="sub mt8" style="color: #1A1918;">{{v.hisStep}}</view>
       </view>
       <view class="pill pill-honey" bindtap="copyStep" data-text="{{v.hisStep}}">复制</view>

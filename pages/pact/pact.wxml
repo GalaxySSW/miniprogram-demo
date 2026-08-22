@@ -3,7 +3,7 @@
   <block wx:if="{{!fromNotNow}}">
     <text class="kicker">本庭约定</text>
     <view class="h2 mt16">这次先一起试试这一件</view>
-    <view class="sub mt8">不用许大愿，一件双方都点头的小事就够。</view>
+    <view class="sub mt8">{{fromAI ? '判官照着你们这桩案子拟了三条，挑一条最做得到的。' : '不用许大愿，一件双方都点头的小事就够。'}}</view>
 
     <view class="mt48 col" style="gap: 24rpx;">
       <view wx:for="{{pacts}}" wx:key="index" bindtap="pickPact" data-idx="{{index}}"

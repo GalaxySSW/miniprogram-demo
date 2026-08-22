@@ -14,7 +14,10 @@ Page({
     caseId: '',
     v: {},
     seal: SEALS.misunderstanding,
-    sealed: false
+    sealed: false,
+    isMock: false,
+    hasWords: false,
+    hasSteps: false
   },
   onLoad() {
     const g = app.globalData
@@ -29,20 +32,27 @@ Page({
     const type = SEALS[v.caseType] ? v.caseType : 'misunderstanding'
     if (!v.verdictTitle) v.verdictTitle = '本案不存在被告。'
 
+    // 从卷宗打开旧案时，云端那份可能缺字段——缺就整段不渲染，不留空标签
+    const hasWords = !!(v.herWord && v.herMeaning) || !!(v.hisWord && v.hisMeaning)
+    const hasSteps = !!(v.herStep || v.hisStep)
+
     this.setData({
       caseId: g.caseData.id,
       v,
       seal: SEALS[type],
-      isMock: g.aiUsed === false   // 调试标识：判决来自样例而非大模型
+      isMock: g.aiUsed === false,
+      hasWords,
+      hasSteps
     })
     setTimeout(() => this.setData({ sealed: true }), 600)
   },
   copyStep(e) {
-    wx.setClipboardData({ data: e.currentTarget.dataset.text })
+    const text = e.currentTarget.dataset.text
+    if (!text) return
+    wx.setClipboardData({ data: text, success: () => wx.showToast({ title: '已复制', icon: 'none' }) })
   },
   saveImage() {
-    // TODO: 用 canvas 生成分享长图；黑客松阶段先用系统截图
-    wx.showToast({ title: '长按屏幕截图分享（长图生成开发中）', icon: 'none' })
+    wx.navigateTo({ url: '/pages/poster/poster' })
   },
   goPact() {
     wx.navigateTo({ url: '/pages/pact/pact' })

@@ -1,0 +1,31 @@
+<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+
+  <text class="kicker">结案长图</text>
+  <view class="h2 mt16">存下来，或者发出去</view>
+  <view class="sub mt8">图里只有判决金句和误会指数，你们说过的每一个字都不在上面。</view>
+
+  <view class="mt48 center">
+    <view wx:if="{{building}}" class="card col" style="align-items: center; padding: 120rpx 40rpx;">
+      <cat mood="calm" breathe="{{true}}" />
+      <view class="faint mt32">正在誊写判决书…</view>
+    </view>
+
+    <image wx:elif="{{imgPath}}" src="{{imgPath}}" mode="widthFix" bindtap="preview"
+      style="width: 100%; border-radius: 24rpx; border: 1rpx solid #E1DACE;" />
+
+    <view wx:else class="card">
+      <view class="sub">这次没能生成图片，回去再试一次吧。</view>
+    </view>
+  </view>
+
+  <view class="grow" style="min-height: 48rpx;"></view>
+
+  <view wx:if="{{imgPath}}" class="col" style="gap: 24rpx;">
+    <view class="btn btn-primary" bindtap="save">保存到相册</view>
+    <view class="faint center">保存后可以发朋友圈，或者直接发给 TA</view>
+  </view>
+
+</view>
+
+<!-- 离屏画布：不显示，只用来出图 -->
+<canvas type="2d" id="poster" style="position: fixed; left: -9999px; top: 0; width: 750px; height: 1000px;"></canvas>

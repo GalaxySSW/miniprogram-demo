@@ -12,6 +12,7 @@
     "pages/interview/interview",
     "pages/trial/trial",
     "pages/verdict/verdict",
+    "pages/poster/poster",
     "pages/pact/pact",
     "pages/history/history",
     "pages/review/review",
