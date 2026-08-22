@@ -204,8 +204,11 @@ exports.main = async (event) => {
           return !leak
         })
 
-        // 兜底第二道：模型复核，挡住改写措辞绕过子串匹配的
-        if (kept.length) {
+        // 兜底第二道：模型复核，挡住改写措辞绕过子串匹配的。
+        // 只在子串过滤已经抓到泄露时才跑——说明这一轮模型在漏，值得多花一次调用；
+        // 干净的一轮直接放行，省掉约 8 秒，避免云函数超时
+        const leaky = kept.length !== res.questions.length
+        if (leaky && kept.length) {
           try {
             const check = await chat([
               { role: 'system', content: '你是隐私审核员。给你一份某人的自述，和几个准备问 TA 的问题。' +
