@@ -1,6 +1,6 @@
 // app.js — 爱情判官（黑客松 MVP）
 // 云开发就绪后把 CLOUD_ENV 填成你的云环境 ID，AI 即自动生效；为空时全流程走本地 mock
-const CLOUD_ENV = ''
+const CLOUD_ENV = 'cloud1-d5gwslwa351e26c8e'
 
 App({
   onLaunch() {
