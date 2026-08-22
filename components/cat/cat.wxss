@@ -1,5 +1,18 @@
 /* 单线稿坐姿猫，2.6px（约 5rpx）圆头笔触，纯黑 */
-.cat { position: relative; width: 240rpx; height: 250rpx; }
+.cat { position: relative; width: 240rpx; height: 250rpx; transform-origin: 50% 90%; }
+.cat--small { transform: scale(.75); }
+.cat--large { transform: scale(1.25); }
+.cat--motion-breathe,
+.cat--motion-calm { animation: catBreathe 4s ease-in-out infinite; }
+.cat--motion-think { animation: catThink 1.6s ease-in-out infinite; }
+@keyframes catBreathe {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 8rpx; }
+}
+@keyframes catThink {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -4rpx; }
+}
 
 .cat-body {
   position: absolute;
@@ -61,3 +74,30 @@
   border-bottom: 4rpx solid #1A1918;
   border-radius: 0 0 50% 50%;
 }
+
+.cat-brow {
+  position: absolute;
+  top: 48rpx;
+  width: 22rpx;
+  border-top: 4rpx solid #2B2118;
+  border-radius: 4rpx;
+}
+.cat-brow-l { left: 42rpx; transform: rotate(-14deg); }
+.cat-brow-r { right: 42rpx; transform: rotate(14deg); }
+
+.cat-thinking-dots {
+  position: absolute;
+  top: 20rpx;
+  right: 18rpx;
+  display: flex;
+  gap: 5rpx;
+}
+.cat-thinking-dots view {
+  display: block;
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: #D9785B;
+}
+.cat-thinking-dots view:nth-child(2) { opacity: .65; }
+.cat-thinking-dots view:nth-child(3) { opacity: .35; }

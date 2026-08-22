@@ -1,7 +1,7 @@
 {
-  "name": "judge",
+  "name": "billing-admin",
   "version": "1.0.0",
-  "description": "爱情判官 AI 云函数：判决书 / 先回一句 / 背对背追问（DeepSeek）",
+  "description": "爱情判官积分后台管理云函数",
   "main": "index.js",
   "dependencies": {
     "@cloudbase/node-sdk": "^3.18.1",

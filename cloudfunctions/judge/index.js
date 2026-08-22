@@ -2,10 +2,14 @@
 // 密钥优先取环境变量 AI_API_KEY，否则回退本地 secret.js（已 gitignore）
 const cloud = require('wx-server-sdk')
 const https = require('https')
+const crypto = require('crypto')
 const {
   VERDICT_SYSTEM, VERDICT_DEPTH_SYSTEM, QUICK_REPLY_SYSTEM, SCREENSHOT_SYSTEM, BRIEF_SYSTEM, INTAKE_SYSTEM,
   INTERVIEW_PLAN_SYSTEM, INTERVIEW_ASK_SYSTEM, INTERVIEW_TURN_SYSTEM, SUPPLEMENT_SYSTEM
 } = require('./prompts')
+const {
+  billingEnvelope, billingMode, createCloudBaseLedger, isBillable, quoteAction
+} = require('./billing')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
@@ -14,8 +18,8 @@ try { localSecret = require('./secret') } catch (e) { /* 生产用环境变量 *
 
 const API_KEY = process.env.AI_API_KEY || localSecret.apiKey || ''
 const HOST = process.env.AI_HOST || 'api.openai-next.com'
-// 中转站的 deepseek-chat 是坏的，文本用 deepseek-v3
-const MODEL = process.env.AI_MODEL || 'deepseek-v3'
+// 所有文本 action 统一走平台模型标识；图片/语音先预处理，再由文本链路处理。
+const MODEL = process.env.AI_MODEL || 'deepseek/deepseek-v4-flash'
 const VISION_MODEL = process.env.AI_VISION_MODEL || 'gpt-4o-mini'
 // 中转站的 whisper-1 / whisper-large-v3 都不可用，实测 gpt-4o-transcribe 正常
 const ASR_MODEL = process.env.AI_ASR_MODEL || 'gpt-4o-transcribe'
@@ -132,7 +136,7 @@ function statementText(label, s) {
   return `${label}：\n${p.join('\n') || '（暂无陈述）'}`
 }
 
-exports.main = async (event) => {
+async function runAction(event) {
   const { action } = event
   if (!API_KEY) return { ok: false, error: '未配置 AI_API_KEY' }
 
@@ -377,5 +381,194 @@ exports.main = async (event) => {
   } catch (e) {
     console.error(action, e)
     return { ok: false, error: e.message }
+  }
+}
+
+function digest(value) {
+  return crypto.createHash('sha256').update(JSON.stringify(value || null)).digest('hex')
+}
+
+function billingError(error) {
+  return (error && error.code) || (error && error.message) || 'BILLING_ERROR'
+}
+
+function resultErrorCode(message) {
+  const text = String(message || '')
+  if (text.includes('AI_API_KEY')) return 'AI_API_KEY_MISSING'
+  if (text.includes('超时')) return 'UPSTREAM_TIMEOUT'
+  if (text.includes('截图')) return 'INPUT_MISSING'
+  return message ? 'AI_CALL_FAILED' : null
+}
+
+async function runEnforced(event, context, requestId, quote) {
+  if (!API_KEY) {
+    return {
+      ok: false,
+      error: '未配置 AI_API_KEY',
+      requestId,
+      source: 'error',
+      billing: billingEnvelope({ requestId, quote, status: 'not_charged', errorCode: 'AI_API_KEY_MISSING' })
+    }
+  }
+
+  const wxContext = cloud.getWXContext()
+  const openid = wxContext && wxContext.OPENID
+  if (!openid) {
+    return {
+      ok: false,
+      error: '无法取得服务端 OPENID',
+      requestId,
+      source: 'billing',
+      billing: billingEnvelope({ requestId, quote, status: 'not_charged', errorCode: 'OPENID_REQUIRED' })
+    }
+  }
+  if (!event.idempotencyKey) {
+    return {
+      ok: false,
+      error: '缺少 idempotencyKey',
+      requestId,
+      source: 'billing',
+      billing: billingEnvelope({ requestId, quote, status: 'not_charged', errorCode: 'IDEMPOTENCY_KEY_REQUIRED' })
+    }
+  }
+
+  const ledger = createCloudBaseLedger(context)
+  const input = { ...event }
+  delete input.requestId
+  delete input.idempotencyKey
+  const reservation = await ledger.reserve({
+    openid,
+    requestId,
+    idempotencyKey: event.idempotencyKey,
+    action: quote.action,
+    cost: quote.cost,
+    model: quote.model,
+    priceVersion: quote.priceVersion,
+    inputHash: digest(input)
+  })
+
+  if (reservation.replay) {
+    const state = reservation.usage.state
+    const terminal = state === 'settled' || state === 'released'
+    return {
+      ok: false,
+      error: terminal ? '请求已处理，请勿重复扣费' : '请求正在处理中，请稍后查询结果',
+      requestId,
+      source: 'billing',
+      billing: billingEnvelope({
+        requestId: reservation.usage.requestId || requestId,
+        quote,
+        status: state,
+        charged: Number(reservation.usage.chargedCredits || 0),
+        balance: reservation.account && reservation.account.available,
+        errorCode: terminal ? 'REQUEST_ALREADY_PROCESSED' : 'REQUEST_IN_PROGRESS'
+      })
+    }
+  }
+
+  const result = await runAction({ ...event, requestId })
+  if (result.ok) {
+    try {
+      const settled = await ledger.settle({
+        openid,
+        usageId: reservation.usage.usageId || reservation.usage._id,
+        resultHash: digest(result.result)
+      })
+      return {
+        ...result,
+        requestId,
+        source: 'live',
+        billing: billingEnvelope({
+          requestId, quote, status: 'settled',
+          charged: quote.cost,
+          balance: settled.account && settled.account.available
+        })
+      }
+    } catch (error) {
+      console.error('billing settle failed', requestId, error)
+      return {
+        ok: false,
+        error: '模型已返回，但积分结算失败，请联系客服核对 requestId',
+        requestId,
+        source: 'billing',
+        billing: billingEnvelope({ requestId, quote, status: 'unknown', errorCode: billingError(error) })
+      }
+    }
+  }
+
+  try {
+    const released = await ledger.release({
+      openid,
+      usageId: reservation.usage.usageId || reservation.usage._id,
+      errorCode: result.error || 'AI_CALL_FAILED'
+    })
+    return {
+      ...result,
+      requestId,
+      source: 'error',
+      billing: billingEnvelope({
+        requestId, quote, status: 'released',
+        balance: released.account && released.account.available,
+        errorCode: result.error || 'AI_CALL_FAILED'
+      })
+    }
+  } catch (error) {
+    console.error('billing release failed', requestId, error)
+    return {
+      ok: false,
+      error: '模型调用失败，且积分释放失败，请联系客服核对 requestId',
+      requestId,
+      source: 'billing',
+      billing: billingEnvelope({ requestId, quote, status: 'unknown', errorCode: billingError(error) })
+    }
+  }
+}
+
+// 计费接缝：默认 shadow，不改变已有本地 Mock/开发者工具流程；enforced 才走真实账本。
+exports.main = async (event = {}, context = {}) => {
+  const action = event.action
+  const requestId = event.requestId || `req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+  const quote = quoteAction(action)
+  const mode = billingMode()
+
+  if (!['shadow', 'mock', 'enforced'].includes(mode)) {
+    return {
+      ok: false,
+      error: `未知 BILLING_MODE: ${mode}`,
+      requestId,
+      source: 'billing',
+      billing: billingEnvelope({
+        requestId, quote, status: 'unknown', errorCode: 'BILLING_MODE_INVALID'
+      })
+    }
+  }
+
+  if (quote && isBillable(action) && mode === 'enforced') {
+    try {
+      return await runEnforced(event, context, requestId, quote)
+    } catch (error) {
+      console.error('billing reserve failed', requestId, error)
+      return {
+        ok: false,
+        error: error.code === 'INSUFFICIENT_CREDITS' ? '积分不足' : '积分预扣失败，请稍后重试',
+        requestId,
+        source: 'billing',
+        billing: billingEnvelope({ requestId, quote, status: 'not_charged', errorCode: billingError(error) })
+      }
+    }
+  }
+
+  const result = await runAction({ ...event, requestId })
+  const status = quote && quote.cost > 0 ? 'not_charged' : 'not_started'
+  return {
+    ...result,
+    requestId,
+    source: result.ok ? 'live' : 'error',
+    billing: billingEnvelope({
+      requestId,
+      quote,
+      status,
+      errorCode: result.ok ? null : resultErrorCode(result.error)
+    })
   }
 }
