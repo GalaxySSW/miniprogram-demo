@@ -25,7 +25,15 @@
 
         <!-- 判官 -->
         <view wx:if="{{item.who === 'judge'}}" style="display: flex; gap: 16rpx; max-width: 86%; align-items: flex-start;">
-          <catface mood="calm" />
+          <view class="cf-face">
+          <view class="cf-ear cf-ear-l"></view>
+          <view class="cf-ear cf-ear-r"></view>
+          <view class="cf-head">
+            <view class="cf-eye cf-eye-l cf-blink"></view>
+            <view class="cf-eye cf-eye-r cf-blink"></view>
+            <view class="cf-mouth"></view>
+          </view>
+        </view>
           <view style="background: #FFFFFF; border: 1rpx solid #E1DACE; border-radius: 8rpx 28rpx 28rpx 28rpx; padding: 26rpx 30rpx;">
             <text style="font-size: 28rpx; line-height: 1.75; color: #1A1918;">{{item.text}}</text>
           </view>
@@ -39,7 +47,20 @@
 
       <!-- 判官正在想 -->
       <view wx:if="{{thinking}}" style="display: flex; margin-top: 32rpx; gap: 16rpx; align-items: flex-start;">
-        <catface mood="thinking" />
+        <view class="cf-face cf-tilt">
+          <view class="cf-ear cf-ear-l"></view>
+          <view class="cf-ear cf-ear-r"></view>
+          <view class="cf-head">
+            <view class="cf-eye cf-eye-l cf-blink"></view>
+            <view class="cf-eye cf-eye-r cf-blink"></view>
+            <view class="cf-mouth"></view>
+            <view class="cf-dots">
+              <view class="cf-dot cf-d1"></view>
+              <view class="cf-dot cf-d2"></view>
+              <view class="cf-dot cf-d3"></view>
+            </view>
+          </view>
+        </view>
         <view class="breathe" style="background: #FFFFFF; border: 1rpx solid #E1DACE; border-radius: 8rpx 28rpx 28rpx 28rpx; padding: 26rpx 30rpx;">
           <text class="faint">判官正在想…</text>
         </view>

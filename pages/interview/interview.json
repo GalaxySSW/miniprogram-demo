@@ -1,4 +1,6 @@
 {
-  "usingComponents": { "cat": "/components/cat/cat", "catface": "/components/catface/catface" },
+  "usingComponents": {
+    "cat": "/components/cat/cat"
+  },
   "navigationBarTitleText": "背对背问话"
 }
