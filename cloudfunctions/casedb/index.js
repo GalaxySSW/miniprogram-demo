@@ -9,10 +9,14 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
 
+// 建表只在容器生命周期内做一次，避免每次调用都白跑三次往返（casedb 超时只有几秒）
+let collectionsReady = false
 async function ensureCollections() {
+  if (collectionsReady) return
   for (const name of ['cases', 'pebbles', 'patterns']) {
     try { await db.createCollection(name) } catch (e) { /* 已存在 */ }
   }
+  collectionsReady = true
 }
 
 // 六位口令：不含易混字符（0/O/1/I），A 用普通微信消息发给 B 即可
