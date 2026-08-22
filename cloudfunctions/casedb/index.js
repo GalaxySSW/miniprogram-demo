@@ -15,6 +15,14 @@ async function ensureCollections() {
   }
 }
 
+// 六位口令：不含易混字符（0/O/1/I），A 用普通微信消息发给 B 即可
+function makeCode() {
+  const CH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let c = ''
+  for (let i = 0; i < 6; i++) c += CH[Math.floor(Math.random() * CH.length)]
+  return c
+}
+
 function makeCaseId(now) {
   const y = now.getFullYear()
   const m = String(now.getMonth() + 1).padStart(2, '0')
@@ -41,6 +49,7 @@ function projectCase(doc, openid) {
     verdict: doc.verdict || null,
     pact: doc.pact || null,
     topic: doc.topic || '',
+    code: doc.code || '',
     note: doc.note || '',
     review: doc.review || null,
     createdAt: doc.createdAt
@@ -80,18 +89,29 @@ exports.main = async (event) => {
       const res = await db.collection('cases').add({
         data: {
           caseId: id.display, serial: id.serial,
+          code: makeCode(),
           aOpenid: OPENID, bOpenid: '', coupleKey: '',
           aStatement: event.statement || {}, bStatement: null, note: '',
           status: 'created', verdict: null, pact: null,
           topic: '', review: null, createdAt: now
         }
       })
-      return { ok: true, result: { _id: res._id, caseId: id.display } }
+      const created = await db.collection('cases').doc(res._id).get()
+      return { ok: true, result: { _id: res._id, caseId: id.display, code: created.data.code } }
     }
 
     if (action === 'get') {
       const doc = await db.collection('cases').doc(event._id).get()
       return { ok: true, result: projectCase(doc.data, OPENID) }
+    }
+
+    // B 用口令进入同一案件
+    if (action === 'getByCode') {
+      const code = String(event.code || '').trim().toUpperCase()
+      if (code.length !== 6) return { ok: false, error: '口令是 6 位' }
+      const r = await db.collection('cases').where({ code }).limit(1).get()
+      if (!r.data.length) return { ok: false, error: '没找到这个案子，口令对吗？' }
+      return { ok: true, result: projectCase(r.data[0], OPENID) }
     }
 
     if (action === 'respond') {

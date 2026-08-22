@@ -33,8 +33,35 @@ Page({
   startCase() {
     wx.navigateTo({ url: '/pages/evidence/evidence' })
   },
+  // 未认证的小程序转发受限，所以留一条口令入口
   gotSummons() {
-    wx.navigateTo({ url: '/pages/respond/respond' })
+    wx.showModal({
+      title: '输入传票口令',
+      editable: true,
+      placeholderText: '六位字母数字，如 K7QM2X',
+      confirmText: '进入',
+      success: (res) => {
+        if (!res.confirm) return
+        const code = (res.content || '').trim().toUpperCase()
+        if (!code) return wx.navigateTo({ url: '/pages/respond/respond' })
+
+        wx.showLoading({ title: '正在调卷' })
+        casedb.getByCode(code).then(c => {
+          wx.hideLoading()
+          if (!c || !c._id) {
+            return wx.showToast({ title: '没找到这个案子，口令对吗？', icon: 'none' })
+          }
+          const g = app.globalData.caseData
+          g.docId = c._id
+          g.id = c.caseId
+          g.note = c.note || ''
+          wx.navigateTo({ url: `/pages/respond/respond?docId=${c._id}` })
+        }).catch(() => {
+          wx.hideLoading()
+          wx.showToast({ title: '没找到这个案子', icon: 'none' })
+        })
+      }
+    })
   },
   goHistory() {
     wx.navigateTo({ url: '/pages/history/history' })

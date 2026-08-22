@@ -1,20 +1,33 @@
-// 传票分享：卡片标题就是 A 自己写的那句话，B 在会话里看到的是本人开口
+// 传票分享：优先用微信转发；未认证的小程序转发受限，所以同时给一份口令
 const app = getApp()
+const casedb = require('../../utils/casedb.js')
 
 Page({
   data: {
     caseId: '',
     docId: '',
-    note: ''
+    code: '',
+    note: '',
+    copied: false
   },
   onLoad() {
     const c = app.globalData.caseData
     this.setData({
       caseId: c.id,
       docId: c.docId || '',
+      code: c.code || '',
       note: c.note || '我不想再这样吵下去了，陪我试个东西行吗？'
     })
     c.status = 'summoned'
+    // 补一次口令（从卷宗回来等情况）
+    if (!this.data.code && c.docId) {
+      casedb.getCase(c.docId).then(r => {
+        if (r && r.code) {
+          c.code = r.code
+          this.setData({ code: r.code })
+        }
+      })
+    }
   },
   onShareAppMessage() {
     return {
@@ -22,8 +35,17 @@ Page({
       path: `/pages/respond/respond?docId=${this.data.docId}`
     }
   },
+  copyInvite() {
+    const text = `${this.data.note}\n\n打开「爱情判官」，在首页点「我收到了传票」，输入口令：${this.data.code}`
+    wx.setClipboardData({
+      data: text,
+      success: () => {
+        this.setData({ copied: true })
+        wx.showToast({ title: '已复制，去微信发给 TA', icon: 'none' })
+      }
+    })
+  },
   simulateTa() {
-    // 演示用：单机模拟 TA 打开传票（服务端会用派生 openid 扮演对方）
     app.globalData.caseData.demoMode = true
     const url = this.data.docId
       ? `/pages/respond/respond?docId=${this.data.docId}`

@@ -74,7 +74,7 @@ Page({
     wx.showToast({ title: '我在，我先认真看看', icon: 'none', duration: 1600 })
 
     casedb.createCase(c.myStatement).then(res => {
-      if (res) { c.docId = res._id; c.id = res.caseId }
+      if (res) { c.docId = res._id; c.id = res.caseId; c.code = res.code || '' }
       c.status = 'accepted'
       setTimeout(() => wx.redirectTo({ url: '/pages/accept/accept' }), 1600)
     })

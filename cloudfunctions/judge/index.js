@@ -17,7 +17,8 @@ const HOST = process.env.AI_HOST || 'api.openai-next.com'
 // 中转站的 deepseek-chat 是坏的，文本用 deepseek-v3
 const MODEL = process.env.AI_MODEL || 'deepseek-v3'
 const VISION_MODEL = process.env.AI_VISION_MODEL || 'gpt-4o-mini'
-const ASR_MODEL = process.env.AI_ASR_MODEL || 'whisper-1'
+// 中转站的 whisper-1 / whisper-large-v3 都不可用，实测 gpt-4o-transcribe 正常
+const ASR_MODEL = process.env.AI_ASR_MODEL || 'gpt-4o-transcribe'
 
 // 中转站的 JSON 模式会把结果包进 ```json 代码块，需剥壳
 function parseJSON(text) {
