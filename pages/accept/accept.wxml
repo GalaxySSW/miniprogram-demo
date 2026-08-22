@@ -1,30 +1,52 @@
 <view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
 
-  <view class="mt48 center">
+  <view class="mt32 center">
     <cat mood="calm" style="display: inline-block;" />
   </view>
 
-  <view class="card mt48" style="position: relative; padding: 48rpx 40rpx;">
+  <view class="card mt32" style="position: relative; padding: 44rpx 40rpx;">
     <text class="kicker">受理通知</text>
     <view class="h2 mt16">本庭已受理</view>
-    <view class="sub mt16">案号 {{caseId}}</view>
-    <view class="sub mt8">你说的每一句，本庭都收下了。接下来交给我。</view>
+    <view class="faint mt16">案号 {{caseId}}</view>
     <view wx:if="{{sealed}}" class="seal seal-drop" style="position: absolute; top: -30rpx; right: 30rpx;">
       <text>已受理</text>
     </view>
   </view>
 
-  <view class="mt64">
-    <view style="font-size: 30rpx; font-weight: 500;">接下来想怎么走？</view>
-    <view class="sub mt8">传票不急着发。气头上收到的东西，多半会被当成挑衅。</view>
+  <!-- 本庭听到的：发传票前的最后一次校对 -->
+  <view class="mt48">
+    <text class="kicker">本庭听到的是这样</text>
+
+    <view wx:if="{{loading}}" class="card mt16">
+      <view class="faint">判官正在把你说的话理一遍…</view>
+    </view>
+
+    <block wx:else>
+      <view class="card mt16 reveal" style="border-left: 6rpx solid #B0793F;">
+        <view class="sub" style="color: #1A1918;">{{heard || '你说的本庭都收下了。'}}</view>
+
+        <view wx:if="{{care.length}}" class="mt24">
+          <view class="faint">你真正在意的是</view>
+          <view class="mt8">
+            <text wx:for="{{care}}" wx:key="index" class="chip chip-on">{{item}}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{unknown}}" class="faint mt24">{{unknown}}</view>
+      </view>
+
+      <view class="center mt16">
+        <text class="faint" bindtap="amend">听岔了？我再补充一点 →</text>
+      </view>
+    </block>
   </view>
 
-  <view class="grow"></view>
+  <view class="grow" style="min-height: 48rpx;"></view>
 
   <view class="col" style="gap: 24rpx;">
-    <view class="btn btn-primary" bindtap="quickReply">先帮我回 TA 一句</view>
-    <view class="btn btn-ghost" bindtap="later">等等再说，我先缓缓</view>
-    <view class="center"><text class="faint" bindtap="sendNow">我想好了，现在就发传票</text></view>
+    <view class="btn btn-primary" bindtap="sendSummons">没错，去发传票</view>
+    <view class="btn btn-ghost" bindtap="quickReply">先帮我回 TA 一句</view>
+    <view class="center"><text class="faint" bindtap="later">等等再说，我先缓缓</text></view>
   </view>
 
 </view>

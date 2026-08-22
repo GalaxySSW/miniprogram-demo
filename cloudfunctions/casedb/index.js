@@ -107,6 +107,16 @@ exports.main = async (event) => {
       return { ok: true, result: { _id: res._id, caseId: id.display, code: created.data.code } }
     }
 
+    // 当事人回去补充后重新提交：更新原案，不新开一桩
+    if (action === 'updateStatement') {
+      const doc = await db.collection('cases').doc(event._id).get()
+      if (doc.data.aOpenid !== OPENID) return { ok: false, error: '不是你的案子' }
+      await db.collection('cases').doc(event._id).update({
+        data: { aStatement: event.statement || {} }
+      })
+      return { ok: true, result: { updated: true } }
+    }
+
     if (action === 'get') {
       const doc = await db.collection('cases').doc(event._id).get()
       return { ok: true, result: projectCase(doc.data, OPENID) }

@@ -2,6 +2,7 @@
 const app = getApp()
 const casedb = require('../../utils/casedb.js')
 const voice = require('../../utils/voice.js')
+const ai = require('../../utils/ai.js')
 
 Page({
   data: {
@@ -20,7 +21,23 @@ Page({
     hasEvidence: false
   },
   onLoad() {
-    this.setData({ hasEvidence: !!app.globalData.caseData.screenshotText })
+    const c = app.globalData.caseData
+    this.setData({ hasEvidence: !!c.screenshotText })
+
+    // 从受理页「听岔了，我再补充」回来时，把之前写的原样恢复，别让人重打一遍
+    const prev = c.myStatement
+    if (prev && (prev.what || prev.hurt || prev.wish)) {
+      const answers = {}
+      QUESTIONS.forEach(q => { if (prev[q.key]) answers[q.key] = prev[q.key] })
+      const filled = Object.keys(answers).length
+      this.setData({
+        answers,
+        extraText: prev.extra || '',
+        extra: !!prev.extra,
+        shown: Math.min(QUESTIONS.length, Math.max(1, filled + 1)),
+        canSubmit: filled > 0
+      })
+    }
   },
   onInput(e) {
     this.setData({ [`answers.${e.currentTarget.dataset.key}`]: e.detail.value })
@@ -72,11 +89,21 @@ Page({
 
     // 提交的第一反馈永远是判官的「接住」，然后才是流程
     wx.showToast({ title: '我在，我先认真看看', icon: 'none', duration: 1600 })
+    // 受理页要用的复述，现在就让判官去写，等页面打开时多半已经好了
+    app.globalData.intakePromise = ai.intake(c.myStatement)
 
-    casedb.createCase(c.myStatement).then(res => {
-      if (res) { c.docId = res._id; c.id = res.caseId; c.code = res.code || ''; c.createdAt = Date.now() }
+    const go = () => {
       c.status = 'accepted'
       setTimeout(() => wx.redirectTo({ url: '/pages/accept/accept' }), 1600)
-    })
+    }
+    // 补充后重新提交的是同一桩案子，不该再开一个案号
+    if (c.docId) {
+      casedb.updateStatement(c.docId, c.myStatement).then(go)
+    } else {
+      casedb.createCase(c.myStatement).then(res => {
+        if (res) { c.docId = res._id; c.id = res.caseId; c.code = res.code || ''; c.createdAt = Date.now() }
+        go()
+      })
+    }
   }
 })

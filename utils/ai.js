@@ -46,6 +46,8 @@ module.exports = {
   verdictDepth: (myStatement, theirStatement) => call('verdictDepth', { myStatement, theirStatement }),
   quickReplies: (myStatement) => call('quickReply', { myStatement }),
   caseBrief: (myStatement) => call('brief', { myStatement }),
+  // 受理确认：本庭听到了什么，交给当事人自己校对
+  intake: (myStatement) => call('intake', { myStatement }),
   interviewQuestions: (myStatement, theirStatement, side) =>
     call('interview', { myStatement, theirStatement, side }),
   // 逐轮对话：每次带上已有的方向与对话历史，换回下一句
