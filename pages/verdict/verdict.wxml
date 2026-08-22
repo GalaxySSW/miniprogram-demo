@@ -10,7 +10,7 @@
     ⚠︎ 本次未接通判官，以下为样例判决
   </view>
 
-  <view wx:if="{{absent}}" class="card mt24" style="border-left: 6rpx solid #B0793F;">
+  <view wx:if="{{absent}}" class="reveal card mt24" style="border-left: 6rpx solid #B0793F;">
     <text class="pill pill-honey">缺席审判</text>
     <view class="sub mt16" style="color: #1A1918;">TA 还没有到庭，这份判决只听了一面之词。</view>
     <view class="faint mt8">等 TA 来了，本庭会重新审一次。在那之前，下面这些只是本庭的推测。</view>
@@ -18,7 +18,7 @@
 
   <view class="hairline mt32"></view>
 
-  <view wx:if="{{v.memory && v.memory.count > 1}}" class="card mt32" style="border-left: 6rpx solid #B0793F;">
+  <view wx:if="{{v.memory && v.memory.count > 1}}" class="reveal card mt32" style="border-left: 6rpx solid #B0793F; animation-delay: 0.2s;">
     <view class="row" style="gap: 16rpx;">
       <text class="pill pill-honey">本庭记得</text>
       <text class="faint">第 {{v.memory.count}} 次</text>
@@ -28,12 +28,12 @@
     <view class="faint mt8">本庭记的是你们之间反复出现的这件事，不是谁的性格。</view>
   </view>
 
-  <view class="mt48">
+  <view class="reveal mt48" style="animation-delay: 0.3s">
     <text class="kicker">案情还原</text>
     <view class="card mt16"><view class="sub" style="color: #1A1918;">{{v.caseBrief}}</view></view>
   </view>
 
-  <view wx:if="{{hasWords}}" class="mt48">
+  <view wx:if="{{hasWords}}" class="reveal mt48" style="animation-delay: 0.75s">
     <text class="kicker">证词翻译</text>
     <view wx:if="{{v.herWord}}" class="card mt16">
       <view class="faint">先开口的那位说</view>
@@ -50,7 +50,7 @@
     <view class="faint center mt16">两片证词，拼成同一件事的全貌</view>
   </view>
 
-  <view wx:if="{{v.herNeed || v.hisNeed}}" class="mt48">
+  <view wx:if="{{v.herNeed || v.hisNeed}}" class="reveal mt48" style="animation-delay: 1.15s">
     <text class="kicker">你们各自要的是什么</text>
     <view wx:if="{{v.herNeed}}" class="card mt16">
       <view class="faint">先开口的那位</view>
@@ -62,7 +62,7 @@
     </view>
   </view>
 
-  <view wx:if="{{v.loop}}" class="mt48">
+  <view wx:if="{{v.loop}}" class="reveal mt48" style="animation-delay: 1.3s">
     <text class="kicker">你们正在转的圈</text>
     <view class="card mt16" style="border-left: 6rpx solid #B0793F;">
       <view class="sub" style="color: #1A1918;">{{v.loop}}</view>
@@ -70,12 +70,12 @@
     </view>
   </view>
 
-  <view wx:if="{{v.boundary}}" class="mt48">
+  <view wx:if="{{v.boundary}}" class="reveal mt48" style="animation-delay: 1.45s">
     <text class="kicker">这件事的边界</text>
     <view class="card mt16"><view class="sub" style="color: #1A1918;">{{v.boundary}}</view></view>
   </view>
 
-  <view class="mt48">
+  <view class="reveal mt48" style="animation-delay: 1.6s">
     <text class="kicker">误会指数</text>
     <view class="card mt16 col" style="align-items: center; padding: 48rpx 40rpx;">
       <view class="row" style="align-items: baseline; gap: 12rpx;">
@@ -91,7 +91,7 @@
     </view>
   </view>
 
-  <view class="mt48">
+  <view class="reveal mt48" style="animation-delay: 2.1s">
     <text class="kicker">本庭判决</text>
     <view class="card mt16" style="position: relative; padding: 48rpx 40rpx;">
       <view class="faint">经本庭审理查明：</view>
@@ -103,7 +103,7 @@
     </view>
   </view>
 
-  <view wx:if="{{hasSteps}}" class="mt48">
+  <view wx:if="{{hasSteps}}" class="reveal mt48" style="animation-delay: 2.7s">
     <text class="kicker">和解执行令</text>
     <view wx:if="{{v.herStep}}" class="card mt16 row" style="gap: 24rpx;">
       <view class="col grow">
@@ -121,7 +121,7 @@
     </view>
   </view>
 
-  <view wx:if="{{hasGuide}}" class="mt48">
+  <view wx:if="{{hasGuide}}" class="reveal mt48" style="animation-delay: 2.5s">
     <text class="kicker">具体可以怎么做</text>
     <view wx:if="{{v.herGuide.length}}" class="card mt16">
       <view class="faint">先开口的那位</view>
@@ -139,7 +139,7 @@
     </view>
   </view>
 
-  <view class="mt64 col" style="gap: 24rpx;">
+  <view class="reveal mt64 col" style="gap: 24rpx; animation-delay: 2.95s;">
     <view class="btn btn-primary" bindtap="goPact">落成本庭约定</view>
     <view class="btn btn-ghost" bindtap="saveImage">存成长图 · 分享此案</view>
     <view class="center mt16">

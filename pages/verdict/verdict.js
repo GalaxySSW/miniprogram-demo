@@ -56,7 +56,7 @@ Page({
       hasSteps,
       hasGuide
     })
-    setTimeout(() => this.setData({ sealed: true }), 600)
+    setTimeout(() => this.setData({ sealed: true }), 2500)   // 跟着「本庭判决」那一段落下
 
     // 深度分析是并行生成的，回来了就补进页面；没有也不影响判决书本体
     const depth = app.globalData.depthPromise
