@@ -1,23 +1,20 @@
-// 云函数 casedb：案件数据层
-// 集合：cases（案件状态机）/ pebbles（石子往来）
-// 隐私原则：陈述原文只回给本人；对方永远拿不到 otherSide 的原文，只拿得到判决书
+// 云函数 casedb：案件数据层 + 关系模式记忆
+// 集合：cases（案件状态机）/ pebbles（石子往来）/ patterns（关系模式）
+//
+// 关于 patterns 的设计底线：记「你们之间反复出现的循环」，不记「某个人是什么样的人」。
+// 每条记录的主语永远是这对情侣，字段里不存任何形容人的词、不存陈述原文，
+// 只存主题、次数、试过的约定和复盘结果——都是可验证、可修改、指向未来的东西。
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
 
-// 首次调用时自动建集合，避免手动去控制台建
 async function ensureCollections() {
-  for (const name of ['cases', 'pebbles']) {
-    try {
-      await db.createCollection(name)
-    } catch (e) {
-      // -501001 / 已存在，忽略
-    }
+  for (const name of ['cases', 'pebbles', 'patterns']) {
+    try { await db.createCollection(name) } catch (e) { /* 已存在 */ }
   }
 }
 
-// 案号：2026 情字第 0822 号 + 4 位序号后缀，避免同日重复
 function makeCaseId(now) {
   const y = now.getFullYear()
   const m = String(now.getMonth() + 1).padStart(2, '0')
@@ -26,7 +23,12 @@ function makeCaseId(now) {
   return { display: `${y} 情字第 ${m}${d} 号`, serial: `${y}${m}${d}-${rand}` }
 }
 
-// 只返回调用者有权看到的字段
+// 情侣键：双方 openid 排序后拼接，与谁先立案无关
+function coupleKeyOf(doc) {
+  if (!doc.aOpenid || !doc.bOpenid) return ''
+  return [doc.aOpenid, doc.bOpenid].sort().join('__')
+}
+
 function projectCase(doc, openid) {
   const isA = doc.aOpenid === openid
   return {
@@ -38,8 +40,31 @@ function projectCase(doc, openid) {
     myStatement: isA ? doc.aStatement : (doc.bOpenid === openid ? doc.bStatement : null),
     verdict: doc.verdict || null,
     pact: doc.pact || null,
+    topic: doc.topic || '',
+    review: doc.review || null,
     createdAt: doc.createdAt
   }
+}
+
+// 找出我所在的情侣键（取最近一次双方齐全的案件）
+async function myCoupleKey(openid) {
+  const res = await db.collection('cases')
+    .where(_.and([
+      _.or([{ aOpenid: openid }, { bOpenid: openid }]),
+      { coupleKey: _.neq('') }
+    ]))
+    .orderBy('createdAt', 'desc').limit(1).get()
+  return res.data.length ? res.data[0].coupleKey : ''
+}
+
+async function patternsOf(coupleKey) {
+  if (!coupleKey) return []
+  const res = await db.collection('patterns')
+    .where({ coupleKey }).orderBy('count', 'desc').limit(5).get()
+  return res.data.map(p => ({
+    topic: p.topic, count: p.count,
+    lastPact: p.lastPact || '', lastResult: p.lastResult || ''
+  }))
 }
 
 exports.main = async (event) => {
@@ -48,42 +73,34 @@ exports.main = async (event) => {
   await ensureCollections()
 
   try {
-    // A 立案
     if (action === 'create') {
       const now = new Date()
       const id = makeCaseId(now)
       const res = await db.collection('cases').add({
         data: {
-          caseId: id.display,
-          serial: id.serial,
-          aOpenid: OPENID,
-          bOpenid: '',
-          aStatement: event.statement || {},
-          bStatement: null,
-          status: 'created',
-          verdict: null,
-          pact: null,
-          createdAt: now
+          caseId: id.display, serial: id.serial,
+          aOpenid: OPENID, bOpenid: '', coupleKey: '',
+          aStatement: event.statement || {}, bStatement: null,
+          status: 'created', verdict: null, pact: null,
+          topic: '', review: null, createdAt: now
         }
       })
       return { ok: true, result: { _id: res._id, caseId: id.display } }
     }
 
-    // 读案件（B 从传票进入时也走这里）
     if (action === 'get') {
       const doc = await db.collection('cases').doc(event._id).get()
       return { ok: true, result: projectCase(doc.data, OPENID) }
     }
 
-    // B 应诉：写入乙方陈述并绑定 openid
     if (action === 'respond') {
       const doc = await db.collection('cases').doc(event._id).get()
-      if (doc.data.aOpenid === OPENID) {
-        return { ok: false, error: '不能给自己的案子应诉' }
-      }
+      if (doc.data.aOpenid === OPENID) return { ok: false, error: '不能给自己的案子应诉' }
+      const merged = { ...doc.data, bOpenid: OPENID }
       await db.collection('cases').doc(event._id).update({
         data: {
           bOpenid: OPENID,
+          coupleKey: coupleKeyOf(merged),
           bStatement: event.statement || {},
           status: 'responded'
         }
@@ -91,7 +108,17 @@ exports.main = async (event) => {
       return { ok: true, result: { status: 'responded' } }
     }
 
-    // 判决落库：双方共见同一份
+    // 开庭前取上下文：这对情侣以前为什么反复开庭、试过什么、有没有用
+    if (action === 'patterns') {
+      const doc = await db.collection('cases').doc(event._id).get()
+      return { ok: true, result: await patternsOf(doc.data.coupleKey) }
+    }
+
+    // 「我的」页用：不依赖具体案件
+    if (action === 'myPatterns') {
+      return { ok: true, result: await patternsOf(await myCoupleKey(OPENID)) }
+    }
+
     if (action === 'saveVerdict') {
       await db.collection('cases').doc(event._id).update({
         data: { verdict: event.verdict, status: 'tried' }
@@ -99,34 +126,72 @@ exports.main = async (event) => {
       return { ok: true, result: { status: 'tried' } }
     }
 
-    // 本庭约定 + 三天后回访时间
-    if (action === 'savePact') {
-      const reviewAt = new Date(Date.now() + 3 * 24 * 3600 * 1000)
-      await db.collection('cases').doc(event._id).update({
+    // 判决产出的主题词记进模式表：只累计次数，不写任何形容人的内容
+    if (action === 'recordPattern') {
+      const topic = String(event.topic || '').slice(0, 12)
+      if (!topic) return { ok: true, result: { skipped: true } }
+      const doc = await db.collection('cases').doc(event._id).get()
+      const coupleKey = doc.data.coupleKey
+      if (!coupleKey) return { ok: true, result: { skipped: true } }
+
+      await db.collection('cases').doc(event._id).update({ data: { topic } })
+      const hit = await db.collection('patterns').where({ coupleKey, topic }).limit(1).get()
+      if (hit.data.length) {
+        await db.collection('patterns').doc(hit.data[0]._id).update({
+          data: { count: _.inc(1), lastAt: new Date(), lastCaseId: event._id }
+        })
+        return { ok: true, result: { topic, count: hit.data[0].count + 1 } }
+      }
+      await db.collection('patterns').add({
         data: {
-          pact: { ...event.pact, confirmedBy: [OPENID], reviewAt },
-          status: 'closed'
+          coupleKey, topic, count: 1, lastAt: new Date(),
+          lastCaseId: event._id, lastPact: '', lastResult: ''
         }
       })
+      return { ok: true, result: { topic, count: 1 } }
+    }
+
+    if (action === 'savePact') {
+      const reviewAt = new Date(Date.now() + 3 * 24 * 3600 * 1000)
+      const doc = await db.collection('cases').doc(event._id).get()
+      await db.collection('cases').doc(event._id).update({
+        data: { pact: { ...event.pact, confirmedBy: [OPENID], reviewAt }, status: 'closed' }
+      })
+      // 把这次试的方法记进模式，供下次开庭参考
+      if (doc.data.coupleKey && doc.data.topic) {
+        await db.collection('patterns')
+          .where({ coupleKey: doc.data.coupleKey, topic: doc.data.topic })
+          .update({ data: { lastPact: event.pact.title || '', lastResult: '待复盘' } })
+      }
       return { ok: true, result: { reviewAt } }
     }
 
-    // 递石子（每人每天上限 3）
+    // 三天后复盘：约定到底有没有用——这才是最有价值的判据
+    if (action === 'saveReview') {
+      const result = ['做到了', '没做到', '情况变了'].includes(event.result) ? event.result : '没做到'
+      const doc = await db.collection('cases').doc(event._id).get()
+      await db.collection('cases').doc(event._id).update({
+        data: { review: { result, at: new Date() } }
+      })
+      if (doc.data.coupleKey && doc.data.topic) {
+        await db.collection('patterns')
+          .where({ coupleKey: doc.data.coupleKey, topic: doc.data.topic })
+          .update({ data: { lastResult: result } })
+      }
+      return { ok: true, result: { result } }
+    }
+
     if (action === 'pebble') {
       const today = new Date(); today.setHours(0, 0, 0, 0)
       const cnt = await db.collection('pebbles')
-        .where({ caseDocId: event._id, fromOpenid: OPENID, createdAt: _.gte(today) })
-        .count()
-      if (cnt.total >= 3) {
-        return { ok: false, error: 'daily_limit' }
-      }
+        .where({ caseDocId: event._id, fromOpenid: OPENID, createdAt: _.gte(today) }).count()
+      if (cnt.total >= 3) return { ok: false, error: 'daily_limit' }
       await db.collection('pebbles').add({
         data: { caseDocId: event._id, fromOpenid: OPENID, type: event.type, createdAt: new Date() }
       })
       return { ok: true, result: { todayCount: cnt.total + 1 } }
     }
 
-    // 我的卷宗
     if (action === 'myCases') {
       const res = await db.collection('cases')
         .where(_.or([{ aOpenid: OPENID }, { bOpenid: OPENID }]))
@@ -134,12 +199,19 @@ exports.main = async (event) => {
       return { ok: true, result: res.data.map(d => projectCase(d, OPENID)) }
     }
 
-    // 销毁证据：清空双方陈述原文，只留判决金句
     if (action === 'destroy') {
       await db.collection('cases').doc(event._id).update({
         data: { aStatement: {}, bStatement: {}, destroyed: true }
       })
       return { ok: true, result: { destroyed: true } }
+    }
+
+    // 一键让判官忘掉你们的模式：延续 7 天销毁的隐私承诺
+    if (action === 'forgetPatterns') {
+      const key = await myCoupleKey(OPENID)
+      if (!key) return { ok: true, result: { removed: 0 } }
+      const r = await db.collection('patterns').where({ coupleKey: key }).remove()
+      return { ok: true, result: { removed: r.stats.removed } }
     }
 
     return { ok: false, error: `未知 action: ${action}` }

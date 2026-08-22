@@ -1,5 +1,5 @@
 // 开庭 · 判决中：动画覆盖 AI 生成耗时
-// 云开发就绪时真实调用 DeepSeek 生成判决书并落库，双方共见同一份
+// 开庭前先取本庭对这对情侣的记忆（反复出现的主题、试过的约定、复盘结果）
 const app = getApp()
 const ai = require('../../utils/ai.js')
 const casedb = require('../../utils/casedb.js')
@@ -8,14 +8,13 @@ Page({
   data: {
     steps: [
       { text: '正在重读双方证词', done: false },
-      { text: '正在翻译没说出口的话', done: false },
+      { text: '正在翻查本庭旧案', done: false },
       { text: '正在锁定真正的被告……', done: false }
     ]
   },
   onLoad() {
     const c = app.globalData.caseData
 
-    // 动画：1.2s 一步，最短约 5s
     const animation = new Promise(resolve => {
       this.data.steps.forEach((s, i) => {
         setTimeout(() => this.setData({ [`steps[${i}].done`]: true }), 1200 * (i + 1))
@@ -23,11 +22,15 @@ Page({
       setTimeout(resolve, 1200 * this.data.steps.length + 1400)
     })
 
-    const generation = ai.generateVerdict(c.myStatement, c.theirStatement)
+    // 先取记忆，再带着记忆开庭
+    const generation = (c.docId ? casedb.patterns(c.docId) : Promise.resolve([]))
+      .then(pats => {
+        this.patterns = pats || []
+        return ai.generateVerdict(c.myStatement, c.theirStatement, this.patterns)
+      })
 
     Promise.all([animation, generation]).then(([, result]) => {
       if (result && result.safety) {
-        // 安全阀：卸下人设，终止调解
         wx.showModal({
           title: '本庭要先说一件更重要的事',
           content: result.message,
@@ -37,8 +40,16 @@ Page({
         return
       }
       if (result && result.ruling) {
+        // 这个主题以前判过几次？算上本次
+        const prev = (this.patterns || []).find(p => p.topic === result.topic)
+        result.memory = prev
+          ? { count: prev.count + 1, lastPact: prev.lastPact, lastResult: prev.lastResult }
+          : null
         app.globalData.verdict = { ...app.globalData.verdict, ...result }
-        if (c.docId) casedb.saveVerdict(c.docId, app.globalData.verdict)
+        if (c.docId) {
+          casedb.saveVerdict(c.docId, app.globalData.verdict)
+          casedb.recordPattern(c.docId, result.topic)
+        }
       }
       wx.redirectTo({ url: '/pages/verdict/verdict' })
     })

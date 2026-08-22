@@ -27,7 +27,8 @@ function upload(tempFilePath, prefix) {
 
 module.exports = {
   upload,
-  generateVerdict: (myStatement, theirStatement) => call('verdict', { myStatement, theirStatement }),
+  generateVerdict: (myStatement, theirStatement, patterns) =>
+    call('verdict', { myStatement, theirStatement, patterns: patterns || [] }),
   quickReplies: (myStatement) => call('quickReply', { myStatement }),
   interviewQuestions: (myStatement, theirStatement, side) => call('interview', { myStatement, theirStatement, side }),
   // 截图直读：传云存储 fileID 数组，返回 { text }

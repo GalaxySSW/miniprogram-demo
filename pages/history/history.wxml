@@ -5,13 +5,18 @@
   <view class="sub mt8">每一桩了结的案子，都是一次和好。</view>
 
   <view class="mt48 col" style="gap: 24rpx;">
-    <view wx:for="{{cases}}" wx:key="id" class="card" bindtap="openCase" data-docid="{{item.docId}}">
-      <view class="row" style="justify-content: space-between;">
-        <text style="font-size: 30rpx; font-weight: 500;">{{item.title}}</text>
-        <text class="pill {{item.status === 'done' ? 'pill-matcha' : 'pill-honey'}}">{{item.statusText}}</text>
+    <view wx:for="{{cases}}" wx:key="id" class="card">
+      <view bindtap="openCase" data-docid="{{item.docId}}">
+        <view class="row" style="justify-content: space-between;">
+          <text style="font-size: 30rpx; font-weight: 500;">{{item.title}}</text>
+          <text class="pill {{item.status === 'done' ? 'pill-matcha' : 'pill-honey'}}">{{item.statusText}}</text>
+        </view>
+        <view class="faint mt8">{{item.id}}</view>
+        <view class="sub mt8">{{item.pact}}</view>
       </view>
-      <view class="faint mt8">{{item.id}}</view>
-      <view class="sub mt8">{{item.pact}}</view>
+      <view wx:if="{{item.canReview}}" class="hairline mt24" style="padding-top: 24rpx;">
+        <text class="faint" bindtap="goReview" data-docid="{{item.docId}}">三天到了 · 去复盘这个约定 →</text>
+      </view>
     </view>
   </view>
 

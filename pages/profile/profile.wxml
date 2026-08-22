@@ -3,26 +3,49 @@
   <view class="center mt48">
     <view class="row" style="justify-content: center; gap: 0;">
       <cat mood="happy" style="transform: scale(0.75); margin-right: -60rpx;" />
-      <cat mood="calm" style="transform: scale(0.75); margin-left: -60rpx;" />
+      <cat wx:if="{{bound}}" mood="calm" style="transform: scale(0.75); margin-left: -60rpx;" />
     </view>
     <view style="font-size: 32rpx; font-weight: 500;" class="mt16">{{bound ? '你们已在本庭结伴' : '还没有绑定 TA'}}</view>
-    <view class="faint mt8">{{bound ? '绑定于 2026 年 7 月' : '发出邀请，一起用同一间小法庭'}}</view>
+    <view class="faint mt8">{{bound ? '同一间小法庭，两个视角' : '发出一张传票，就绑定了'}}</view>
   </view>
 
-  <view class="card mt64 row" style="padding: 40rpx 0;">
+  <view class="card mt48 row" style="padding: 40rpx 0;">
     <view wx:for="{{stats}}" wx:key="label" class="col center grow">
       <text style="font-size: 44rpx; font-weight: 500;">{{item.num}}</text>
       <text class="faint mt8">{{item.label}}</text>
     </view>
   </view>
 
-  <view wx:if="{{!bound}}" class="btn btn-primary mt48" bindtap="invite">邀请 TA</view>
+  <view wx:if="{{!bound}}" class="btn btn-primary mt32" bindtap="invite">邀请 TA</view>
+
+  <view class="mt64">
+    <view class="row" style="justify-content: space-between; align-items: baseline;">
+      <text class="kicker">本庭记得</text>
+      <text wx:if="{{patterns.length}}" class="faint" bindtap="forget">让本庭忘掉</text>
+    </view>
+
+    <block wx:if="{{patterns.length}}">
+      <view class="col mt24" style="gap: 20rpx;">
+        <view wx:for="{{patterns}}" wx:key="topic" class="card">
+          <view class="row" style="justify-content: space-between;">
+            <text style="font-size: 28rpx; font-weight: 500;">{{item.topic}}</text>
+            <text class="pill {{item.count > 2 ? 'pill-honey' : 'pill-matcha'}}">开庭 {{item.count}} 次</text>
+          </view>
+          <view wx:if="{{item.lastPact}}" class="faint mt8">试过「{{item.lastPact}}」· {{item.lastResult || '待复盘'}}</view>
+        </view>
+      </view>
+      <view class="faint mt24">本庭只记你们之间反复出现的事，不记你们各自是什么样的人。</view>
+    </block>
+    <view wx:else class="card mt24">
+      <view class="sub">还没有反复出现的模式。等到同一件事第二次开庭，本庭才会记住它。</view>
+    </view>
+  </view>
 
   <view class="grow"></view>
 
-  <view class="card">
+  <view class="card mt48">
     <text class="pill pill-honey">隐私承诺</text>
-    <view class="sub mt16">所有聊天截图与陈述原文，判决后 7 天自动销毁；你也可以在任意案件里手动一键销毁。</view>
+    <view class="sub mt16">聊天截图与陈述原文在判决后 7 天自动销毁；上面的记录随时可以一键清空。</view>
   </view>
 
 </view>

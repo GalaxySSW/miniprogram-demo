@@ -13,6 +13,7 @@
     "pages/verdict/verdict",
     "pages/pact/pact",
     "pages/history/history",
+    "pages/review/review",
     "pages/profile/profile"
   ],
   "window": {

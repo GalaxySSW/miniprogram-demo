@@ -1,34 +1,56 @@
 // 卷宗：案件历史，状态胶囊两色（复盘中蜜色 / 已和好抹茶）
+// 点开旧案时按案件 ID 从云端读回那一份判决，避免显示当前内存里的别的案子
 const app = getApp()
 const casedb = require('../../utils/casedb.js')
 
 const MOCK = [
-  { id: '2026 情字第 0822 号', title: '加班晚归案', status: 'review', statusText: '复盘中', pact: '约定：出行提前一句' },
-  { id: '2026 情字第 0731 号', title: '朋友圈没点赞案', status: 'done', statusText: '已和好', pact: '约定：睡前不带气' }
+  { id: '2026 情字第 0822 号', title: '加班晚归案', status: 'review', statusText: '复盘中', pact: '约定：出行提前一句', canReview: true },
+  { id: '2026 情字第 0731 号', title: '朋友圈没点赞案', status: 'done', statusText: '已和好', pact: '约定：睡前不带气', canReview: false }
 ]
 
 Page({
   data: {
-    cases: MOCK
+    cases: MOCK,
+    fromCloud: false
   },
   onShow() {
     casedb.myCases().then(list => {
       if (!list || !list.length) return
       this.setData({
+        fromCloud: true,
         cases: list.map(c => ({
           docId: c._id,
           id: c.caseId,
-          title: c.verdict && c.verdict.pactTitle ? c.verdict.pactTitle + '案' : '待判决',
-          status: c.status === 'closed' ? 'done' : 'review',
-          statusText: c.status === 'closed' ? '已和好' : '复盘中',
-          pact: c.pact ? '约定：' + c.pact.title : '尚未落成约定'
+          title: c.topic ? c.topic + '案' : (c.status === 'created' ? '待应诉' : '待判决'),
+          status: c.review ? 'done' : (c.status === 'closed' ? 'review' : 'open'),
+          statusText: c.review ? '已复盘' : (c.status === 'closed' ? '待复盘' : '审理中'),
+          pact: c.pact ? '约定：' + c.pact.title : '尚未落成约定',
+          canReview: c.status === 'closed' && !c.review
         }))
       })
     })
   },
   openCase(e) {
     const docId = e.currentTarget.dataset.docid
-    if (docId) app.globalData.caseData.docId = docId
-    wx.navigateTo({ url: '/pages/verdict/verdict' })
+    if (!docId) return wx.navigateTo({ url: '/pages/verdict/verdict' })
+
+    // 读回这一份案件自己的判决书，而不是内存里的当前案
+    wx.showLoading({ title: '正在调卷' })
+    casedb.getCase(docId).then(c => {
+      wx.hideLoading()
+      if (!c) return wx.navigateTo({ url: '/pages/verdict/verdict' })
+      app.globalData.caseData.docId = docId
+      app.globalData.caseData.id = c.caseId
+      app.globalData.caseData.pact = c.pact
+      if (c.verdict) app.globalData.verdict = c.verdict
+      wx.navigateTo({ url: '/pages/verdict/verdict' })
+    }).catch(() => {
+      wx.hideLoading()
+      wx.navigateTo({ url: '/pages/verdict/verdict' })
+    })
+  },
+  goReview(e) {
+    const docId = e.currentTarget.dataset.docid || ''
+    wx.navigateTo({ url: `/pages/review/review?docId=${docId}` })
   }
 })

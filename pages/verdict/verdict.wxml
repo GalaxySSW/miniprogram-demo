@@ -8,6 +8,16 @@
 
   <view class="hairline mt32"></view>
 
+  <view wx:if="{{v.memory && v.memory.count > 1}}" class="card mt32" style="border-left: 6rpx solid #B0793F;">
+    <view class="row" style="gap: 16rpx;">
+      <text class="pill pill-honey">本庭记得</text>
+      <text class="faint">第 {{v.memory.count}} 次</text>
+    </view>
+    <view class="sub mt16" style="color: #1A1918;">关于「{{v.topic}}」，你们已经是第 {{v.memory.count}} 次开庭。</view>
+    <view wx:if="{{v.memory.lastPact}}" class="faint mt8">上次的约定是「{{v.memory.lastPact}}」，复盘结果：{{v.memory.lastResult || '待复盘'}}。</view>
+    <view class="faint mt8">本庭记的是你们之间反复出现的这件事，不是谁的性格。</view>
+  </view>
+
   <view class="mt48">
     <text class="kicker">案情还原</text>
     <view class="card mt16"><view class="sub" style="color: #1A1918;">{{v.caseBrief}}</view></view>

@@ -105,10 +105,19 @@ exports.main = async (event) => {
     }
 
     if (action === 'verdict') {
-      const user = [
+      const parts = [
         statementText('甲方（发起方）陈述', event.myStatement),
         statementText('乙方（应诉方）陈述', event.theirStatement)
-      ].join('\n\n')
+      ]
+      // 本庭记忆：只有主题、次数、试过的约定与复盘结果，没有任何描述人的内容
+      const pats = event.patterns || []
+      if (pats.length) {
+        parts.push('本庭记录（这对情侣过去的开庭模式，仅供参考，不可作为指认任何一方的证据）：\n' +
+          pats.map(p => `· 主题「${p.topic}」已开庭 ${p.count} 次` +
+            (p.lastPact ? `；上次约定「${p.lastPact}」，复盘结果：${p.lastResult || '待复盘'}` : '')
+          ).join('\n'))
+      }
+      const user = parts.join('\n\n')
       return { ok: true, result: await chat([
         { role: 'system', content: VERDICT_SYSTEM }, { role: 'user', content: user }
       ]) }

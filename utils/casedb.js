@@ -24,5 +24,11 @@ module.exports = {
   savePact: (_id, pact) => call('savePact', { _id, pact }),
   pebble: (_id, type) => call('pebble', { _id, type }),
   myCases: () => call('myCases', {}),
-  destroy: (_id) => call('destroy', { _id })
+  destroy: (_id) => call('destroy', { _id }),
+  // 关系模式记忆：主语永远是「你们」，不存任何描述个人的内容
+  patterns: (_id) => call('patterns', { _id }),
+  myPatterns: () => call('myPatterns', {}),
+  recordPattern: (_id, topic) => call('recordPattern', { _id, topic }),
+  saveReview: (_id, result) => call('saveReview', { _id, result }),
+  forgetPatterns: () => call('forgetPatterns', {})
 }

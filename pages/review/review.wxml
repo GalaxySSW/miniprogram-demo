@@ -1,0 +1,40 @@
+<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+
+  <view class="center mt32">
+    <cat mood="calm" style="display: inline-block;" />
+  </view>
+
+  <view class="mt32">
+    <text class="kicker">三天后 · 本庭回访</text>
+    <view class="h2 mt16">{{saved ? '知道了，本庭继续看着' : '那个约定，真的有帮助吗？'}}</view>
+    <view class="sub mt8">{{saved ? '不管结果如何，你们愿意回答就已经比上次前进了一点。' : '说实话就好。没做到不丢人，本庭只是想知道该换个什么方法。'}}</view>
+  </view>
+
+  <view class="card mt48">
+    <text class="pill pill-honey">上次的约定</text>
+    <view style="font-size: 30rpx; font-weight: 500;" class="mt16">{{pact.title}}</view>
+    <view class="sub mt8">{{pact.desc}}</view>
+  </view>
+
+  <block wx:if="{{!saved}}">
+    <view class="mt48 col" style="gap: 24rpx;">
+      <view wx:for="{{options}}" wx:key="index" bindtap="pick" data-idx="{{index}}"
+        class="card row" style="justify-content: space-between; padding: 32rpx 40rpx; border-color: {{picked === index ? '#B0793F' : '#E1DACE'}}; border-width: {{picked === index ? '3rpx' : '1rpx'}};">
+        <text style="font-size: 30rpx;">{{item}}</text>
+        <text wx:if="{{picked === index}}" style="color: #B0793F;">✓</text>
+      </view>
+    </view>
+    <view class="grow"></view>
+    <view class="btn btn-primary" bindtap="submit">告诉本庭</view>
+    <view class="faint center mt16">你的回答只用来给你们换个更合适的方法</view>
+  </block>
+
+  <block wx:else>
+    <view class="card mt24">
+      <view class="sub">本庭会把这次结果记进你们的模式里。下次为同一件事开庭时，我不会再开同一个方子。</view>
+    </view>
+    <view class="grow"></view>
+    <view class="btn btn-ghost" bindtap="goHome">回首页</view>
+  </block>
+
+</view>
