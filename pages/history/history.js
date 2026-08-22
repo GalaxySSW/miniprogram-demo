@@ -22,9 +22,12 @@ Page({
           docId: c._id,
           id: c.caseId,
           title: c.topic ? c.topic + '案' : (c.status === 'created' ? '待应诉' : '待判决'),
-          status: c.review ? 'done' : (c.status === 'closed' ? 'review' : 'open'),
-          statusText: c.review ? '已复盘' : (c.status === 'closed' ? '待复盘' : '审理中'),
-          pact: c.pact ? '约定：' + c.pact.title : '尚未落成约定',
+          status: c.review || c.status === 'tried' ? 'done' : (c.status === 'closed' ? 'review' : 'open'),
+          statusText: c.review ? '已复盘'
+            : (c.status === 'closed' ? '待复盘'
+              : (c.status === 'tried' ? '判决已出' : '审理中')),
+          pact: c.pact ? '约定：' + c.pact.title
+            : (c.status === 'tried' ? '判决书已就绪，点开看看' : '尚未落成约定'),
           canReview: c.status === 'closed' && !c.review
         }))
       })

@@ -55,6 +55,12 @@ Page({
           g.docId = c._id
           g.id = c.caseId
           g.note = c.note || ''
+          // 自己的案子用自己的口令进来 = 单机测试，自动开演示模式扮演对方，
+          // 否则服务端会以「不能给自己的案子应诉」拒掉，双人数据建不起来
+          g.demoMode = (c.side === 'a')
+          if (g.demoMode) {
+            wx.showToast({ title: '同一个微信号，已按演示模式扮演 TA', icon: 'none', duration: 2200 })
+          }
           wx.navigateTo({ url: `/pages/respond/respond?docId=${c._id}` })
         }).catch(() => {
           wx.hideLoading()
