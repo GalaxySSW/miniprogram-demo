@@ -1,0 +1,95 @@
+/* 64rpx 见方的小猫脸，耳朵略微探出顶部（右侧是文字，不会遮挡） */
+.face {
+  position: relative;
+  width: 64rpx;
+  height: 64rpx;
+  flex-shrink: 0;
+  transform-origin: 50% 90%;
+}
+.face.tilt { animation: tilt 2.6s ease-in-out infinite alternate; }
+@keyframes tilt {
+  from { transform: rotate(-4deg); }
+  to   { transform: rotate(4deg); }
+}
+
+.head {
+  position: absolute;
+  inset: 0;
+  border: 2rpx solid #1A1918;
+  border-radius: 50%;
+  background: #FFFDF9;
+}
+
+/* 耳朵：两个小三角，贴着圆的上沿 */
+.ear {
+  position: absolute;
+  top: -8rpx;
+  width: 0;
+  height: 0;
+  border-left: 9rpx solid transparent;
+  border-right: 9rpx solid transparent;
+  border-bottom: 14rpx solid #1A1918;
+}
+.ear-l { left: 8rpx; transform: rotate(-16deg); }
+.ear-r { right: 8rpx; transform: rotate(16deg); }
+
+/* 眼睛：平时是圆点，每 6 秒眨一次——只占动画周期的一小段，余光里几乎察觉不到 */
+.eye {
+  position: absolute;
+  top: 26rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: #1A1918;
+}
+.eye-l { left: 16rpx; }
+.eye-r { right: 16rpx; }
+.blink { animation: blink 6s infinite; }
+@keyframes blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95%           { transform: scaleY(0.1); }
+}
+
+/* 弯弯眼 */
+.eye-arc {
+  position: absolute;
+  top: 24rpx;
+  width: 14rpx;
+  height: 7rpx;
+  border-top: 3rpx solid #1A1918;
+  border-radius: 50% 50% 0 0;
+}
+
+.mouth {
+  position: absolute;
+  top: 40rpx;
+  left: 50%;
+  margin-left: -7rpx;
+  width: 14rpx;
+  height: 7rpx;
+  border-bottom: 2rpx solid #1A1918;
+  border-radius: 0 0 50% 50%;
+}
+
+/* 思考时的三个小点，浅色、缓慢，只是暗示「在想」 */
+.dots {
+  position: absolute;
+  top: 8rpx;
+  right: -6rpx;
+  display: flex;
+  gap: 4rpx;
+}
+.dot {
+  width: 5rpx;
+  height: 5rpx;
+  border-radius: 50%;
+  background: #C9573F;
+  opacity: 0.25;
+}
+.d1 { animation: pulse 1.4s ease-in-out infinite; }
+.d2 { animation: pulse 1.4s ease-in-out 0.2s infinite; }
+.d3 { animation: pulse 1.4s ease-in-out 0.4s infinite; }
+@keyframes pulse {
+  0%, 100% { opacity: 0.2; }
+  50%      { opacity: 0.85; }
+}

@@ -25,9 +25,7 @@
 
         <!-- 判官 -->
         <view wx:if="{{item.who === 'judge'}}" style="display: flex; gap: 16rpx; max-width: 86%; align-items: flex-start;">
-          <view style="flex-shrink: 0; width: 64rpx; height: 64rpx; border-radius: 50%; border: 2rpx solid #C9573F; display: flex; align-items: center; justify-content: center; background: #FFFFFF;">
-            <text style="font-size: 28rpx; color: #C9573F;">判</text>
-          </view>
+          <catface mood="calm" />
           <view style="background: #FFFFFF; border: 1rpx solid #E1DACE; border-radius: 8rpx 28rpx 28rpx 28rpx; padding: 26rpx 30rpx;">
             <text style="font-size: 28rpx; line-height: 1.75; color: #1A1918;">{{item.text}}</text>
           </view>
@@ -41,9 +39,7 @@
 
       <!-- 判官正在想 -->
       <view wx:if="{{thinking}}" style="display: flex; margin-top: 32rpx; gap: 16rpx; align-items: flex-start;">
-        <view style="flex-shrink: 0; width: 64rpx; height: 64rpx; border-radius: 50%; border: 2rpx solid #C9573F; display: flex; align-items: center; justify-content: center; background: #FFFFFF;">
-          <text style="font-size: 28rpx; color: #C9573F;">判</text>
-        </view>
+        <catface mood="thinking" />
         <view class="breathe" style="background: #FFFFFF; border: 1rpx solid #E1DACE; border-radius: 8rpx 28rpx 28rpx 28rpx; padding: 26rpx 30rpx;">
           <text class="faint">判官正在想…</text>
         </view>
