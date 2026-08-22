@@ -1,0 +1,21 @@
+<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+
+  <text class="kicker">卷宗</text>
+  <view class="h2 mt16">你们的案底</view>
+  <view class="sub mt8">每一桩了结的案子，都是一次和好。</view>
+
+  <view class="mt48 col" style="gap: 24rpx;">
+    <view wx:for="{{cases}}" wx:key="id" class="card" bindtap="openCase">
+      <view class="row" style="justify-content: space-between;">
+        <text style="font-size: 30rpx; font-weight: 500;">{{item.title}}</text>
+        <text class="pill {{item.status === 'done' ? 'pill-matcha' : 'pill-honey'}}">{{item.statusText}}</text>
+      </view>
+      <view class="faint mt8">{{item.id}}</view>
+      <view class="sub mt8">{{item.pact}}</view>
+    </view>
+  </view>
+
+  <view class="grow"></view>
+  <view class="faint center">判决后 7 天，证据自动销毁，卷宗只留下金句</view>
+
+</view>

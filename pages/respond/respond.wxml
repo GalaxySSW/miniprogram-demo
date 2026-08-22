@@ -1,0 +1,35 @@
+<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+
+  <view class="center mt32">
+    <cat mood="calm" style="display: inline-block;" />
+  </view>
+
+  <view class="mt32">
+    <text class="kicker">传票 · 致你</text>
+    <view class="h2 mt16">TA 已经先来说了</view>
+    <view class="sub mt8">在你开口前，本庭先向你承诺三件事：</view>
+  </view>
+
+  <view class="mt48 col" style="gap: 24rpx;">
+    <view class="card row" style="gap: 24rpx;">
+      <text style="font-size: 26rpx; color: #B0793F; font-weight: 500;">一</text>
+      <view class="sub grow">不评输赢。这里没有被告，被审的只是误会。</view>
+    </view>
+    <view class="card row" style="gap: 24rpx;">
+      <text style="font-size: 26rpx; color: #B0793F; font-weight: 500;">二</text>
+      <view class="sub grow">互相保密。TA 看不到你说的原话，你也看不到 TA 的。</view>
+    </view>
+    <view class="card row" style="gap: 24rpx;">
+      <text style="font-size: 26rpx; color: #B0793F; font-weight: 500;">三</text>
+      <view class="sub grow">最后你们看到的，是同一份判决书。</view>
+    </view>
+  </view>
+
+  <view class="grow"></view>
+
+  <view class="col" style="gap: 24rpx;">
+    <view class="btn btn-primary" bindtap="willTalk">好，我也说说</view>
+    <view class="btn btn-ghost" bindtap="notNow">我现在不想聊这个</view>
+  </view>
+
+</view>

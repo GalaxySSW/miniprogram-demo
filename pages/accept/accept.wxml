@@ -1,0 +1,29 @@
+<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+
+  <view class="mt48 center">
+    <cat mood="calm" style="display: inline-block;" />
+  </view>
+
+  <view class="card mt48" style="position: relative; padding: 48rpx 40rpx;">
+    <text class="kicker">受理通知</text>
+    <view class="h2 mt16">本庭已受理</view>
+    <view class="sub mt16">案号 {{caseId}}</view>
+    <view class="sub mt8">你说的每一句，本庭都收下了。接下来交给我。</view>
+    <view wx:if="{{sealed}}" class="seal seal-drop" style="position: absolute; top: -30rpx; right: 30rpx;">
+      <text>已受理</text>
+    </view>
+  </view>
+
+  <view class="mt64">
+    <view style="font-size: 30rpx; font-weight: 500;">现在，先帮你回 TA 一句？</view>
+    <view class="sub mt8">如果 TA 的消息还亮在那里，本庭可以先帮你接住它。</view>
+  </view>
+
+  <view class="grow"></view>
+
+  <view class="col" style="gap: 24rpx;">
+    <view class="btn btn-primary" bindtap="quickReply">好，先帮我回一句</view>
+    <view class="btn btn-ghost" bindtap="later">不用，直接发传票</view>
+  </view>
+
+</view>

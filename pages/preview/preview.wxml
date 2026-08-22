@@ -1,0 +1,32 @@
+<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+
+  <text class="kicker">发出前 · 最后确认</text>
+  <view class="h2 mt16">TA 会看到什么</view>
+  <view class="sub mt8">传票发出前，先看一眼 TA 那边的样子。</view>
+
+  <view class="card mt48">
+    <text class="pill pill-matcha">TA 能看到</text>
+    <view class="mt24 col" style="gap: 16rpx;">
+      <view class="sub">· 一张邀请卡：「TA 有心事想跟你说清楚」</view>
+      <view class="sub">· 案号，和一只等着 TA 的猫猫判官</view>
+      <view class="sub">· 三条承诺：不评输赢、互相保密、共见判决</view>
+    </view>
+  </view>
+
+  <view class="card mt24">
+    <text class="pill pill-honey">TA 看不到</text>
+    <view class="mt24 col" style="gap: 16rpx;">
+      <view class="sub">· 你的陈述原话，一个字都不会</view>
+      <view class="sub">· 你上传的任何截图</view>
+      <view class="sub">· 你选择「先回一句」的事</view>
+    </view>
+  </view>
+
+  <view class="grow"></view>
+
+  <view class="col" style="gap: 24rpx;">
+    <view class="btn btn-primary" bindtap="confirm">确认，去发传票</view>
+    <view class="btn btn-ghost" bindtap="edit">我再改改</view>
+  </view>
+
+</view>

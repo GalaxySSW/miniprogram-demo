@@ -1,0 +1,21 @@
+<view class="cat {{breathe ? 'breathe' : ''}}">
+  <view class="cat-tail"></view>
+  <view class="cat-body" style="background: {{bg}};"></view>
+  <view class="cat-ear cat-ear-l"></view>
+  <view class="cat-ear cat-ear-r"></view>
+  <view class="cat-head" style="background: {{bg}};">
+    <block wx:if="{{mood === 'happy'}}">
+      <view class="cat-eye-arc cat-eye-pos-l"></view>
+      <view class="cat-eye-arc cat-eye-pos-r"></view>
+    </block>
+    <block wx:elif="{{mood === 'sleep'}}">
+      <view class="cat-eye-line cat-eye-pos-l"></view>
+      <view class="cat-eye-line cat-eye-pos-r"></view>
+    </block>
+    <block wx:else>
+      <view class="cat-eye cat-eye-pos-l"></view>
+      <view class="cat-eye cat-eye-pos-r"></view>
+    </block>
+    <view class="cat-mouth"></view>
+  </view>
+</view>

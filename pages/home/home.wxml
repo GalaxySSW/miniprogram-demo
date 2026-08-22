@@ -1,0 +1,34 @@
+<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+
+  <view class="row" style="justify-content: space-between;">
+    <text class="kicker">LOVE JUDGE</text>
+    <view class="row" style="gap: 36rpx;">
+      <text class="faint" bindtap="goHistory">卷宗</text>
+      <text class="faint" bindtap="goProfile">我的</text>
+    </view>
+  </view>
+
+  <view class="mt64">
+    <view class="h1">吵不明白的架，</view>
+    <view class="h1">交给本庭。</view>
+    <view class="sub mt24">不判谁输谁赢，只审那个让你们受伤的误会。</view>
+  </view>
+
+  <view class="row mt64" style="justify-content: center;">
+    <cat mood="calm" />
+  </view>
+
+  <view class="grow"></view>
+
+  <view class="col" style="gap: 24rpx;">
+    <view class="btn btn-primary" bindtap="startCase">我要立案</view>
+    <view class="btn btn-ghost" bindtap="gotSummons">我收到了传票</view>
+  </view>
+
+  <swiper class="mt32" vertical autoplay circular interval="3000" duration="600" style="height: 60rpx;">
+    <swiper-item wx:for="{{quotes}}" wx:key="index">
+      <view class="faint center">「{{item}}」</view>
+    </swiper-item>
+  </swiper>
+
+</view>

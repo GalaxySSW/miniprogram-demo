@@ -1,0 +1,25 @@
+<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+
+  <text class="kicker">你的陈述</text>
+  <view class="h2 mt16">这件事，你怎么看？</view>
+  <view class="sub mt8">随便说，说多说少都行。TA 不会看到原话。</view>
+
+  <view class="card mt48">
+    <textarea placeholder="示例：那天真的是临时加班。回到家看到她脸色不对，我就不知道怎么开口了……"
+      placeholder-class="field-ph" bindinput="onInput" auto-height maxlength="500"
+      style="width: 100%; font-size: 28rpx; line-height: 1.7; min-height: 200rpx;" />
+  </view>
+
+  <view class="mt48">
+    <view style="font-size: 28rpx; font-weight: 500;">这几天你更多是什么感觉？</view>
+    <view class="mt24">
+      <text wx:for="{{moods}}" wx:key="index" class="chip {{moodIdx === index ? 'chip-on' : ''}}"
+        data-idx="{{index}}" bindtap="pickMood">{{item}}</text>
+    </view>
+  </view>
+
+  <view class="grow"></view>
+
+  <view class="btn btn-primary" bindtap="submit">呈上本庭 · 请求开庭</view>
+
+</view>

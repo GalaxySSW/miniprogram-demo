@@ -1,0 +1,28 @@
+<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+
+  <text class="kicker">传票</text>
+  <view class="h2 mt16">递给 TA</view>
+  <view class="sub mt8">这张卡会出现在你们的聊天里。措辞已替你软化过了。</view>
+
+  <view class="card mt48" style="padding: 48rpx 40rpx;">
+    <view class="row" style="gap: 32rpx;">
+      <cat mood="calm" bg="#FFFFFF" style="transform: scale(0.6); transform-origin: left center; width: 150rpx;" />
+      <view class="col grow">
+        <view style="font-size: 30rpx; font-weight: 500;">TA 有心事想跟你说清楚</view>
+        <view class="faint mt8">爱情判官 · {{caseId}}</view>
+        <view class="sub mt8">不评输赢 · 互相保密 · 共见同一份判决</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="faint mt24">点下方按钮通过微信转发；对方点开即进入应诉。</view>
+
+  <view class="grow"></view>
+
+  <view class="col" style="gap: 24rpx;">
+    <button open-type="share" class="btn btn-primary" style="width: 100%;">转发给 TA</button>
+    <view class="btn btn-ghost" bindtap="simulateTa">演示：切到 TA 视角</view>
+    <view class="center"><text class="faint" bindtap="goHome">先回首页，等 TA 应诉</text></view>
+  </view>
+
+</view>

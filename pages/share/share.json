@@ -1,0 +1,4 @@
+{
+  "usingComponents": { "cat": "/components/cat/cat" },
+  "navigationBarTitleText": "发出传票"
+}

@@ -1,0 +1,29 @@
+<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+
+  <text class="kicker">立案 · 第二步</text>
+  <view class="h2 mt16">慢慢说，本庭在听</view>
+  <view class="sub mt8">不用组织语言，想到什么说什么。</view>
+
+  <view class="mt48 col" style="gap: 32rpx;">
+    <view class="card" wx:for="{{questions}}" wx:key="key">
+      <view style="font-size: 28rpx; font-weight: 500;">{{item.q}}</view>
+      <textarea class="mt16" placeholder="{{item.ph}}" placeholder-class="field-ph"
+        data-key="{{item.key}}" bindinput="onInput" auto-height maxlength="500"
+        style="width: 100%; font-size: 28rpx; line-height: 1.7; min-height: 120rpx;" />
+    </view>
+
+    <view class="card" wx:if="{{extra}}">
+      <view style="font-size: 28rpx; font-weight: 500;">还想补充的</view>
+      <textarea class="mt16" placeholder="想到什么补什么" placeholder-class="field-ph"
+        bindinput="onExtraInput" auto-height maxlength="500"
+        style="width: 100%; font-size: 28rpx; line-height: 1.7; min-height: 120rpx;" />
+    </view>
+    <view wx:else class="center"><text class="faint" bindtap="addExtra">＋ 再补一句</text></view>
+  </view>
+
+  <view class="grow" style="min-height: 48rpx;"></view>
+
+  <view class="btn btn-primary" bindtap="submit">呈上本庭</view>
+  <view class="faint center mt24">你说的这些，TA 不会看到原话</view>
+
+</view>

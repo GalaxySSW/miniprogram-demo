@@ -1,0 +1,27 @@
+<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+
+  <text class="kicker">立案 · 第一步</text>
+  <view class="h2 mt16">呈上证据</view>
+  <view class="sub mt8">把你们的聊天截图交给本庭。放心，只有判官会看，判决后可一键销毁。</view>
+
+  <view class="mt48" style="display: flex; flex-wrap: wrap; gap: 20rpx;">
+    <view wx:for="{{images}}" wx:key="index" style="position: relative; width: 196rpx; height: 196rpx;">
+      <image src="{{item}}" mode="aspectFill" style="width: 100%; height: 100%; border-radius: 24rpx; border: 1rpx solid #E1DACE;" />
+      <view bindtap="removeImage" data-idx="{{index}}"
+        style="position: absolute; top: -12rpx; right: -12rpx; width: 44rpx; height: 44rpx; border-radius: 50%; background: #1A1918; color: #FAF7F2; display: flex; align-items: center; justify-content: center; font-size: 24rpx;">×</view>
+    </view>
+    <view wx:if="{{images.length < 9}}" bindtap="chooseImage"
+      style="width: 196rpx; height: 196rpx; border: 1rpx dashed #C0B8A8; border-radius: 24rpx; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #FFFFFF;">
+      <text style="font-size: 56rpx; color: #C0B8A8; font-weight: 300; line-height: 1;">+</text>
+      <text class="faint mt8">{{images.length}}/9</text>
+    </view>
+  </view>
+
+  <view class="faint mt24">也可以直接复制聊天文字，下一步粘贴进陈述里。</view>
+
+  <view class="grow"></view>
+
+  <view class="btn btn-primary" bindtap="next">下一步 · 我来陈述</view>
+  <view class="center mt24"><text class="faint" bindtap="next">没有截图，跳过这一步</text></view>
+
+</view>

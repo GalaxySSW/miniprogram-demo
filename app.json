@@ -1,13 +1,26 @@
 {
   "pages": [
-    "pages/index/index",
-    "pages/logs/logs"
+    "pages/home/home",
+    "pages/evidence/evidence",
+    "pages/statement/statement",
+    "pages/accept/accept",
+    "pages/reply/reply",
+    "pages/preview/preview",
+    "pages/share/share",
+    "pages/respond/respond",
+    "pages/their-statement/their-statement",
+    "pages/trial/trial",
+    "pages/verdict/verdict",
+    "pages/pact/pact",
+    "pages/history/history",
+    "pages/profile/profile"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "miniprogram-demo",
-    "navigationBarTextStyle": "black"
+    "navigationBarBackgroundColor": "#FAF7F2",
+    "navigationBarTitleText": "爱情判官",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FAF7F2"
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

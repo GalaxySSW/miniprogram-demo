@@ -1,0 +1,63 @@
+/* 单线稿坐姿猫，2.6px（约 5rpx）圆头笔触，纯黑 */
+.cat { position: relative; width: 240rpx; height: 250rpx; }
+
+.cat-body {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  margin-left: -105rpx;
+  width: 210rpx;
+  height: 100rpx;
+  border: 5rpx solid #1A1918;
+  border-bottom: none;
+  border-radius: 105rpx 105rpx 0 0;
+}
+.cat-tail {
+  position: absolute;
+  bottom: 0;
+  right: -6rpx;
+  width: 64rpx;
+  height: 88rpx;
+  border-right: 5rpx solid #1A1918;
+  border-top: 5rpx solid #1A1918;
+  border-radius: 0 56rpx 0 0;
+}
+.cat-ear {
+  position: absolute;
+  top: 10rpx;
+  width: 48rpx;
+  height: 48rpx;
+  border-left: 5rpx solid #1A1918;
+  border-top: 5rpx solid #1A1918;
+  border-top-left-radius: 10rpx;
+}
+.cat-ear-l { left: 46rpx; transform: rotate(18deg); }
+.cat-ear-r { right: 46rpx; transform: rotate(72deg); }
+
+.cat-head {
+  position: absolute;
+  top: 34rpx;
+  left: 50%;
+  margin-left: -88rpx;
+  width: 176rpx;
+  height: 142rpx;
+  border: 5rpx solid #1A1918;
+  border-radius: 46% 46% 44% 44%;
+}
+
+.cat-eye { position: absolute; top: 62rpx; width: 12rpx; height: 12rpx; border-radius: 50%; background: #1A1918; }
+.cat-eye-arc { position: absolute; top: 58rpx; width: 22rpx; height: 12rpx; border-top: 5rpx solid #1A1918; border-radius: 50% 50% 0 0; }
+.cat-eye-line { position: absolute; top: 66rpx; width: 20rpx; height: 0; border-top: 5rpx solid #1A1918; border-radius: 4rpx; }
+.cat-eye-pos-l { left: 44rpx; }
+.cat-eye-pos-r { right: 44rpx; }
+
+.cat-mouth {
+  position: absolute;
+  top: 84rpx;
+  left: 50%;
+  margin-left: -13rpx;
+  width: 26rpx;
+  height: 13rpx;
+  border-bottom: 4rpx solid #1A1918;
+  border-radius: 0 0 50% 50%;
+}

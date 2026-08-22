@@ -1,0 +1,28 @@
+<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+
+  <view class="center mt48">
+    <view class="row" style="justify-content: center; gap: 0;">
+      <cat mood="happy" style="transform: scale(0.75); margin-right: -60rpx;" />
+      <cat mood="calm" style="transform: scale(0.75); margin-left: -60rpx;" />
+    </view>
+    <view style="font-size: 32rpx; font-weight: 500;" class="mt16">{{bound ? '你们已在本庭结伴' : '还没有绑定 TA'}}</view>
+    <view class="faint mt8">{{bound ? '绑定于 2026 年 7 月' : '发出邀请，一起用同一间小法庭'}}</view>
+  </view>
+
+  <view class="card mt64 row" style="padding: 40rpx 0;">
+    <view wx:for="{{stats}}" wx:key="label" class="col center grow">
+      <text style="font-size: 44rpx; font-weight: 500;">{{item.num}}</text>
+      <text class="faint mt8">{{item.label}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{!bound}}" class="btn btn-primary mt48" bindtap="invite">邀请 TA</view>
+
+  <view class="grow"></view>
+
+  <view class="card">
+    <text class="pill pill-honey">隐私承诺</text>
+    <view class="sub mt16">所有聊天截图与陈述原文，判决后 7 天自动销毁；你也可以在任意案件里手动一键销毁。</view>
+  </view>
+
+</view>
