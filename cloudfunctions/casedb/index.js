@@ -276,6 +276,52 @@ exports.main = async (event) => {
       return { ok: true, result: { received: true } }
     }
 
+    // 案件时间线：等待页每隔几秒问一次「进展到哪儿了」
+    // 走云函数而不是前端 watch，是为了不放开 cases 集合的读权限——那里面有双方的陈述原文
+    if (action === 'timeline') {
+      const doc = await db.collection('cases').doc(event._id).get()
+      const d = doc.data
+      const isA = d.aOpenid === OPENID
+      const peb = await db.collection('pebbles')
+        .where({ caseDocId: event._id, fromOpenid: _.neq(OPENID), received: false }).count()
+      return { ok: true, result: {
+        status: d.status,
+        hasB: !!d.bOpenid,
+        verdictReady: !!d.verdict,
+        pactTitle: d.pact ? d.pact.title : '',
+        reviewed: !!d.review,
+        side: isA ? 'a' : (d.bOpenid === OPENID ? 'b' : 'guest'),
+        pebbleWaiting: peb.total
+      } }
+    }
+
+    // 收件箱：我名下所有案子里，有哪些「有新进展」的事
+    if (action === 'inbox') {
+      const res = await db.collection('cases')
+        .where(_.or([{ aOpenid: OPENID }, { bOpenid: OPENID }]))
+        .orderBy('createdAt', 'desc').limit(10).get()
+      const items = []
+      for (const d of res.data) {
+        const isA = d.aOpenid === OPENID
+        if (isA && d.status === 'responded' && !d.verdict) {
+          items.push({ docId: d._id, caseId: d.caseId, kind: 'responded', text: 'TA 已经应诉了，可以开庭' })
+        }
+        if (d.verdict && d.status === 'tried') {
+          items.push({ docId: d._id, caseId: d.caseId, kind: 'verdict', text: '判决书已经出来了' })
+        }
+        if (d.pact && !d.review) {
+          const due = d.pact.reviewAt && new Date(d.pact.reviewAt) <= new Date()
+          if (due) items.push({ docId: d._id, caseId: d.caseId, kind: 'review', text: '约定满三天了，本庭来回访' })
+        }
+        const peb = await db.collection('pebbles')
+          .where({ caseDocId: d._id, fromOpenid: _.neq(OPENID), received: false }).count()
+        if (peb.total) {
+          items.push({ docId: d._id, caseId: d.caseId, kind: 'pebble', text: `TA 递来了 ${peb.total} 颗石子` })
+        }
+      }
+      return { ok: true, result: items }
+    }
+
     if (action === 'myCases') {
       const res = await db.collection('cases')
         .where(_.or([{ aOpenid: OPENID }, { bOpenid: OPENID }]))

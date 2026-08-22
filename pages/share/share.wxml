@@ -34,7 +34,7 @@
 
   <view class="col" style="gap: 24rpx;">
     <view class="btn btn-ghost" bindtap="simulateTa">演示：切到 TA 视角</view>
-    <view class="center"><text class="faint" bindtap="goHome">先回首页，等 TA 应诉</text></view>
+    <view class="center"><text class="faint" bindtap="goWaiting">发好了 · 去等 TA</text></view>
   </view>
 
 </view>

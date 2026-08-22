@@ -29,6 +29,8 @@ module.exports = {
   pebbleFeed: (_id) => call('pebbleFeed', { _id }),
   receivePebble: (pebbleId) => call('receivePebble', { pebbleId }),
   myCases: () => call('myCases', {}),
+  timeline: (_id) => call('timeline', { _id }),
+  inbox: () => call('inbox', {}),
   destroy: (_id) => call('destroy', { _id }),
   // 关系模式记忆：主语永远是「你们」，不存任何描述个人的内容
   patterns: (_id) => call('patterns', { _id }),

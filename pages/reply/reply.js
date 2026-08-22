@@ -1,6 +1,7 @@
 // 先回一句：低风险话术轮换；云开发就绪时由 DeepSeek 生成，否则用内置话术
 const app = getApp()
 const ai = require('../../utils/ai.js')
+const notify = require('../../utils/notify.js')
 
 Page({
   data: {
@@ -34,6 +35,8 @@ Page({
       success: () => {
         this.setData({ copied: true })
         wx.showToast({ title: '判官在后台等 TA', icon: 'none' })
+        // 一次授权换一次推送：TA 应诉时把人叫回来
+        notify.askSubscribe(['responded', 'verdict'])
       }
     })
   },

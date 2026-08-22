@@ -7,6 +7,7 @@
     "pages/reply/reply",
     "pages/preview/preview",
     "pages/share/share",
+    "pages/waiting/waiting",
     "pages/respond/respond",
     "pages/their-statement/their-statement",
     "pages/interview/interview",

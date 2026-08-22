@@ -52,7 +52,7 @@ Page({
       : '/pages/respond/respond'
     wx.navigateTo({ url })
   },
-  goHome() {
-    wx.reLaunch({ url: '/pages/home/home' })
+  goWaiting() {
+    wx.redirectTo({ url: '/pages/waiting/waiting' })
   }
 })

@@ -1,15 +1,18 @@
 const app = getApp()
 const casedb = require('../../utils/casedb.js')
+const notify = require('../../utils/notify.js')
 
 Page({
   data: {
     quotes: [],
-    pending: null   // 缓着没发传票的案子，随时可以捡回来
+    pending: null,   // 缓着没发传票的案子，随时可以捡回来
+    news: []         // 站内提醒：TA 应诉了 / 判决出来了 / 递来石子 / 该复盘了
   },
   onLoad() {
     this.setData({ quotes: app.globalData.quotes })
   },
   onShow() {
+    notify.fetch().then(items => this.setData({ news: items || [] }))
     const c = app.globalData.caseData
     if (c.docId && (c.status === 'pending' || c.status === 'accepted')) {
       this.setData({ pending: { id: c.id } })
@@ -27,6 +30,22 @@ Page({
       })
     }
   },
+  openNews(e) {
+    const item = this.data.news[e.currentTarget.dataset.idx]
+    if (!item) return
+    notify.markSeen(item)
+    const g = app.globalData.caseData
+    g.docId = item.docId
+    g.id = item.caseId
+    const route = {
+      responded: '/pages/trial/trial',
+      verdict: '/pages/verdict/verdict',
+      pebble: '/pages/pebble/pebble',
+      review: '/pages/review/review'
+    }[item.kind] || '/pages/history/history'
+    wx.navigateTo({ url: route })
+  },
+
   resume() {
     wx.navigateTo({ url: '/pages/preview/preview' })
   },

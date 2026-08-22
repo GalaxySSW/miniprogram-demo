@@ -1,6 +1,7 @@
 // 和好约定（三选一，由判官针对本案生成）+ 递石子（冷战通道，每日上限 3）
 const app = getApp()
 const casedb = require('../../utils/casedb.js')
+const notify = require('../../utils/notify.js')
 
 // 云开发不可用时的兜底：通用但仍然具体的三条
 const FALLBACK = [
@@ -47,6 +48,7 @@ Page({
     c.status = 'closed'
     c.pact = pact
     wx.showToast({ title: '三天后，本庭会回来问问', icon: 'none', duration: 2000 })
+    notify.askSubscribe(['review'])   // 三天后的回访提醒
     if (c.docId) casedb.savePact(c.docId, pact)
     setTimeout(() => wx.redirectTo({ url: '/pages/history/history' }), 2000)
   },
