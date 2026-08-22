@@ -18,7 +18,8 @@ Page({
     }
   },
   simulateTa() {
-    // 演示用：单机模拟 TA 打开传票
+    // 演示用：单机模拟 TA 打开传票（服务端会用派生 openid 扮演对方）
+    app.globalData.caseData.demoMode = true
     const url = this.data.docId
       ? `/pages/respond/respond?docId=${this.data.docId}`
       : '/pages/respond/respond'

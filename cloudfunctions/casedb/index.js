@@ -95,11 +95,17 @@ exports.main = async (event) => {
 
     if (action === 'respond') {
       const doc = await db.collection('cases').doc(event._id).get()
-      if (doc.data.aOpenid === OPENID) return { ok: false, error: '不能给自己的案子应诉' }
-      const merged = { ...doc.data, bOpenid: OPENID }
+      // 正常情况下不能给自己的案子应诉；单机演示时用一个派生 openid 扮演对方，
+      // 好让双人闭环（含关系模式累计）在一台设备上也能完整跑通
+      let responder = OPENID
+      if (doc.data.aOpenid === OPENID) {
+        if (!event.demo) return { ok: false, error: '不能给自己的案子应诉' }
+        responder = OPENID + '__demo'
+      }
+      const merged = { ...doc.data, bOpenid: responder }
       await db.collection('cases').doc(event._id).update({
         data: {
-          bOpenid: OPENID,
+          bOpenid: responder,
           coupleKey: coupleKeyOf(merged),
           bStatement: event.statement || {},
           status: 'responded'

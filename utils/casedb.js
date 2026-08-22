@@ -19,7 +19,8 @@ function call(action, data) {
 module.exports = {
   createCase: (statement) => call('create', { statement }),
   getCase: (_id) => call('get', { _id }),
-  respond: (_id, statement) => call('respond', { _id, statement }),
+  // demo=true：单机演示时扮演对方，绕过「不能给自己应诉」的限制
+  respond: (_id, statement, demo) => call('respond', { _id, statement, demo: !!demo }),
   saveVerdict: (_id, verdict) => call('saveVerdict', { _id, verdict }),
   savePact: (_id, pact) => call('savePact', { _id, pact }),
   pebble: (_id, type) => call('pebble', { _id, type }),

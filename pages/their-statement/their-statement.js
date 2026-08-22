@@ -49,7 +49,7 @@ Page({
       c.status = 'responded'
       setTimeout(() => wx.redirectTo({ url: '/pages/trial/trial' }), 1400)
     }
-    if (c.docId) casedb.respond(c.docId, c.theirStatement).then(done)
+    if (c.docId) casedb.respond(c.docId, c.theirStatement, c.demoMode).then(done)
     else done()
   }
 })
