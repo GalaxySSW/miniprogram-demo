@@ -49,6 +49,13 @@ module.exports = {
   // 逐轮对话：每次带上已有的方向与对话历史，换回下一句
   interviewTurn: (myStatement, theirStatement, side, angles, history) =>
     call('interviewTurn', { myStatement, theirStatement, side, angles, history }),
+  // 补充视角：判决后觉得没说清，再聊几轮
+  supplement: (myStatement, theirStatement, side, verdict, history) =>
+    call('supplement', {
+      myStatement, theirStatement, side,
+      verdictTitle: (verdict || {}).verdictTitle, ruling: (verdict || {}).ruling,
+      history
+    }),
   readScreenshots: (fileIDs) => call('readScreenshots', { fileIDs }),
   transcribe: (fileID) => call('transcribe', { fileID })
 }

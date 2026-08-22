@@ -14,6 +14,7 @@
     "pages/verdict/verdict",
     "pages/poster/poster",
     "pages/pact/pact",
+    "pages/pebble/pebble",
     "pages/history/history",
     "pages/review/review",
     "pages/profile/profile"

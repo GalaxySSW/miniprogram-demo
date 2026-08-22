@@ -15,9 +15,6 @@ Page({
     pacts: FALLBACK,
     fromAI: false,
     pactIdx: -1,
-    pebbles: [],
-    pebbleTypes: ['一首歌', '一张图', '一个表情'],
-    maxPebbles: 3
   },
   onLoad(options) {
     const g = app.globalData
@@ -35,7 +32,6 @@ Page({
       pacts: pacts && pacts.length ? pacts : FALLBACK,
       fromAI: !!(pacts && pacts.length),
       fromNotNow: options.from === 'notnow',
-      pebbles: new Array(g.caseData.pebblesToday).fill(1)
     })
   },
   pickPact(e) {
@@ -54,23 +50,7 @@ Page({
     if (c.docId) casedb.savePact(c.docId, pact)
     setTimeout(() => wx.redirectTo({ url: '/pages/history/history' }), 2000)
   },
-  dropPebble(e) {
-    const c = app.globalData.caseData
-    if (c.pebblesToday >= this.data.maxPebbles) return
-    const type = e.currentTarget.dataset.type
-
-    const bump = () => {
-      c.pebblesToday += 1
-      this.setData({ pebbles: new Array(c.pebblesToday).fill(1) })
-      wx.showToast({ title: `递出了${type} · TA 会收到`, icon: 'none' })
-    }
-    if (c.docId) {
-      casedb.pebble(c.docId, type).then(res => {
-        if (res) bump()
-        else wx.showToast({ title: '今天够了，去说句话吧', icon: 'none' })
-      })
-    } else {
-      bump()
-    }
+  goPebble() {
+    wx.navigateTo({ url: '/pages/pebble/pebble' })
   }
 })

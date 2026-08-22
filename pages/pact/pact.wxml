@@ -24,23 +24,9 @@
 
   <view class="{{fromNotNow ? '' : 'mt48'}}">
     <text class="kicker">冷战通道</text>
-    <view class="h2 mt16">说不出话，就递颗石子</view>
-    <view class="sub mt8">不解释、不分析，只告诉 TA 一件事：我还在。</view>
-
-    <view class="row mt48" style="gap: 24rpx;">
-      <view wx:for="{{pebbleTypes}}" wx:key="index" bindtap="dropPebble" data-type="{{item}}"
-        class="card center grow" style="padding: 32rpx 0; opacity: {{pebbles.length >= maxPebbles ? 0.4 : 1}};">
-        <text style="font-size: 28rpx;">{{item}}</text>
-      </view>
-    </view>
-
-    <view class="row mt32" style="gap: 16rpx; justify-content: center; min-height: 40rpx;">
-      <view wx:for="{{pebbles}}" wx:key="index" class="float-up"
-        style="width: 28rpx; height: 24rpx; border-radius: 50% 50% 45% 45%; border: 4rpx solid #1A1918;"></view>
-    </view>
-    <view class="faint center mt8">
-      {{pebbles.length >= maxPebbles ? '今天够了，去说句话吧' : '今天还能递 ' + (maxPebbles - pebbles.length) + ' 颗'}}
-    </view>
+    <view class="h2 mt16">还说不出话？</view>
+    <view class="sub mt8">递一颗石子过去——不用解释，只告诉 TA：我还在。</view>
+    <view class="btn btn-ghost mt32" bindtap="goPebble">去递一颗石子</view>
   </view>
 
   <view class="grow"></view>

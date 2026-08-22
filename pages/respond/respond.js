@@ -27,7 +27,7 @@ Page({
   notNow() {
     wx.showToast({ title: '好，本庭替你转告：你还需要一点时间', icon: 'none', duration: 2000 })
     setTimeout(() => {
-      wx.navigateTo({ url: '/pages/pact/pact?from=notnow' })
+      wx.navigateTo({ url: '/pages/pebble/pebble' })
     }, 2000)
   }
 })

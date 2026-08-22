@@ -25,7 +25,9 @@ module.exports = {
   saveNote: (_id, note, brief) => call('saveNote', { _id, note, brief }),
   saveVerdict: (_id, verdict) => call('saveVerdict', { _id, verdict }),
   savePact: (_id, pact) => call('savePact', { _id, pact }),
-  pebble: (_id, type) => call('pebble', { _id, type }),
+  pebble: (_id, type, payload) => call('pebble', { _id, type, payload }),
+  pebbleFeed: (_id) => call('pebbleFeed', { _id }),
+  receivePebble: (pebbleId) => call('receivePebble', { pebbleId }),
   myCases: () => call('myCases', {}),
   destroy: (_id) => call('destroy', { _id }),
   // 关系模式记忆：主语永远是「你们」，不存任何描述个人的内容

@@ -1,0 +1,90 @@
+<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+
+  <text class="kicker">冷战通道</text>
+  <view class="h2 mt16">说不出话，就递颗石子</view>
+  <view class="sub mt8">不用解释，也不用讲道理。它只说一件事：我还在。</view>
+
+  <!-- 往来记录 -->
+  <view wx:if="{{loading}}" class="faint center mt64">正在看看石子堆…</view>
+
+  <block wx:elif="{{list.length}}">
+    <view class="mt48 col" style="gap: 20rpx;">
+      <view wx:for="{{list}}" wx:key="_id"
+        style="display: flex; justify-content: {{item.mine ? 'flex-end' : 'flex-start'}};">
+
+        <view class="card {{item.received || item.mine ? '' : 'float-up'}}"
+          style="max-width: 78%; padding: 28rpx 32rpx; border-color: {{!item.mine && !item.received ? '#B0793F' : '#E1DACE'}};">
+
+          <view class="faint">{{item.mine ? '你递出的' : 'TA 递来的'}}</view>
+
+          <view wx:if="{{item.type === 'emoji'}}" class="mt8" style="font-size: 60rpx; line-height: 1.2;">{{item.payload}}</view>
+          <view wx:elif="{{item.type === 'song'}}" class="mt8" style="font-size: 30rpx;">♪ {{item.payload}}</view>
+          <image wx:elif="{{item.type === 'image'}}" src="{{item.payload}}" mode="widthFix"
+            style="width: 260rpx; border-radius: 16rpx; margin-top: 12rpx;" />
+
+          <view wx:if="{{item.mine}}" class="faint mt8">{{item.received ? 'TA 收下了' : '静静躺在那边'}}</view>
+          <view wx:elif="{{!item.received}}" class="pill pill-honey mt16" bindtap="receive" data-id="{{item._id}}">收下</view>
+          <view wx:else class="faint mt8">你收下了</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="card mt48">
+    <view class="sub">还没有石子。递出第一颗，TA 那边就会看到。</view>
+  </view>
+
+  <!-- 往来够两轮，判官才轻声问一句 -->
+  <view wx:if="{{rounds >= 2}}" class="card mt32" style="border-left: 6rpx solid #B0793F;">
+    <view class="sub" style="color: #1A1918;">你们已经来回递了 {{rounds}} 次石子。</view>
+    <view class="faint mt8">要不要，让本庭再试一次？</view>
+    <view class="btn btn-ghost mt24" bindtap="reopen">好，重新开庭</view>
+  </view>
+
+  <view class="grow" style="min-height: 48rpx;"></view>
+
+  <!-- 递一颗 -->
+  <block wx:if="{{!composing}}">
+    <view class="btn {{sentToday >= maxDaily ? 'btn-disabled' : 'btn-primary'}}" bindtap="startCompose">
+      {{sentToday >= maxDaily ? '今天够了，去说句话吧' : '递一颗石子'}}
+    </view>
+    <view class="faint center mt16">今天还能递 {{maxDaily - sentToday}} 颗 · 每天最多三颗</view>
+  </block>
+
+  <block wx:else>
+    <view class="card">
+      <view class="row" style="gap: 16rpx;">
+        <view class="chip {{tab === 'emoji' ? 'chip-on' : ''}}" data-tab="emoji" bindtap="switchTab">一个表情</view>
+        <view class="chip {{tab === 'song' ? 'chip-on' : ''}}" data-tab="song" bindtap="switchTab">一首歌</view>
+        <view class="chip {{tab === 'image' ? 'chip-on' : ''}}" data-tab="image" bindtap="switchTab">一张图</view>
+      </view>
+
+      <view wx:if="{{tab === 'emoji'}}" class="mt24" style="display: flex; flex-wrap: wrap; gap: 20rpx;">
+        <view wx:for="{{emojis}}" wx:key="index" data-emoji="{{item}}" bindtap="pickEmoji"
+          style="width: 96rpx; height: 96rpx; border-radius: 24rpx; display: flex; align-items: center; justify-content: center; font-size: 48rpx; border: 1rpx solid {{picked === item ? '#B0793F' : '#E1DACE'}}; background: {{picked === item ? 'rgba(176,121,63,0.10)' : '#FFFFFF'}};">{{item}}</view>
+      </view>
+
+      <view wx:elif="{{tab === 'song'}}" class="mt24">
+        <input value="{{songText}}" bindinput="onSongInput" maxlength="40"
+          placeholder="写个歌名就行，比如「暖暖 - 梁静茹」" placeholder-class="field-ph"
+          style="background: #FAF7F2; border: 1rpx solid #E1DACE; border-radius: 24rpx; padding: 24rpx 28rpx; font-size: 28rpx;" />
+        <view class="faint mt8">TA 会看到这个名字，不会看到你为什么选它。</view>
+      </view>
+
+      <view wx:else class="mt24">
+        <image wx:if="{{imgPath}}" src="{{imgPath}}" mode="widthFix" bindtap="chooseImage"
+          style="width: 100%; border-radius: 20rpx; border: 1rpx solid #E1DACE;" />
+        <view wx:else bindtap="chooseImage"
+          style="height: 200rpx; border: 1rpx dashed #C0B8A8; border-radius: 24rpx; display: flex; align-items: center; justify-content: center; color: #C0B8A8; font-size: 28rpx;">选一张图</view>
+      </view>
+    </view>
+
+    <view class="col mt24" style="gap: 20rpx;">
+      <view class="btn {{sending ? 'btn-disabled' : 'btn-primary'}}" bindtap="send">
+        {{sending ? '正在递过去…' : '递过去'}}
+      </view>
+      <view class="center"><text class="faint" bindtap="cancelCompose">算了</text></view>
+    </view>
+  </block>
+
+</view>

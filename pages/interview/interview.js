@@ -25,15 +25,18 @@ Page({
     recording: false,
     transcribing: false,
     done: false,
+    mode: 'interview',
     scrollTo: ''
   },
 
   onLoad(options) {
     this.side = options.side === 'a' ? 'a' : 'b'
+    // supplement 模式：判决已出，当事人觉得没说清，回来补充视角
+    this.mode = options.mode === 'supplement' ? 'supplement' : 'interview'
     this.history = []     // [{ q, a }]
     this.angles = null
     this.pendingQ = ''
-    this.setData({ side: this.side })
+    this.setData({ side: this.side, mode: this.mode })
     this.nextTurn(true)
   },
 
@@ -48,7 +51,11 @@ Page({
     const c = app.globalData.caseData
     this.setData({ thinking: true })
 
-    ai.interviewTurn(c.myStatement, c.theirStatement, this.side, this.angles, this.history)
+    const ask = this.mode === 'supplement'
+      ? ai.supplement(c.myStatement, c.theirStatement, this.side, app.globalData.verdict, this.history)
+      : ai.interviewTurn(c.myStatement, c.theirStatement, this.side, this.angles, this.history)
+
+    ask
       .then(res => {
         this.setData({ thinking: false, loading: false })
 
@@ -66,7 +73,9 @@ Page({
         // 云端不可用时的兜底：只给一个安全的开场问题
         if (!res) {
           if (first) {
-            this.pendingQ = FALLBACK_FIRST[this.side]
+            this.pendingQ = this.mode === 'supplement'
+              ? '哪一部分是本庭没说到的？想到什么说什么。'
+              : FALLBACK_FIRST[this.side]
             this.push('judge', this.pendingQ)
             this.setData({ asked: 1 })
           } else {
@@ -136,7 +145,8 @@ Page({
     const target = this.side === 'a' ? 'myStatement' : 'theirStatement'
     const answered = this.history.filter(h => h.a)
     if (answered.length) {
-      c[target] = { ...(c[target] || {}), followups: answered }
+      const prev = (c[target] && c[target].followups) || []
+      c[target] = { ...(c[target] || {}), followups: prev.concat(answered) }
     }
     wx.redirectTo({ url: '/pages/trial/trial' })
   }

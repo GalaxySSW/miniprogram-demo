@@ -221,15 +221,59 @@ exports.main = async (event) => {
       return { ok: true, result: { result } }
     }
 
+    // 递石子：不解释、不分析，只传递一件事——我还在。
+    // 石子必须真的送达对方，否则这个功能没有意义
     if (action === 'pebble') {
       const today = new Date(); today.setHours(0, 0, 0, 0)
       const cnt = await db.collection('pebbles')
         .where({ caseDocId: event._id, fromOpenid: OPENID, createdAt: _.gte(today) }).count()
       if (cnt.total >= 3) return { ok: false, error: 'daily_limit' }
+
+      const doc = await db.collection('cases').doc(event._id).get()
       await db.collection('pebbles').add({
-        data: { caseDocId: event._id, fromOpenid: OPENID, type: event.type, createdAt: new Date() }
+        data: {
+          caseDocId: event._id,
+          coupleKey: doc.data.coupleKey || '',
+          fromOpenid: OPENID,
+          type: event.type || 'emoji',
+          payload: String(event.payload || '').slice(0, 60),
+          received: false,
+          createdAt: new Date()
+        }
       })
       return { ok: true, result: { todayCount: cnt.total + 1 } }
+    }
+
+    // 石子往来：我递出的 + TA 递来的，按时间排好
+    if (action === 'pebbleFeed') {
+      const res = await db.collection('pebbles')
+        .where({ caseDocId: event._id })
+        .orderBy('createdAt', 'asc').limit(30).get()
+      const today = new Date(); today.setHours(0, 0, 0, 0)
+      const list = res.data.map(p => ({
+        _id: p._id,
+        mine: p.fromOpenid === OPENID,
+        type: p.type,
+        payload: p.payload || '',
+        received: !!p.received
+      }))
+      const sentToday = res.data.filter(p =>
+        p.fromOpenid === OPENID && new Date(p.createdAt) >= today).length
+      // 往来轮次：双方各递过多少个来回
+      const mineCount = list.filter(p => p.mine).length
+      const theirsCount = list.length - mineCount
+      return { ok: true, result: {
+        list,
+        sentToday,
+        rounds: Math.min(mineCount, theirsCount),
+        unreceived: list.filter(p => !p.mine && !p.received).length
+      } }
+    }
+
+    // 收下 TA 的石子
+    if (action === 'receivePebble') {
+      await db.collection('pebbles').doc(event.pebbleId).update({ data: { received: true } })
+      return { ok: true, result: { received: true } }
     }
 
     if (action === 'myCases') {

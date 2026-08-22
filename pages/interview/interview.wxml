@@ -12,12 +12,12 @@
 
     <view wx:if="{{loading}}" class="col" style="align-items: center; padding-top: 120rpx;">
       <cat mood="calm" breathe="{{true}}" />
-      <view class="faint mt32">判官正在读你的陈述，想一句该问的话…</view>
+      <view class="faint mt32">{{mode === 'supplement' ? '判官正在重读这桩案子…' : '判官正在读你的陈述，想一句该问的话…'}}</view>
     </view>
 
     <block wx:else>
       <view class="faint" style="text-align: center; padding-bottom: 8rpx;">
-        本庭想再跟你聊几句，问完就开庭
+        {{mode === 'supplement' ? '说说哪里没说到，本庭重新审一次' : '本庭想再跟你聊几句，问完就开庭'}}
       </view>
 
       <view wx:for="{{messages}}" wx:key="id" id="{{item.id}}"
@@ -46,7 +46,7 @@
       </view>
 
       <view wx:if="{{done}}" style="display: flex; justify-content: center; margin-top: 56rpx;">
-        <view class="btn btn-primary" style="padding: 0 64rpx;" bindtap="toTrial">请求开庭</view>
+        <view class="btn btn-primary" style="padding: 0 64rpx;" bindtap="toTrial">{{mode === 'supplement' ? '请求重审' : '请求开庭'}}</view>
       </view>
 
       <view style="height: 48rpx;"></view>

@@ -54,6 +54,11 @@ Page({
   saveImage() {
     wx.navigateTo({ url: '/pages/poster/poster' })
   },
+  supplement() {
+    // 判决不是终点：觉得没说清就回去补充，补完重新审
+    const side = app.globalData.caseData.side === 'a' ? 'a' : 'b'
+    wx.navigateTo({ url: `/pages/interview/interview?mode=supplement&side=${side}` })
+  },
   goPact() {
     wx.navigateTo({ url: '/pages/pact/pact' })
   }

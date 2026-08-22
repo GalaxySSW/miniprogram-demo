@@ -4,7 +4,7 @@ const cloud = require('wx-server-sdk')
 const https = require('https')
 const {
   VERDICT_SYSTEM, QUICK_REPLY_SYSTEM, SCREENSHOT_SYSTEM, BRIEF_SYSTEM,
-  INTERVIEW_PLAN_SYSTEM, INTERVIEW_ASK_SYSTEM, INTERVIEW_TURN_SYSTEM
+  INTERVIEW_PLAN_SYSTEM, INTERVIEW_ASK_SYSTEM, INTERVIEW_TURN_SYSTEM, SUPPLEMENT_SYSTEM
 } = require('./prompts')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
@@ -286,6 +286,31 @@ exports.main = async (event) => {
           : '那天对你来说，最难受的是哪一下？'
       }
       return { ok: true, result: { ...res, angles } }
+    }
+
+    // 补充视角：判决出来后觉得没说清，再跟判官聊几轮
+    if (action === 'supplement') {
+      const askedIsB = event.side === 'b'
+      const own = rawStatement(askedIsB ? event.theirStatement : event.myStatement)
+      const other = rawStatement(askedIsB ? event.myStatement : event.theirStatement)
+      const history = event.history || []
+      const convo = history.length
+        ? history.map(h => `判官：${h.q}\nTA：${h.a || '（跳过了）'}`).join('\n')
+        : '（还没开始）'
+
+      const res = await chat([
+        { role: 'system', content: SUPPLEMENT_SYSTEM },
+        { role: 'user', content:
+          `【TA 自己的陈述】\n${own || '（几乎没说什么）'}\n\n` +
+          `【本庭这次的判决】\n${event.verdictTitle || ''}\n${event.ruling || ''}\n\n` +
+          `【补充到这里】\n${convo}\n\n已问 ${history.length} 个问题。` }
+      ])
+
+      if (res && res.question && leakedFragment(String(res.question), own, other)) {
+        console.warn('拦截泄露追问:', res.question)
+        res.question = '那你觉得，最该被说到却没被说到的是什么？'
+      }
+      return { ok: true, result: res }
     }
 
     // 截图直读：不做 OCR，多模态模型直接看图（气泡左右天然携带「谁说的」）
