@@ -1,32 +1,27 @@
-// 背对背问话：判官与一方的独立会话
+// 背对背问话：与判官的一对一多轮对话
+// 每一问都由模型根据 TA 刚才的回答现生成，不是事先写好的问卷
 // 三条底线：至多 3 问、每问都能跳过、绝不透露对方说了什么
 const app = getApp()
 const ai = require('../../utils/ai.js')
 const voice = require('../../utils/voice.js')
 
-// 云开发未就绪时的兜底追问（引导式、不评判、不引用对方）
-const FALLBACK = {
-  a: [
-    '那天最让你难受的那一刻，你心里最先冒出来的念头是什么？',
-    '如果 TA 当时做了一件小事，就能让你好受一点，那会是什么？',
-    '有没有什么话你一直想说，但一直没找到机会说？'
-  ],
-  b: [
-    '那天你沉默的时候，心里在想什么？',
-    '如果当时能重来一次，你最想改掉的是哪一句话？',
-    '你觉得 TA 最在意的，可能是什么？'
-  ]
+const MAX_Q = 3
+
+// 云开发未就绪时的兜底开场（引导式、不评判、不引用对方）
+const FALLBACK_FIRST = {
+  a: '那天最让你难受的那一刻，你心里最先冒出来的念头是什么？',
+  b: '那天你心里在想什么？想到什么说什么就行。'
 }
 
 Page({
   data: {
     side: 'b',
     loading: true,
-    questions: [],
-    idx: 0,
     messages: [],
     input: '',
     chips: ['说不清', '我当时很累', '我没想那么多', '有点怕'],
+    asked: 0,
+    thinking: false,
     recording: false,
     transcribing: false,
     done: false,
@@ -34,83 +29,92 @@ Page({
   },
 
   onLoad(options) {
-    const side = options.side === 'a' ? 'a' : 'b'
+    this.side = options.side === 'a' ? 'a' : 'b'
+    this.history = []     // [{ q, a }]
+    this.angles = null
+    this.pendingQ = ''
+    this.setData({ side: this.side })
+    this.nextTurn(true)
+  },
+
+  push(who, text, skipped) {
+    const list = this.data.messages.slice()
+    list.push({ id: 'm' + list.length, who, text, skipped: !!skipped })
+    this.setData({ messages: list, scrollTo: list[list.length - 1].id })
+  },
+
+  // 向判官要下一句：它会先回应 TA 刚才那句，再问下去
+  nextTurn(first) {
     const c = app.globalData.caseData
-    this.answers = []
-    this.setData({ side })
+    this.setData({ thinking: true })
 
-    ai.interviewQuestions(c.myStatement, c.theirStatement, side).then(res => {
-      if (res && res.safety) {
-        wx.showModal({
-          title: '本庭要先说一件更重要的事',
-          content: res.message,
-          showCancel: false,
-          success: () => wx.reLaunch({ url: '/pages/home/home' })
-        })
-        return
-      }
-      let qs = (res && res.questions) || []
-      if (!qs.length) qs = FALLBACK[side]
-      qs = qs.slice(0, 3)
-      this.setData({
-        loading: false,
-        questions: qs,
-        messages: [{ id: 'm0', who: 'judge', text: qs[0] }],
-        scrollTo: 'm0'
+    ai.interviewTurn(c.myStatement, c.theirStatement, this.side, this.angles, this.history)
+      .then(res => {
+        this.setData({ thinking: false, loading: false })
+
+        if (res && res.safety) {
+          wx.showModal({
+            title: '本庭要先说一件更重要的事',
+            content: res.message,
+            showCancel: false,
+            success: () => wx.reLaunch({ url: '/pages/home/home' })
+          })
+          return
+        }
+        if (res && res.angles) this.angles = res.angles
+
+        // 云端不可用时的兜底：只给一个安全的开场问题
+        if (!res) {
+          if (first) {
+            this.pendingQ = FALLBACK_FIRST[this.side]
+            this.push('judge', this.pendingQ)
+            this.setData({ asked: 1 })
+          } else {
+            this.finish('我问完了，剩下的交给本庭。')
+          }
+          return
+        }
+
+        const reachedMax = this.data.asked >= MAX_Q
+        if (res.done || reachedMax || !res.question) {
+          this.finish(res.closing || '我问完了，剩下的交给本庭。', res.reply)
+          return
+        }
+
+        // 回应和提问合成一句说出来，读着才像人在讲话
+        const text = (res.reply ? res.reply.trim() + ' ' : '') + res.question.trim()
+        this.pendingQ = res.question.trim()
+        this.push('judge', text)
+        this.setData({ asked: this.data.asked + 1 })
       })
-    })
   },
 
-  onInput(e) {
-    this.setData({ input: e.detail.value })
+  finish(closing, reply) {
+    const text = (reply ? reply.trim() + ' ' : '') + closing
+    this.push('judge', text)
+    this.setData({ done: true })
   },
-  pickChip(e) {
-    this.reply(e.currentTarget.dataset.text)
-  },
+
+  onInput(e) { this.setData({ input: e.detail.value }) },
+  pickChip(e) { this.reply(e.currentTarget.dataset.text) },
   send() {
     const t = (this.data.input || '').trim()
     if (!t) return
     this.setData({ input: '' })
     this.reply(t)
   },
-  skip() {
-    this.reply('', true)
-  },
+  skip() { this.reply('', true) },
 
-  // 回答（或跳过）当前这一问，然后推进
+  // TA 回答（或跳过）之后，把这一轮记进对话，再要下一句
   reply(text, skipped) {
-    const { idx, questions, messages } = this.data
-    const list = messages.slice()
-
-    list.push({
-      id: 'm' + list.length,
-      who: 'me',
-      text: skipped ? '（这个先不说）' : text,
-      skipped: !!skipped
-    })
-    if (!skipped) this.answers.push({ q: questions[idx], a: text })
-
-    const next = idx + 1
-    if (next < questions.length) {
-      list.push({ id: 'm' + list.length, who: 'judge', text: questions[next] })
-      this.setData({
-        messages: list, idx: next,
-        scrollTo: list[list.length - 1].id
-      })
-    } else {
-      list.push({
-        id: 'm' + list.length,
-        who: 'judge',
-        text: skipped && !this.answers.length
-          ? '好，不想说也没关系。本庭按现在知道的来判。'
-          : '我问完了。剩下的交给本庭。'
-      })
-      this.setData({ messages: list, done: true, scrollTo: list[list.length - 1].id })
-    }
+    if (this.data.thinking || this.data.done) return
+    this.push('me', skipped ? '（这个先不说）' : text, skipped)
+    this.history.push({ q: this.pendingQ, a: skipped ? '' : text })
+    this.nextTurn(false)
   },
 
-  // 语音回答
   recStart() {
+    if (this.data.thinking || this.data.done) return
     this.setData({ recording: true })
     voice.start()
   },
@@ -129,9 +133,10 @@ Page({
 
   toTrial() {
     const c = app.globalData.caseData
-    const target = this.data.side === 'a' ? 'myStatement' : 'theirStatement'
-    if (this.answers.length) {
-      c[target] = { ...(c[target] || {}), followups: this.answers }
+    const target = this.side === 'a' ? 'myStatement' : 'theirStatement'
+    const answered = this.history.filter(h => h.a)
+    if (answered.length) {
+      c[target] = { ...(c[target] || {}), followups: answered }
     }
     wx.redirectTo({ url: '/pages/trial/trial' })
   }

@@ -46,6 +46,9 @@ module.exports = {
   caseBrief: (myStatement) => call('brief', { myStatement }),
   interviewQuestions: (myStatement, theirStatement, side) =>
     call('interview', { myStatement, theirStatement, side }),
+  // 逐轮对话：每次带上已有的方向与对话历史，换回下一句
+  interviewTurn: (myStatement, theirStatement, side, angles, history) =>
+    call('interviewTurn', { myStatement, theirStatement, side, angles, history }),
   readScreenshots: (fileIDs) => call('readScreenshots', { fileIDs }),
   transcribe: (fileID) => call('transcribe', { fileID })
 }

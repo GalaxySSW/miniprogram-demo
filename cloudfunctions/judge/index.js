@@ -4,7 +4,7 @@ const cloud = require('wx-server-sdk')
 const https = require('https')
 const {
   VERDICT_SYSTEM, QUICK_REPLY_SYSTEM, SCREENSHOT_SYSTEM, BRIEF_SYSTEM,
-  INTERVIEW_PLAN_SYSTEM, INTERVIEW_ASK_SYSTEM
+  INTERVIEW_PLAN_SYSTEM, INTERVIEW_ASK_SYSTEM, INTERVIEW_TURN_SYSTEM
 } = require('./prompts')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
@@ -239,6 +239,53 @@ exports.main = async (event) => {
         res.questions = kept.slice(0, 3)
       }
       return { ok: true, result: res }
+    }
+
+    // 逐轮对话式追问：每次只产出下一句，承接 TA 刚才的回答
+    if (action === 'interviewTurn') {
+      const askedIsB = event.side === 'b'
+      const own = rawStatement(askedIsB ? event.theirStatement : event.myStatement)
+      const other = rawStatement(askedIsB ? event.myStatement : event.theirStatement)
+      const history = event.history || []
+
+      // 第一轮先定方向（需要看双方证词），之后复用客户端传回的方向
+      let angles = event.angles
+      if (!angles) {
+        const plan = await chat([
+          { role: 'system', content: INTERVIEW_PLAN_SYSTEM },
+          { role: 'user', content: [
+            statementText('甲方陈述', event.myStatement),
+            statementText('乙方陈述', event.theirStatement),
+            `请列出需要向「${askedIsB ? '乙方' : '甲方'}」澄清的方向。`
+          ].join('\n\n') }
+        ])
+        if (plan && plan.safety) return { ok: true, result: plan }
+        angles = ((plan && plan.angles) || []).filter(a => {
+          const leak = leakedFragment(String(a), own, other)
+          if (leak) console.warn('拦截泄露方向:', a, '| 命中:', leak)
+          return !leak
+        }).slice(0, 3)
+      }
+
+      const convo = history.length
+        ? history.map(h => `判官：${h.q}\nTA：${h.a || '（跳过了）'}`).join('\n')
+        : '（还没开始）'
+      const res = await chat([
+        { role: 'system', content: INTERVIEW_TURN_SYSTEM },
+        { role: 'user', content:
+          `【TA 自己的陈述】\n${own || '（几乎没说什么）'}\n\n` +
+          `【想澄清的方向】\n${angles.length ? angles.map((a, i) => `${i + 1}. ${a}`).join('\n') : '（自由发挥）'}\n\n` +
+          `【已经聊到这里】\n${convo}\n\n已问 ${history.length} 个问题。` }
+      ])
+
+      // 泄露兜底：问题带上了对方独有的细节就丢掉，改成安全的开放问法
+      if (res && res.question && leakedFragment(String(res.question), own, other)) {
+        console.warn('拦截泄露追问:', res.question)
+        res.question = history.length
+          ? '那你当时心里最强烈的感觉是什么？'
+          : '那天对你来说，最难受的是哪一下？'
+      }
+      return { ok: true, result: { ...res, angles } }
     }
 
     // 截图直读：不做 OCR，多模态模型直接看图（气泡左右天然携带「谁说的」）

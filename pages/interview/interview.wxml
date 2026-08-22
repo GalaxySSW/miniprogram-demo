@@ -1,62 +1,74 @@
-<view style="height: 100vh; display: flex; flex-direction: column; box-sizing: border-box;">
+<view style="height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; background: #FAF7F2;">
 
   <!-- 常驻保密提示：背对背的信任全靠这一条 -->
-  <view class="row" style="gap: 12rpx; padding: 20rpx 50rpx; background: #FAF7F2; border-bottom: 1rpx solid #E1DACE;">
+  <view class="row" style="gap: 12rpx; padding: 20rpx 50rpx; border-bottom: 1rpx solid #E1DACE;">
     <text class="pill pill-honey">对 TA 保密</text>
     <text class="faint grow">这段对话 TA 永远看不到</text>
-    <text wx:if="{{!loading && !done}}" class="faint">{{idx + 1}}/{{questions.length}}</text>
+    <text wx:if="{{!loading && !done}}" class="faint">{{asked}}/3</text>
   </view>
 
   <scroll-view scroll-y scroll-into-view="{{scrollTo}}" scroll-with-animation
     style="flex: 1; padding: 32rpx 50rpx;">
 
-    <view wx:if="{{loading}}" class="col center" style="padding-top: 120rpx;">
+    <view wx:if="{{loading}}" class="col" style="align-items: center; padding-top: 120rpx;">
       <cat mood="calm" breathe="{{true}}" />
-      <view class="faint mt32">judge 正在读你们的证词，想两句该问的话…</view>
+      <view class="faint mt32">判官正在读你的陈述，想一句该问的话…</view>
     </view>
 
     <block wx:else>
-      <view class="faint center" style="padding-bottom: 24rpx;">
-        {{side === 'a' ? '本庭想再问你几句' : '本庭想再问你几句，问完就开庭'}}
+      <view class="faint" style="text-align: center; padding-bottom: 8rpx;">
+        本庭想再跟你聊几句，问完就开庭
       </view>
 
-      <view wx:for="{{messages}}" wx:key="id" id="{{item.id}}" class="mt24"
-        style="display: flex; justify-content: {{item.who === 'judge' ? 'flex-start' : 'flex-end'}};">
+      <view wx:for="{{messages}}" wx:key="id" id="{{item.id}}"
+        style="display: flex; margin-top: 32rpx; justify-content: {{item.who === 'judge' ? 'flex-start' : 'flex-end'}};">
 
-        <view wx:if="{{item.who === 'judge'}}" class="row" style="gap: 16rpx; max-width: 88%;">
-          <view style="flex-shrink: 0; width: 64rpx;">
-            <cat mood="calm" style="transform: scale(0.26); transform-origin: top left; width: 64rpx;" />
+        <!-- 判官 -->
+        <view wx:if="{{item.who === 'judge'}}" style="display: flex; gap: 16rpx; max-width: 86%; align-items: flex-start;">
+          <view style="flex-shrink: 0; width: 64rpx; height: 64rpx; border-radius: 50%; border: 2rpx solid #C9573F; display: flex; align-items: center; justify-content: center; background: #FFFFFF;">
+            <text style="font-size: 28rpx; color: #C9573F;">判</text>
           </view>
-          <view class="card" style="padding: 28rpx 32rpx; border-radius: 8rpx 32rpx 32rpx 32rpx;">
-            <view class="sub" style="color: #1A1918;">{{item.text}}</view>
+          <view style="background: #FFFFFF; border: 1rpx solid #E1DACE; border-radius: 8rpx 28rpx 28rpx 28rpx; padding: 26rpx 30rpx;">
+            <text style="font-size: 28rpx; line-height: 1.75; color: #1A1918;">{{item.text}}</text>
           </view>
         </view>
 
-        <view wx:else style="max-width: 78%; padding: 24rpx 32rpx; border-radius: 32rpx 8rpx 32rpx 32rpx; background: {{item.skipped ? '#F0EBE3' : '#B0793F'}};">
-          <view style="font-size: 28rpx; line-height: 1.7; color: {{item.skipped ? '#9C958A' : '#FAF7F2'}};">{{item.text}}</view>
+        <!-- 我 -->
+        <view wx:else style="max-width: 78%; padding: 24rpx 30rpx; border-radius: 28rpx 8rpx 28rpx 28rpx; background: {{item.skipped ? '#F0EBE3' : '#B0793F'}};">
+          <text style="font-size: 28rpx; line-height: 1.75; color: {{item.skipped ? '#9C958A' : '#FAF7F2'}};">{{item.text}}</text>
         </view>
       </view>
 
-      <view wx:if="{{done}}" class="mt48 center">
-        <view class="btn btn-primary" bindtap="toTrial">请求开庭</view>
+      <!-- 判官正在想 -->
+      <view wx:if="{{thinking}}" style="display: flex; margin-top: 32rpx; gap: 16rpx; align-items: flex-start;">
+        <view style="flex-shrink: 0; width: 64rpx; height: 64rpx; border-radius: 50%; border: 2rpx solid #C9573F; display: flex; align-items: center; justify-content: center; background: #FFFFFF;">
+          <text style="font-size: 28rpx; color: #C9573F;">判</text>
+        </view>
+        <view class="breathe" style="background: #FFFFFF; border: 1rpx solid #E1DACE; border-radius: 8rpx 28rpx 28rpx 28rpx; padding: 26rpx 30rpx;">
+          <text class="faint">判官正在想…</text>
+        </view>
       </view>
 
-      <view style="height: 40rpx;"></view>
+      <view wx:if="{{done}}" style="display: flex; justify-content: center; margin-top: 56rpx;">
+        <view class="btn btn-primary" style="padding: 0 64rpx;" bindtap="toTrial">请求开庭</view>
+      </view>
+
+      <view style="height: 48rpx;"></view>
     </block>
   </scroll-view>
 
   <!-- 输入区 -->
-  <view wx:if="{{!loading && !done}}" style="border-top: 1rpx solid #E1DACE; background: #FAF7F2; padding: 20rpx 50rpx 36rpx;">
+  <view wx:if="{{!loading && !done}}" style="border-top: 1rpx solid #E1DACE; padding: 20rpx 50rpx 36rpx;">
     <view style="white-space: nowrap; overflow-x: auto;">
       <text wx:for="{{chips}}" wx:key="index" class="chip" data-text="{{item}}" bindtap="pickChip">{{item}}</text>
     </view>
 
     <view class="row mt8" style="gap: 16rpx;">
       <input class="grow" value="{{input}}" bindinput="onInput" bindconfirm="send"
-        placeholder="说说看，几个字也行" placeholder-class="field-ph" confirm-type="send"
+        placeholder="{{thinking ? '判官正在想…' : '说说看，几个字也行'}}" placeholder-class="field-ph" confirm-type="send"
         style="background: #FFFFFF; border: 1rpx solid #E1DACE; border-radius: 999rpx; padding: 20rpx 32rpx; font-size: 28rpx;" />
       <view bindtap="send"
-        style="flex-shrink: 0; width: 96rpx; height: 76rpx; border-radius: 999rpx; background: #1A1918; color: #FAF7F2; display: flex; align-items: center; justify-content: center; font-size: 26rpx;">发送</view>
+        style="flex-shrink: 0; width: 96rpx; height: 76rpx; border-radius: 999rpx; background: {{thinking ? '#C0B8A8' : '#1A1918'}}; color: #FAF7F2; display: flex; align-items: center; justify-content: center; font-size: 26rpx;">发送</view>
     </view>
 
     <view class="row mt16" style="gap: 24rpx;">
