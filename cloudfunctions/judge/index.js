@@ -2,7 +2,10 @@
 // 密钥优先取环境变量 AI_API_KEY，否则回退本地 secret.js（已 gitignore）
 const cloud = require('wx-server-sdk')
 const https = require('https')
-const { VERDICT_SYSTEM, QUICK_REPLY_SYSTEM, INTERVIEW_SYSTEM, SCREENSHOT_SYSTEM } = require('./prompts')
+const {
+  VERDICT_SYSTEM, QUICK_REPLY_SYSTEM, SCREENSHOT_SYSTEM,
+  INTERVIEW_PLAN_SYSTEM, INTERVIEW_ASK_SYSTEM
+} = require('./prompts')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
@@ -82,6 +85,36 @@ async function transcribe(buffer, ext) {
   return json.text || ''
 }
 
+// 背对背的信任是硬承诺，不能只靠模型自觉。
+// 这道过滤器逐条检查追问：只要问题里出现了「对方陈述里有、而被问方自己没提过」的片段，
+// 就判定为泄露并丢弃该问题。宁可少问一句，也不能让 TA 猜到对方说了什么。
+const LEAK_STOP = new Set([
+  '什么', '时候', '自己', '这件', '那件', '那天', '当时', '现在', '后来', '因为', '所以',
+  '但是', '可能', '觉得', '知道', '没有', '一个', '这个', '那个', '事情', '想过', '如果',
+  '为什么', '怎么', '他们', '我们', '你们', '还是', '就是', '不是', '有点', '一下', '起来',
+  '回家', '出门', '说话', '开始', '结束', '发生', '希望', '需要', '应该', '真的'
+])
+
+// 只取用户自己写的内容做泄露比对，不含我们自己加的字段标签，否则会误伤
+function rawStatement(s) {
+  if (!s) return ''
+  return [s.what, s.hurt, s.wish, s.extra, s.text, s.mood, s.screenshots]
+    .filter(Boolean).join('\n')
+}
+
+function leakedFragment(question, ownText, otherText) {
+  for (let len = 4; len >= 2; len--) {
+    for (let i = 0; i + len <= otherText.length; i++) {
+      const g = otherText.slice(i, i + len)
+      if (!/^[一-龥]+$/.test(g)) continue
+      if (LEAK_STOP.has(g)) continue
+      if (ownText.includes(g)) continue      // 被问方自己也说过，不算泄露
+      if (question.includes(g)) return g
+    }
+  }
+  return ''
+}
+
 function statementText(label, s) {
   if (!s) return `${label}：（暂无陈述）`
   const p = []
@@ -92,6 +125,9 @@ function statementText(label, s) {
   if (s.text) p.push(`陈述：${s.text}`)
   if (s.mood) p.push(`这几天的感觉：${s.mood}`)
   if (s.screenshots) p.push(`聊天记录（由截图识别）：\n${s.screenshots}`)
+  if (s.followups && s.followups.length) {
+    p.push('背对背追问：\n' + s.followups.map(f => `问：${f.q}\n答：${f.a}`).join('\n'))
+  }
   return `${label}：\n${p.join('\n') || '（暂无陈述）'}`
 }
 
@@ -130,15 +166,67 @@ exports.main = async (event) => {
       ]) }
     }
 
+    // 背对背问话：两步生成（先定方向、再写问题）+ 两道泄露过滤
     if (action === 'interview') {
-      const user = [
-        statementText('甲方陈述', event.myStatement),
-        statementText('乙方陈述', event.theirStatement),
-        `请为「${event.side === 'b' ? '乙方' : '甲方'}」生成追问。`
-      ].join('\n\n')
-      return { ok: true, result: await chat([
-        { role: 'system', content: INTERVIEW_SYSTEM }, { role: 'user', content: user }
-      ]) }
+      const askedIsB = event.side === 'b'
+      const own = rawStatement(askedIsB ? event.theirStatement : event.myStatement)
+      const other = rawStatement(askedIsB ? event.myStatement : event.theirStatement)
+
+      // 第一步：看双方证词，只产出抽象的澄清方向，不许带细节
+      const plan = await chat([
+        { role: 'system', content: INTERVIEW_PLAN_SYSTEM },
+        { role: 'user', content: [
+          statementText('甲方陈述', event.myStatement),
+          statementText('乙方陈述', event.theirStatement),
+          `请列出需要向「${askedIsB ? '乙方' : '甲方'}」澄清的方向。`
+        ].join('\n\n') }
+      ])
+      if (plan && plan.safety) return { ok: true, result: plan }
+
+      // 方向词本身也可能夹带对方的细节，先过一遍同一道过滤再往下传
+      const angles = ((plan && plan.angles) || []).filter(a => {
+        const leak = leakedFragment(String(a), own, other)
+        if (leak) console.warn('拦截泄露方向:', a, '| 命中:', leak)
+        return !leak
+      }).slice(0, 3)
+      const res = await chat([
+        { role: 'system', content: INTERVIEW_ASK_SYSTEM },
+        { role: 'user', content: `【TA 自己的陈述】\n${own || '（几乎没说什么）'}\n\n【想澄清的方向】\n` +
+          (angles.length ? angles.map((a, i) => `${i + 1}. ${a}`).join('\n') : '（自由发挥，问得开放一点）') }
+      ])
+
+      if (res && Array.isArray(res.questions)) {
+        // 兜底第一道：子串比对，挡住直接搬运对方原话
+        let kept = res.questions.filter(q => {
+          const leak = leakedFragment(String(q), own, other)
+          if (leak) console.warn('拦截泄露追问(子串):', q, '| 命中:', leak)
+          return !leak
+        })
+
+        // 兜底第二道：模型复核，挡住改写措辞绕过子串匹配的
+        if (kept.length) {
+          try {
+            const check = await chat([
+              { role: 'system', content: '你是隐私审核员。给你一份某人的自述，和几个准备问 TA 的问题。' +
+                '判断每个问题里是否出现了这份自述中没有提到过的具体信息（具体的事件、动作、说过的话、涉及的人）。' +
+                '只要有，就必须标记删除——因为那意味着信息来自别处，问出来会暴露别人说了什么。' +
+                '泛泛的开放式提问（问心情、感受、想法、当时在想什么）永远是安全的。' +
+                '只返回 JSON：{"drop":[序号]}，序号从 1 开始，没有要删的就返回 {"drop":[]}。' },
+              { role: 'user', content: `【这个人的自述】\n${own}\n\n【准备问 TA 的问题】\n` +
+                kept.map((q, i) => `${i + 1}. ${q}`).join('\n') }
+            ])
+            const drop = new Set((check && check.drop) || [])
+            kept = kept.filter((q, i) => {
+              if (drop.has(i + 1)) console.warn('拦截泄露追问(复核):', q)
+              return !drop.has(i + 1)
+            })
+          } catch (e) {
+            console.warn('复核失败，保留子串过滤结果', e.message)
+          }
+        }
+        res.questions = kept.slice(0, 3)
+      }
+      return { ok: true, result: res }
     }
 
     // 截图直读：不做 OCR，多模态模型直接看图（气泡左右天然携带「谁说的」）

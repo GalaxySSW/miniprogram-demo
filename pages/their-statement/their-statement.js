@@ -47,7 +47,8 @@ Page({
 
     const done = () => {
       c.status = 'responded'
-      setTimeout(() => wx.redirectTo({ url: '/pages/trial/trial' }), 1400)
+      // 证词齐了，先背对背追问，再开庭
+      setTimeout(() => wx.redirectTo({ url: '/pages/interview/interview?side=b' }), 1400)
     }
     if (c.docId) casedb.respond(c.docId, c.theirStatement, c.demoMode).then(done)
     else done()

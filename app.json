@@ -9,6 +9,7 @@
     "pages/share/share",
     "pages/respond/respond",
     "pages/their-statement/their-statement",
+    "pages/interview/interview",
     "pages/trial/trial",
     "pages/verdict/verdict",
     "pages/pact/pact",
