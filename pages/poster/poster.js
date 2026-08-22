@@ -1,7 +1,7 @@
 // 结案长图：只画判决金句与误会指数，绝不含陈述原文、案由、台阶等隐私内容
 const app = getApp()
 
-const W = 750           // 画布逻辑宽度
+const W = 750           // 9:16 竖版，适配朋友圈与小红书信息流
 const PAD = 60
 const CREAM = '#FAF7F2'
 const INK = '#1A1918'
@@ -49,7 +49,7 @@ Page({
     const v = app.globalData.verdict || {}
     const caseId = app.globalData.caseData.id || ''
     const dpr = wx.getSystemInfoSync().pixelRatio || 2
-    const H = 1000
+    const H = 1334
 
     canvas.width = W * dpr
     canvas.height = H * dpr
@@ -60,7 +60,7 @@ Page({
     ctx.fillStyle = CREAM
     ctx.fillRect(0, 0, W, H)
 
-    let y = 96
+    let y = 130
 
     // 抬头
     ctx.fillStyle = HONEY
@@ -101,18 +101,13 @@ Page({
     ctx.fillRect(PAD, y, barW, 8)
     ctx.fillStyle = CLAY
     ctx.fillRect(PAD, y, barW * pct, 8)
-    y += 90
+    y += 130
 
-    // 判决主文——分享出去的就是这句
+    // 只画脱敏金句：判决主文可能带着可被认出的具体情节，绝不能进分享图
     ctx.fillStyle = INK
-    ctx.font = '38px sans-serif'
-    y = this.wrap(ctx, v.verdictTitle || '本案不存在被告。', PAD, y, barW, 56, 'center')
-    y += 24
-
-    ctx.fillStyle = '#4A443C'
-    ctx.font = '26px sans-serif'
-    y = this.wrap(ctx, v.ruling || '', PAD, y, barW - 40, 46, 'center')
-    y += 70
+    ctx.font = '40px sans-serif'
+    y = this.wrap(ctx, v.shareLine || v.verdictTitle || '本案不存在被告。', PAD, y, barW - 20, 62, 'center')
+    y += 110
 
     // 印章
     const seal = { misunderstanding: ['误会', '有罪'], breach: ['有错', '可改'], mismatch: ['未曾', '对齐'] }
@@ -132,16 +127,16 @@ Page({
     ctx.restore()
     y = cy + 130
 
-    // 页脚
+    // 页脚固定在底部
     ctx.fillStyle = MUTE
     ctx.font = '20px sans-serif'
-    ctx.fillText('本图只含判决金句，不含任何聊天内容', W / 2, y)
-    y += 34
+    ctx.fillText('本图只含判决金句，不含任何聊天内容', W / 2, H - 96)
     ctx.fillStyle = HONEY
-    ctx.fillText('吵不明白的架，交给本庭', W / 2, y)
+    ctx.font = '22px sans-serif'
+    ctx.fillText('爱情判官 · 吵不明白的架，交给本庭', W / 2, H - 56)
 
-    // 按实际内容裁掉多余高度
-    const finalH = Math.min(H, y + 70)
+    // 竖版比例固定，页脚压在底部，不按内容裁剪
+    const finalH = H
     wx.canvasToTempFilePath({
       canvas,
       x: 0, y: 0, width: W, height: finalH,

@@ -142,9 +142,13 @@ exports.main = async (event) => {
     }
 
     if (action === 'verdict') {
+      const t = event.theirStatement
+      const absent = !t || !(t.text || t.what || t.mood || (t.followups || []).length)
       const parts = [
         statementText('甲方（发起方）陈述', event.myStatement),
-        statementText('乙方（应诉方）陈述', event.theirStatement)
+        absent
+          ? '乙方尚未到庭：本案为缺席审判，另一方还没有提交任何说法。'
+          : statementText('乙方（应诉方）陈述', t)
       ]
       // 本庭记忆：只有主题、次数、试过的约定与复盘结果，没有任何描述人的内容
       const pats = event.patterns || []
@@ -155,9 +159,15 @@ exports.main = async (event) => {
           ).join('\n'))
       }
       const user = parts.join('\n\n')
-      return { ok: true, result: await chat([
+      const r = await chat([
         { role: 'system', content: VERDICT_SYSTEM }, { role: 'user', content: user }
-      ]) }
+      ])
+      // 缺席时绝不能给没到庭的人定责——模型偶尔仍会判成 breach，这里硬掰回来
+      if (absent && r) {
+        r.absent = true
+        if (r.caseType === 'breach') r.caseType = 'mismatch'
+      }
+      return { ok: true, result: r }
     }
 
     // 案由：给对方看的中立背景，A 发出前可预览可改

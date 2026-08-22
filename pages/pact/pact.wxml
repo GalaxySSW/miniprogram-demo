@@ -16,8 +16,17 @@
       </view>
     </view>
 
-    <view class="btn btn-primary mt48" bindtap="confirmPact">就这件 · 双方确认</view>
-    <view class="faint center mt16">三天后，本庭会回来问问这个约定有没有帮助</view>
+    <view class="card mt32 row" style="gap: 20rpx; align-items: flex-start;" bindtap="toggleReview">
+      <view style="flex-shrink: 0; width: 36rpx; height: 36rpx; border-radius: 10rpx; border: 2rpx solid {{wantReview ? '#B0793F' : '#E1DACE'}}; background: {{wantReview ? '#B0793F' : '#FFFFFF'}}; display: flex; align-items: center; justify-content: center;">
+        <text wx:if="{{wantReview}}" style="color: #FAF7F2; font-size: 22rpx;">✓</text>
+      </view>
+      <view class="col grow">
+        <view style="font-size: 28rpx;">过几天，让本庭来问问</view>
+        <view class="faint mt8">不勾也没关系。本庭会一直记着这件事，下次为同一件事开庭时自然会提。</view>
+      </view>
+    </view>
+
+    <view class="btn btn-primary mt32" bindtap="confirmPact">就这件 · 双方确认</view>
 
     <view class="hairline mt64"></view>
   </block>

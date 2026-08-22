@@ -10,6 +10,12 @@
     ⚠︎ 本次未接通判官，以下为样例判决
   </view>
 
+  <view wx:if="{{absent}}" class="card mt24" style="border-left: 6rpx solid #B0793F;">
+    <text class="pill pill-honey">缺席审判</text>
+    <view class="sub mt16" style="color: #1A1918;">TA 还没有到庭，这份判决只听了一面之词。</view>
+    <view class="faint mt8">等 TA 来了，本庭会重新审一次。在那之前，下面这些只是本庭的推测。</view>
+  </view>
+
   <view class="hairline mt32"></view>
 
   <view wx:if="{{v.memory && v.memory.count > 1}}" class="card mt32" style="border-left: 6rpx solid #B0793F;">

@@ -4,20 +4,19 @@ const casedb = require('../../utils/casedb.js')
 Page({
   data: {
     bound: true,
-    stats: [
-      { num: 0, label: '立案' },
-      { num: 0, label: '和好' },
-      { num: 0, label: '石子' }
-    ],
+    pactDone: 0,
+    pactTried: 0,
     patterns: []
   },
   onShow() {
     casedb.myCases().then(list => {
       if (!list) return
-      const closed = list.filter(c => c.status === 'closed').length
+      // 「全产品只有一个数字」是 PRD 原则，这里不再展示立案次数这类虚荣计数，
+      // 只说约定试过几件、做到了几件——那是指向行为的
+      const withPact = list.filter(c => c.pact)
       this.setData({
-        'stats[0].num': list.length,
-        'stats[1].num': closed,
+        pactTried: withPact.length,
+        pactDone: withPact.filter(c => c.review && c.review.result === '做到了').length,
         bound: list.some(c => c.hasB)
       })
     })

@@ -192,10 +192,11 @@ exports.main = async (event) => {
     }
 
     if (action === 'savePact') {
+      const wantReview = !!event.wantReview
       const reviewAt = new Date(Date.now() + 3 * 24 * 3600 * 1000)
       const doc = await db.collection('cases').doc(event._id).get()
       await db.collection('cases').doc(event._id).update({
-        data: { pact: { ...event.pact, confirmedBy: [OPENID], reviewAt }, status: 'closed' }
+        data: { pact: { ...event.pact, confirmedBy: [OPENID], wantReview, reviewAt }, status: 'closed' }
       })
       // 把这次试的方法记进模式，供下次开庭参考
       if (doc.data.coupleKey && doc.data.topic) {
@@ -225,15 +226,19 @@ exports.main = async (event) => {
     // 石子必须真的送达对方，否则这个功能没有意义
     if (action === 'pebble') {
       const today = new Date(); today.setHours(0, 0, 0, 0)
+      const key = await myCoupleKey(OPENID)
+      const scope = key ? { coupleKey: key } : { caseDocId: event._id }
       const cnt = await db.collection('pebbles')
-        .where({ caseDocId: event._id, fromOpenid: OPENID, createdAt: _.gte(today) }).count()
+        .where({ ...scope, fromOpenid: OPENID, createdAt: _.gte(today) }).count()
       if (cnt.total >= 3) return { ok: false, error: 'daily_limit' }
 
-      const doc = await db.collection('cases').doc(event._id).get()
+      const doc = event._id
+        ? await db.collection('cases').doc(event._id).get()
+        : { data: { coupleKey: key } }
       await db.collection('pebbles').add({
         data: {
-          caseDocId: event._id,
-          coupleKey: doc.data.coupleKey || '',
+          caseDocId: event._id || '',
+          coupleKey: doc.data.coupleKey || key || '',
           fromOpenid: OPENID,
           type: event.type || 'emoji',
           payload: String(event.payload || '').slice(0, 60),
@@ -246,8 +251,11 @@ exports.main = async (event) => {
 
     // 石子往来：我递出的 + TA 递来的，按时间排好
     if (action === 'pebbleFeed') {
+      // 优先按情侣查：冷战期可能根本没有活跃案件
+      const key = await myCoupleKey(OPENID)
+      const scope = key ? { coupleKey: key } : { caseDocId: event._id || '' }
       const res = await db.collection('pebbles')
-        .where({ caseDocId: event._id })
+        .where(scope)
         .orderBy('createdAt', 'asc').limit(30).get()
       const today = new Date(); today.setHours(0, 0, 0, 0)
       const list = res.data.map(p => ({
@@ -259,6 +267,7 @@ exports.main = async (event) => {
       }))
       const sentToday = res.data.filter(p =>
         p.fromOpenid === OPENID && new Date(p.createdAt) >= today).length
+      void scope
       // 往来轮次：双方各递过多少个来回
       const mineCount = list.filter(p => p.mine).length
       const theirsCount = list.length - mineCount
@@ -282,8 +291,10 @@ exports.main = async (event) => {
       const doc = await db.collection('cases').doc(event._id).get()
       const d = doc.data
       const isA = d.aOpenid === OPENID
+      const pkey = d.coupleKey
       const peb = await db.collection('pebbles')
-        .where({ caseDocId: event._id, fromOpenid: _.neq(OPENID), received: false }).count()
+        .where(pkey ? { coupleKey: pkey, fromOpenid: _.neq(OPENID), received: false }
+                    : { caseDocId: event._id, fromOpenid: _.neq(OPENID), received: false }).count()
       return { ok: true, result: {
         status: d.status,
         hasB: !!d.bOpenid,
@@ -309,9 +320,11 @@ exports.main = async (event) => {
         if (d.verdict && d.status === 'tried') {
           items.push({ docId: d._id, caseId: d.caseId, kind: 'verdict', text: '判决书已经出来了' })
         }
-        if (d.pact && !d.review) {
+        // 定时回访会变成打卡考核，也会在人过得好的时候把注意力拉回冲突。
+        // 只有用户自己勾选了「过几天提醒我们」，本庭才开口。
+        if (d.pact && d.pact.wantReview && !d.review) {
           const due = d.pact.reviewAt && new Date(d.pact.reviewAt) <= new Date()
-          if (due) items.push({ docId: d._id, caseId: d.caseId, kind: 'review', text: '约定满三天了，本庭来回访' })
+          if (due) items.push({ docId: d._id, caseId: d.caseId, kind: 'review', text: '你们让本庭过几天问问，时候到了' })
         }
         const peb = await db.collection('pebbles')
           .where({ caseDocId: d._id, fromOpenid: _.neq(OPENID), received: false }).count()

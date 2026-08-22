@@ -16,6 +16,16 @@ Page({
     const fallback = app.globalData.replySuggestions
     this.setData({ suggestions: fallback, suggestion: fallback[0] })
     ai.quickReplies(app.globalData.caseData.myStatement).then(res => {
+      // 这一页是情绪最高的入口，安全阀必须和开庭页、问话页一样接上
+      if (res && res.safety) {
+        wx.showModal({
+          title: '本庭要先说一件更重要的事',
+          content: res.message,
+          showCancel: false,
+          success: () => wx.reLaunch({ url: '/pages/home/home' })
+        })
+        return
+      }
       if (res && res.replies && res.replies.length) {
         this.setData({ suggestions: res.replies, suggestion: res.replies[0], idx: 0 })
       }

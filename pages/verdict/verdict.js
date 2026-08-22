@@ -6,7 +6,8 @@ const app = getApp()
 const SEALS = {
   misunderstanding: { top: '误会', bottom: '有罪' },
   breach: { top: '有错', bottom: '可改' },
-  mismatch: { top: '未曾', bottom: '对齐' }
+  mismatch: { top: '未曾', bottom: '对齐' },
+  absent: { top: '待', bottom: '重审' }
 }
 
 Page({
@@ -16,6 +17,7 @@ Page({
     seal: SEALS.misunderstanding,
     sealed: false,
     isMock: false,
+    absent: false,
     hasWords: false,
     hasSteps: false
   },
@@ -29,7 +31,8 @@ Page({
     const n = Math.round(Number(v.index))
     v.index = (isNaN(n) || n < 1 || n > 100) ? 87 : n
 
-    const type = SEALS[v.caseType] ? v.caseType : 'misunderstanding'
+    // 缺席审判只听了一面之词，章上写「待重审」，不写任何带定性的字
+    const type = v.absent ? 'absent' : (SEALS[v.caseType] ? v.caseType : 'misunderstanding')
     if (!v.verdictTitle) v.verdictTitle = '本案不存在被告。'
 
     // 从卷宗打开旧案时，云端那份可能缺字段——缺就整段不渲染，不留空标签
@@ -41,6 +44,7 @@ Page({
       v,
       seal: SEALS[type],
       isMock: g.aiUsed === false,
+      absent: !!v.absent,
       hasWords,
       hasSteps
     })

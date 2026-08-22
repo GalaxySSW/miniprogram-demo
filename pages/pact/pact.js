@@ -16,6 +16,7 @@ Page({
     pacts: FALLBACK,
     fromAI: false,
     pactIdx: -1,
+    wantReview: false,
   },
   onLoad(options) {
     const g = app.globalData
@@ -35,6 +36,9 @@ Page({
       fromNotNow: options.from === 'notnow',
     })
   },
+  toggleReview() {
+    this.setData({ wantReview: !this.data.wantReview })
+  },
   pickPact(e) {
     this.setData({ pactIdx: e.currentTarget.dataset.idx })
   },
@@ -47,9 +51,12 @@ Page({
     const pact = this.data.pacts[this.data.pactIdx]
     c.status = 'closed'
     c.pact = pact
-    wx.showToast({ title: '三天后，本庭会回来问问', icon: 'none', duration: 2000 })
-    notify.askSubscribe(['review'])   // 三天后的回访提醒
-    if (c.docId) casedb.savePact(c.docId, pact)
+    wx.showToast({
+      title: this.data.wantReview ? '好，过几天本庭来问问' : '记下了',
+      icon: 'none', duration: 2000
+    })
+    if (this.data.wantReview) notify.askSubscribe(['review'])
+    if (c.docId) casedb.savePact(c.docId, pact, this.data.wantReview)
     setTimeout(() => wx.redirectTo({ url: '/pages/history/history' }), 2000)
   },
   goPebble() {
