@@ -48,7 +48,8 @@
   },
   "compileType": "miniprogram",
   "libVersion": "2.32.3",
-  "appid": "touristappid",
+  "appid": "wx4d925226e4544dbd",
+  "cloudfunctionRoot": "cloudfunctions/",
   "projectname": "miniprogram-demo",
   "condition": {},
   "editorSetting": {

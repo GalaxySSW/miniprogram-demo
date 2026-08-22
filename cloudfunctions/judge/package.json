@@ -1,0 +1,9 @@
+{
+  "name": "judge",
+  "version": "1.0.0",
+  "description": "爱情判官 AI 云函数：判决书 / 先回一句 / 背对背追问（DeepSeek）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

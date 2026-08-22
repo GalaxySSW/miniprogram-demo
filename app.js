@@ -1,7 +1,16 @@
-// app.js — 爱情判官（黑客松 MVP，当前为本地 mock 数据，后续接云开发 + DeepSeek）
+// app.js — 爱情判官（黑客松 MVP）
+// 云开发就绪后把 CLOUD_ENV 填成你的云环境 ID，AI 即自动生效；为空时全流程走本地 mock
+const CLOUD_ENV = ''
+
 App({
-  onLaunch() {},
+  onLaunch() {
+    if (wx.cloud && CLOUD_ENV) {
+      wx.cloud.init({ env: CLOUD_ENV, traceUser: true })
+      this.globalData.cloudReady = true
+    }
+  },
   globalData: {
+    cloudReady: false,
     // 当前案件的模拟状态机：created → accepted → summoned → responded → tried → closed
     caseData: {
       id: '2026 情字第 0822 号',
