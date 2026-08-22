@@ -1,5 +1,6 @@
 // 和好约定（三选一）+ 递石子（冷战通道，每日上限 3）
 const app = getApp()
+const casedb = require('../../utils/casedb.js')
 
 Page({
   data: {
@@ -15,9 +16,16 @@ Page({
     maxPebbles: 3
   },
   onLoad(options) {
+    const g = app.globalData
+    // 判决书里已生成的约定优先，否则用三选一
+    if (g.verdict && g.verdict.pactTitle) {
+      const pacts = this.data.pacts.slice()
+      pacts.unshift({ title: g.verdict.pactTitle, desc: g.verdict.pactDesc || '' })
+      this.setData({ pacts })
+    }
     this.setData({
       fromNotNow: options.from === 'notnow',
-      pebbles: new Array(app.globalData.caseData.pebblesToday).fill(1)
+      pebbles: new Array(g.caseData.pebblesToday).fill(1)
     })
   },
   pickPact(e) {
@@ -28,17 +36,31 @@ Page({
       wx.showToast({ title: '先选一件小事', icon: 'none' })
       return
     }
-    app.globalData.caseData.status = 'closed'
+    const c = app.globalData.caseData
+    const pact = this.data.pacts[this.data.pactIdx]
+    c.status = 'closed'
     wx.showToast({ title: '三天后，本庭会回来问问', icon: 'none', duration: 2000 })
-    setTimeout(() => {
-      wx.redirectTo({ url: '/pages/history/history' })
-    }, 2000)
+    if (c.docId) casedb.savePact(c.docId, pact)
+    setTimeout(() => wx.redirectTo({ url: '/pages/history/history' }), 2000)
   },
   dropPebble(e) {
     const c = app.globalData.caseData
     if (c.pebblesToday >= this.data.maxPebbles) return
-    c.pebblesToday += 1
-    this.setData({ pebbles: new Array(c.pebblesToday).fill(1) })
-    wx.showToast({ title: `递出了${e.currentTarget.dataset.type} · TA 会收到`, icon: 'none' })
+    const type = e.currentTarget.dataset.type
+
+    const bump = () => {
+      c.pebblesToday += 1
+      this.setData({ pebbles: new Array(c.pebblesToday).fill(1) })
+      wx.showToast({ title: `递出了${type} · TA 会收到`, icon: 'none' })
+    }
+
+    if (c.docId) {
+      casedb.pebble(c.docId, type).then(res => {
+        if (res) bump()
+        else wx.showToast({ title: '今天够了，去说句话吧', icon: 'none' })
+      })
+    } else {
+      bump()
+    }
   }
 })

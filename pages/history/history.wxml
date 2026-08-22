@@ -5,7 +5,7 @@
   <view class="sub mt8">每一桩了结的案子，都是一次和好。</view>
 
   <view class="mt48 col" style="gap: 24rpx;">
-    <view wx:for="{{cases}}" wx:key="id" class="card" bindtap="openCase">
+    <view wx:for="{{cases}}" wx:key="id" class="card" bindtap="openCase" data-docid="{{item.docId}}">
       <view class="row" style="justify-content: space-between;">
         <text style="font-size: 30rpx; font-weight: 500;">{{item.title}}</text>
         <text class="pill {{item.status === 'done' ? 'pill-matcha' : 'pill-honey'}}">{{item.statusText}}</text>

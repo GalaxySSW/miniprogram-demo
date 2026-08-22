@@ -14,6 +14,7 @@ App({
     // 当前案件的模拟状态机：created → accepted → summoned → responded → tried → closed
     caseData: {
       id: '2026 情字第 0822 号',
+      docId: '',
       status: 'created',
       myStatement: {},
       theirStatement: {},

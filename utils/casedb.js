@@ -1,0 +1,28 @@
+// 前端案件数据层：云开发就绪时走 casedb 云函数，否则返回 null（页面回退到本地 globalData）
+function call(action, data) {
+  if (!wx.cloud || !getApp().globalData.cloudReady) {
+    return Promise.resolve(null)
+  }
+  return wx.cloud.callFunction({
+    name: 'casedb',
+    data: { action, ...data }
+  }).then(res => {
+    if (res.result && res.result.ok) return res.result.result
+    console.warn('casedb 返回异常', res.result)
+    return null
+  }).catch(err => {
+    console.warn('casedb 调用失败，回退本地态', err)
+    return null
+  })
+}
+
+module.exports = {
+  createCase: (statement) => call('create', { statement }),
+  getCase: (_id) => call('get', { _id }),
+  respond: (_id, statement) => call('respond', { _id, statement }),
+  saveVerdict: (_id, verdict) => call('saveVerdict', { _id, verdict }),
+  savePact: (_id, pact) => call('savePact', { _id, pact }),
+  pebble: (_id, type) => call('pebble', { _id, type }),
+  myCases: () => call('myCases', {}),
+  destroy: (_id) => call('destroy', { _id })
+}

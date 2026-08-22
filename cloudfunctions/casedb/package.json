@@ -1,0 +1,9 @@
+{
+  "name": "casedb",
+  "version": "1.0.0",
+  "description": "爱情判官 案件数据层：立案 / 应诉 / 判决落库 / 约定 / 递石子",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

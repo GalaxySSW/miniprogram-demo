@@ -1,23 +1,28 @@
-// 传票分享：onShareAppMessage 携带案件 ID；演示时可直接切到 TA 视角
+// 传票分享：onShareAppMessage 携带案件 docId，B 点开即进入应诉
 const app = getApp()
 
 Page({
   data: {
-    caseId: ''
+    caseId: '',
+    docId: ''
   },
   onLoad() {
-    this.setData({ caseId: app.globalData.caseData.id })
-    app.globalData.caseData.status = 'summoned'
+    const c = app.globalData.caseData
+    this.setData({ caseId: c.id, docId: c.docId || '' })
+    c.status = 'summoned'
   },
   onShareAppMessage() {
     return {
       title: 'TA 有心事想跟你说清楚',
-      path: `/pages/respond/respond?caseId=${encodeURIComponent(this.data.caseId)}`
+      path: `/pages/respond/respond?docId=${this.data.docId}`
     }
   },
   simulateTa() {
-    // 演示用：模拟 TA 打开传票
-    wx.navigateTo({ url: '/pages/respond/respond' })
+    // 演示用：单机模拟 TA 打开传票
+    const url = this.data.docId
+      ? `/pages/respond/respond?docId=${this.data.docId}`
+      : '/pages/respond/respond'
+    wx.navigateTo({ url })
   },
   goHome() {
     wx.reLaunch({ url: '/pages/home/home' })

@@ -1,5 +1,6 @@
 // 立案 · 引导式陈述：2–3 个具体小问题，占位文案即示例答案
 const app = getApp()
+const casedb = require('../../utils/casedb.js')
 
 Page({
   data: {
@@ -10,7 +11,8 @@ Page({
     ],
     answers: {},
     extra: false,
-    extraText: ''
+    extraText: '',
+    submitting: false
   },
   onInput(e) {
     const key = e.currentTarget.dataset.key
@@ -23,13 +25,24 @@ Page({
     this.setData({ extra: true })
   },
   submit() {
+    if (this.data.submitting) return
+    this.setData({ submitting: true })
+
     const c = app.globalData.caseData
     c.myStatement = { ...this.data.answers, extra: this.data.extraText }
-    c.status = 'accepted'
+
     // 提交的第一反馈永远是判官的「接住」，然后才是流程
     wx.showToast({ title: '我在，我先认真看看', icon: 'none', duration: 1600 })
-    setTimeout(() => {
-      wx.redirectTo({ url: '/pages/accept/accept' })
-    }, 1600)
+
+    casedb.createCase(c.myStatement).then(res => {
+      if (res) {
+        c.docId = res._id
+        c.id = res.caseId
+      }
+      c.status = 'accepted'
+      setTimeout(() => {
+        wx.redirectTo({ url: '/pages/accept/accept' })
+      }, 1600)
+    })
   }
 })
