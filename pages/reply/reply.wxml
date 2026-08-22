@@ -4,6 +4,11 @@
   <view class="h2 mt16">先回 TA 一句</view>
   <view class="sub mt8">一句温和、不升级的话，先把这一刻接住。发不发、怎么改，都由你。</view>
 
+  <view wx:if="{{stance}}" class="card mt24 row" style="gap: 20rpx; padding: 28rpx 32rpx; border-left: 6rpx solid #B0793F;">
+    <view class="grow" style="font-size: 26rpx; line-height: 1.8;">{{stance}}</view>
+  </view>
+  <view wx:if="{{stance}}" class="faint mt8">这句话只有你看得到，TA 永远看不到。</view>
+
   <view class="card mt48" style="padding: 48rpx 40rpx;">
     <view class="row" style="justify-content: space-between;">
       <text class="pill pill-honey">只是建议</text>

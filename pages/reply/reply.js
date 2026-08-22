@@ -6,6 +6,7 @@ Page({
   data: {
     suggestions: [],
     suggestion: '',
+    stance: '',
     idx: 0,
     copied: false,
     loading: true
@@ -17,6 +18,8 @@ Page({
       if (res && res.replies && res.replies.length) {
         this.setData({ suggestions: res.replies, suggestion: res.replies[0], idx: 0 })
       }
+      // 这段只有当事人自己看得到，所以判官可以明确站在 TA 这边
+      if (res && res.stance) this.setData({ stance: res.stance })
       this.setData({ loading: false })
     })
   },

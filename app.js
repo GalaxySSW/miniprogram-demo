@@ -34,6 +34,9 @@ App({
       hisWord: '一整晚的沉默',
       hisMeaning: '「不是不在乎，是怕一开口，把你越推越远。」',
       index: 87,
+      caseType: 'misunderstanding',
+      residue: '其余 13% 不是误会：加班这件事，你确实有三次没提前说一声。',
+      verdictTitle: '本案不存在被告。',
       ruling: '判处「你根本不在乎我」一句有罪，当庭销毁；原告双方，无罪释放，即刻和好。',
       herStep: '「那天说随便你，其实是想让你再多问我一句。」',
       hisStep: '「我沉默不是不在乎，我在想怎么说你才不会更生气。」'
