@@ -1,0 +1,12 @@
+# 依赖
+node_modules/
+miniprogram_npm/
+
+# 本地配置（包含个人开发者工具设置，不要提交）
+project.private.config.json
+
+# 系统文件
+.DS_Store
+
+# 日志
+*.log
