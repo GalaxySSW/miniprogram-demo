@@ -1,16 +1,21 @@
-// 立案 · 引导式陈述：2–3 个具体小问题，支持按住说话（语音优先）
+// 立案 · 引导式陈述
+// 三个空白框一次全摊开，心理压力太大，也显得像填表。
+// 改成渐进披露：先只问一句，答了才浮出下一句——一次只面对一个问题。
 const app = getApp()
 const casedb = require('../../utils/casedb.js')
 const voice = require('../../utils/voice.js')
 const ai = require('../../utils/ai.js')
 
+const QUESTIONS = [
+  { key: 'what', q: '那天发生了什么？', ph: '示例：周三晚上他说要加班，让我先吃。我等到九点他还没回消息……' },
+  { key: 'hurt', q: '哪一句话、哪个瞬间最让你难受？', ph: '示例：他说「你怎么又这样」的时候，我觉得所有委屈都白受了。' },
+  { key: 'wish', q: '你其实最想让 TA 知道什么？', ph: '示例：我不是要 TA 别工作，我只是想被提前告诉一声。' }
+]
+
 Page({
   data: {
-    questions: [
-      { key: 'what', q: '那天发生了什么？', ph: '示例：周三晚上他说要加班，让我先吃。我等到九点他还没回消息……' },
-      { key: 'hurt', q: '哪一句话、哪个瞬间最让你难受？', ph: '示例：他说「你怎么又这样」的时候，我觉得所有委屈都白受了。' },
-      { key: 'wish', q: '你其实最想让 TA 知道什么？', ph: '示例：我不是要 TA 别工作，我只是想被提前告诉一声。' }
-    ],
+    questions: QUESTIONS,
+    shown: 1,            // 当前露出几个问题
     answers: {},
     extra: false,
     extraText: '',
@@ -18,8 +23,10 @@ Page({
     activeKey: 'what',   // 语音结果写入哪一栏
     recording: false,
     transcribing: false,
-    hasEvidence: false
+    hasEvidence: false,
+    canSubmit: false
   },
+
   onLoad() {
     const c = app.globalData.caseData
     this.setData({ hasEvidence: !!c.screenshotText })
@@ -39,14 +46,30 @@ Page({
       })
     }
   },
+
   onInput(e) {
     this.setData({ [`answers.${e.currentTarget.dataset.key}`]: e.detail.value })
+    this.refresh()
   },
   onFocus(e) {
     this.setData({ activeKey: e.currentTarget.dataset.key })
   },
   onExtraInput(e) {
     this.setData({ extraText: e.detail.value })
+  },
+
+  // 当前这句写了东西，就把下一句放出来
+  refresh() {
+    const { answers, shown } = this.data
+    const filled = QUESTIONS.filter(q => (answers[q.key] || '').trim()).length
+    this.setData({
+      shown: Math.min(QUESTIONS.length, Math.max(shown, filled + 1)),
+      canSubmit: filled > 0
+    })
+  },
+
+  showNext() {
+    this.setData({ shown: Math.min(QUESTIONS.length, this.data.shown + 1) })
   },
   addExtra() {
     this.setData({ extra: true, activeKey: 'extra' })
@@ -70,14 +93,17 @@ Page({
       if (key === 'extra') {
         this.setData({ extraText: (this.data.extraText || '') + text })
       } else {
-        const cur = this.data.answers[key] || ''
-        this.setData({ [`answers.${key}`]: cur + text })
+        this.setData({ [`answers.${key}`]: (this.data.answers[key] || '') + text })
       }
+      this.refresh()
     })
   },
 
   submit() {
     if (this.data.submitting) return
+    if (!this.data.canSubmit) {
+      return wx.showToast({ title: '至少说一句吧', icon: 'none' })
+    }
     this.setData({ submitting: true })
 
     const c = app.globalData.caseData
