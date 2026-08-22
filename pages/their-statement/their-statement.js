@@ -25,13 +25,13 @@ Page({
   recEnd() {
     if (!this.data.recording) return
     this.setData({ recording: false, transcribing: true })
-    voice.stop().then(text => {
+    voice.stop().then(({ text, error }) => {
       this.setData({ transcribing: false })
-      if (!text) return wx.showToast({ title: '没听清，再说一次？', icon: 'none' })
+      if (!text) {
+        if (voice.handle(error)) return
+        return wx.showToast({ title: voice.tip(error), icon: 'none', duration: 2200 })
+      }
       this.setData({ text: (this.data.text || '') + text })
-    }).catch(() => {
-      this.setData({ transcribing: false })
-      wx.showToast({ title: '录音出了点问题', icon: 'none' })
     })
   },
   submit() {

@@ -43,9 +43,12 @@ Page({
   recEnd() {
     if (!this.data.recording) return
     this.setData({ recording: false, transcribing: true })
-    voice.stop().then(text => {
+    voice.stop().then(({ text, error }) => {
       this.setData({ transcribing: false })
-      if (!text) return wx.showToast({ title: '没听清，再说一次？', icon: 'none' })
+      if (!text) {
+        if (voice.handle(error)) return
+        return wx.showToast({ title: voice.tip(error), icon: 'none', duration: 2200 })
+      }
       const key = this.data.activeKey
       if (key === 'extra') {
         this.setData({ extraText: (this.data.extraText || '') + text })
@@ -53,9 +56,6 @@ Page({
         const cur = this.data.answers[key] || ''
         this.setData({ [`answers.${key}`]: cur + text })
       }
-    }).catch(() => {
-      this.setData({ transcribing: false })
-      wx.showToast({ title: '录音出了点问题', icon: 'none' })
     })
   },
 
