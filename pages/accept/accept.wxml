@@ -15,15 +15,16 @@
   </view>
 
   <view class="mt64">
-    <view style="font-size: 30rpx; font-weight: 500;">现在，先帮你回 TA 一句？</view>
-    <view class="sub mt8">如果 TA 的消息还亮在那里，本庭可以先帮你接住它。</view>
+    <view style="font-size: 30rpx; font-weight: 500;">接下来想怎么走？</view>
+    <view class="sub mt8">传票不急着发。气头上收到的东西，多半会被当成挑衅。</view>
   </view>
 
   <view class="grow"></view>
 
   <view class="col" style="gap: 24rpx;">
-    <view class="btn btn-primary" bindtap="quickReply">好，先帮我回一句</view>
-    <view class="btn btn-ghost" bindtap="later">不用，直接发传票</view>
+    <view class="btn btn-primary" bindtap="quickReply">先帮我回 TA 一句</view>
+    <view class="btn btn-ghost" bindtap="later">等等再说，我先缓缓</view>
+    <view class="center"><text class="faint" bindtap="sendNow">我想好了，现在就发传票</text></view>
   </view>
 
 </view>

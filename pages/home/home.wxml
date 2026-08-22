@@ -20,7 +20,15 @@
 
   <view class="grow"></view>
 
-  <view class="col" style="gap: 24rpx;">
+  <view wx:if="{{pending}}" class="card mt24" bindtap="resume" style="border-left: 6rpx solid #B0793F;">
+    <view class="row" style="justify-content: space-between;">
+      <text style="font-size: 28rpx; font-weight: 500;">还有一桩案子等着你</text>
+      <text class="pill pill-honey">未发传票</text>
+    </view>
+    <view class="faint mt8">{{pending.id}} · 想好了就去发给 TA →</view>
+  </view>
+
+  <view class="col mt24" style="gap: 24rpx;">
     <view class="btn btn-primary" bindtap="startCase">我要立案</view>
     <view class="btn btn-ghost" bindtap="gotSummons">我收到了传票</view>
   </view>

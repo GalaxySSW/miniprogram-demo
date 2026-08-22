@@ -1,19 +1,25 @@
 <view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
 
-  <view class="center mt32">
+  <view wx:if="{{note}}" class="mt48">
+    <text class="kicker">TA 想先跟你说</text>
+    <view class="card mt16" style="border-left: 6rpx solid #B0793F; padding: 40rpx;">
+      <view style="font-size: 32rpx; line-height: 1.8;">{{note}}</view>
+    </view>
+  </view>
+
+  <view class="center {{note ? 'mt48' : 'mt32'}}">
     <cat mood="calm" style="display: inline-block;" />
   </view>
 
   <view class="mt32">
-    <text class="kicker">传票 · 致你</text>
-    <view class="h2 mt16">TA 已经先来说了</view>
+    <view class="h2">TA 已经先来说了</view>
     <view class="sub mt8">在你开口前，本庭先向你承诺三件事：</view>
   </view>
 
-  <view class="mt48 col" style="gap: 24rpx;">
+  <view class="mt32 col" style="gap: 24rpx;">
     <view class="card row" style="gap: 24rpx;">
       <text style="font-size: 26rpx; color: #B0793F; font-weight: 500;">一</text>
-      <view class="sub grow">不评输赢。这里没有被告，被审的只是误会。</view>
+      <view class="sub grow">不评输赢。这里没有被告，被审的只是那件事。</view>
     </view>
     <view class="card row" style="gap: 24rpx;">
       <text style="font-size: 26rpx; color: #B0793F; font-weight: 500;">二</text>
@@ -25,7 +31,7 @@
     </view>
   </view>
 
-  <view class="grow"></view>
+  <view class="grow" style="min-height: 48rpx;"></view>
 
   <view class="col" style="gap: 24rpx;">
     <view class="btn btn-primary" bindtap="willTalk">好，我也说说</view>

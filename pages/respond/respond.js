@@ -1,11 +1,21 @@
-// 对方应诉页：三条承诺先降防御，保留体面的退出口
+// 对方应诉页：先看到 TA 本人写的那句话，再看到本庭是什么——先是人，再是工具
 const app = getApp()
+const casedb = require('../../utils/casedb.js')
 
 Page({
+  data: {
+    note: ''
+  },
   onLoad(options) {
-    // 从传票卡片进入时带着案件 docId
     if (options.docId) {
       app.globalData.caseData.docId = options.docId
+      casedb.getCase(options.docId).then(c => {
+        if (c && c.note) this.setData({ note: c.note })
+      })
+    }
+    // 单机演示时云端可能还没写入，用本地那份兜底
+    if (!this.data.note && app.globalData.caseData.note) {
+      this.setData({ note: app.globalData.caseData.note })
     }
   },
   willTalk() {

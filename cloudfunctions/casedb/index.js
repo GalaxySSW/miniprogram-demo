@@ -41,6 +41,7 @@ function projectCase(doc, openid) {
     verdict: doc.verdict || null,
     pact: doc.pact || null,
     topic: doc.topic || '',
+    note: doc.note || '',
     review: doc.review || null,
     createdAt: doc.createdAt
   }
@@ -80,7 +81,7 @@ exports.main = async (event) => {
         data: {
           caseId: id.display, serial: id.serial,
           aOpenid: OPENID, bOpenid: '', coupleKey: '',
-          aStatement: event.statement || {}, bStatement: null,
+          aStatement: event.statement || {}, bStatement: null, note: '',
           status: 'created', verdict: null, pact: null,
           topic: '', review: null, createdAt: now
         }
@@ -123,6 +124,14 @@ exports.main = async (event) => {
     // 「我的」页用：不依赖具体案件
     if (action === 'myPatterns') {
       return { ok: true, result: await patternsOf(await myCoupleKey(OPENID)) }
+    }
+
+    // A 写给 TA 的附言：卡片是信封，这句话才是信
+    if (action === 'saveNote') {
+      await db.collection('cases').doc(event._id).update({
+        data: { note: String(event.note || '').slice(0, 60) }
+      })
+      return { ok: true, result: { saved: true } }
     }
 
     if (action === 'saveVerdict') {
