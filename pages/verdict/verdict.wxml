@@ -31,6 +31,21 @@
   </view>
 
   <view class="mt48">
+    <text class="kicker">误会指数</text>
+    <view class="card mt16 col" style="align-items: center; padding: 48rpx 40rpx;">
+      <view class="row" style="align-items: baseline; gap: 12rpx;">
+        <text style="font-size: 96rpx; font-weight: 300; line-height: 1; color: #C9573F;">{{v.index}}</text>
+        <text style="font-size: 32rpx; font-weight: 300; color: #C9573F;">%</text>
+      </view>
+      <text class="faint mt8">是误会，不是不爱</text>
+      <view class="mt24" style="width: 100%; height: 8rpx; border-radius: 999rpx; background: rgba(201, 87, 63, 0.12); overflow: hidden;">
+        <view style="width: {{v.index}}%; height: 8rpx; border-radius: 999rpx; background: #C9573F;"></view>
+      </view>
+      <view class="faint mt16">实际矛盾含量仅 {{100 - v.index}}% · 你们的问题，没那么大</view>
+    </view>
+  </view>
+
+  <view class="mt48">
     <text class="kicker">本庭判决</text>
     <view class="card mt16" style="position: relative; padding: 48rpx 40rpx;">
       <view class="faint">经本庭审理查明：</view>
