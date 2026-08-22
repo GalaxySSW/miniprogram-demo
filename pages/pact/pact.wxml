@@ -1,6 +1,7 @@
 <view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
 
-  <block wx:if="{{!fromNotNow}}">
+  <!-- 我来选 -->
+  <block wx:if="{{stage === 'choose'}}">
     <text class="kicker">本庭约定</text>
     <view class="h2 mt16">这次先一起试试这一件</view>
     <view class="sub mt8">{{fromAI ? '判官照着你们这桩案子拟了三条，挑一条最做得到的。' : '不用许大愿，一件双方都点头的小事就够。'}}</view>
@@ -26,18 +27,71 @@
       </view>
     </view>
 
-    <view class="btn btn-primary mt32" bindtap="confirmPact">就这件 · 双方确认</view>
-
-    <view class="hairline mt64"></view>
+    <view class="btn {{submitting ? 'btn-disabled' : 'btn-primary'}} mt32" bindtap="choose">就这件 · 交给 TA 点头</view>
+    <view class="faint center mt16">约定要两个人都同意才算数</view>
   </block>
 
-  <view class="{{fromNotNow ? '' : 'mt48'}}">
-    <text class="kicker">冷战通道</text>
-    <view class="h2 mt16">还说不出话？</view>
-    <view class="sub mt8">递一颗石子过去——不用解释，只告诉 TA：我还在。</view>
-    <view class="btn btn-ghost mt32" bindtap="goPebble">去递一颗石子</view>
-  </view>
+  <!-- 我定好了，等 TA -->
+  <block wx:elif="{{stage === 'wait'}}">
+    <text class="kicker">本庭约定</text>
+    <view class="h2 mt16">等 TA 点个头</view>
+    <view class="sub mt8">约定要两个人都同意才算数。TA 那边会看到这一件。</view>
 
-  <view class="grow"></view>
+    <view class="card mt48" style="border-left: 6rpx solid #B0793F;">
+      <view style="font-size: 32rpx; font-weight: 500;">{{chosen.title}}</view>
+      <view class="sub mt16">{{chosen.desc}}</view>
+      <view class="row mt24" style="gap: 24rpx;">
+        <text class="pill pill-matcha">你已确认</text>
+        <text class="pill pill-honey">等待 TA 确认</text>
+      </view>
+    </view>
+
+    <view class="center mt48"><cat mood="sleep" breathe="{{true}}" style="display: inline-block;" /></view>
+
+    <view class="grow"></view>
+    <view class="btn btn-ghost" bindtap="goHistory">先回卷宗</view>
+  </block>
+
+  <!-- TA 定了，等我点头 -->
+  <block wx:elif="{{stage === 'confirm'}}">
+    <text class="kicker">本庭约定</text>
+    <view class="h2 mt16">TA 定了这一件</view>
+    <view class="sub mt8">你点头，本案就了结。还没想好也没关系，可以先递颗石子。</view>
+
+    <view class="card mt48" style="border-left: 6rpx solid #B0793F;">
+      <view style="font-size: 32rpx; font-weight: 500;">{{chosen.title}}</view>
+      <view class="sub mt16">{{chosen.desc}}</view>
+      <view class="row mt24" style="gap: 24rpx;">
+        <text class="pill pill-matcha">TA 已确认</text>
+        <text class="pill pill-honey">等你点头</text>
+      </view>
+    </view>
+
+    <view class="grow"></view>
+    <view class="btn {{submitting ? 'btn-disabled' : 'btn-primary'}}" bindtap="confirm">我也同意 · 就这件</view>
+    <view class="center mt24"><text class="faint" bindtap="goPebble">还没想好，先递颗石子</text></view>
+  </block>
+
+  <!-- 双方齐了 -->
+  <block wx:else>
+    <view class="center mt64"><cat mood="happy" style="display: inline-block;" /></view>
+    <view class="h2 center mt32">本案了结</view>
+    <view class="sub center mt8">你们都点头了。本庭把这件事记下了。</view>
+
+    <view class="card mt48" style="border-left: 6rpx solid #7E9B72;">
+      <view style="font-size: 32rpx; font-weight: 500;">{{chosen.title}}</view>
+      <view class="sub mt16">{{chosen.desc}}</view>
+      <view class="row mt24" style="gap: 24rpx;">
+        <text class="pill pill-matcha">双方已确认</text>
+      </view>
+    </view>
+
+    <view class="grow"></view>
+    <view class="btn btn-ghost" bindtap="goHistory">去卷宗看看</view>
+  </block>
+
+  <view wx:if="{{stage !== 'choose'}}" class="hairline mt64" style="padding-top: 48rpx;">
+    <view class="faint center" bindtap="goPebble">说不出话的时候，还可以递颗石子 →</view>
+  </view>
 
 </view>

@@ -3,10 +3,10 @@
   <view class="center mt48">
     <view class="row" style="justify-content: center; gap: 0;">
       <cat mood="happy" style="transform: scale(0.75); margin-right: -60rpx;" />
-      <cat wx:if="{{bound}}" mood="calm" style="transform: scale(0.75); margin-left: -60rpx;" />
+      <cat wx:if="{{together}}" mood="calm" style="transform: scale(0.75); margin-left: -60rpx;" />
     </view>
-    <view style="font-size: 32rpx; font-weight: 500;" class="mt16">{{bound ? '你们已在本庭结伴' : '还没有绑定 TA'}}</view>
-    <view class="faint mt8">{{bound ? '同一间小法庭，两个视角' : '发出一张传票，就绑定了'}}</view>
+    <view style="font-size: 32rpx; font-weight: 500;" class="mt16">{{together ? '本庭见过你们两个' : '本庭记着你'}}</view>
+    <view class="faint mt8">{{together ? '同一间小法庭，两个视角' : '等 TA 也来说过话，这里就会有两只猫'}}</view>
   </view>
 
   <view wx:if="{{pactTried}}" class="card mt48">
@@ -14,8 +14,6 @@
     <view class="sub mt16" style="color: #1A1918;">你们一起试过 {{pactTried}} 件小事，其中 {{pactDone}} 件真的做到了。</view>
     <view class="faint mt8">做不到也没关系，本庭会换个更小的方子。</view>
   </view>
-
-  <view wx:if="{{!bound}}" class="btn btn-primary mt32" bindtap="invite">邀请 TA</view>
 
   <view class="mt64">
     <view class="row" style="justify-content: space-between; align-items: baseline;">

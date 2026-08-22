@@ -1,9 +1,13 @@
-// 我的 · 情侣绑定 + 本庭记得的模式（可查看、可一键清空）
+// 我的 · 本庭记得的模式（可查看、可一键清空）
+//
+// 这里刻意没有「绑定情侣」这道手续：关系是从第一次共同结案自动沉淀出来的结果，
+// 不该是使用产品的前置门槛。绑定会把承诺放在价值之前，也会带来分手时的解绑难题。
+// 退出机制就是下面那个「让本庭忘掉」。
 const casedb = require('../../utils/casedb.js')
 
 Page({
   data: {
-    bound: true,
+    together: false,
     pactDone: 0,
     pactTried: 0,
     patterns: []
@@ -17,16 +21,14 @@ Page({
       this.setData({
         pactTried: withPact.length,
         pactDone: withPact.filter(c => c.review && c.review.result === '做到了').length,
-        bound: list.some(c => c.hasB)
+        together: list.some(c => c.hasB)
       })
     })
     casedb.myPatterns().then(ps => {
       if (ps) this.setData({ patterns: ps })
     })
   },
-  invite() {
-    wx.showToast({ title: '从传票分享给 TA 即可绑定', icon: 'none' })
-  },
+
   forget() {
     wx.showModal({
       title: '让本庭忘掉？',

@@ -1,4 +1,4 @@
-// 和好约定（三选一，由判官针对本案生成）+ 递石子（冷战通道，每日上限 3）
+// 本庭约定：判官针对本案拟三条，一方选定 → 另一方点头 → 双方齐了才算了结
 const app = getApp()
 const casedb = require('../../utils/casedb.js')
 const notify = require('../../utils/notify.js')
@@ -12,54 +12,87 @@ const FALLBACK = [
 
 Page({
   data: {
-    fromNotNow: false,
+    stage: 'choose',      // choose 我来选 | wait 等 TA 点头 | confirm TA 选了等我点头 | done 双方齐了
     pacts: FALLBACK,
     fromAI: false,
     pactIdx: -1,
     wantReview: false,
+    chosen: null,
+    submitting: false
   },
-  onLoad(options) {
-    const g = app.globalData
-    const v = g.verdict || {}
 
-    // 判官针对本案给的三个选项优先；旧版只有单个 pactTitle 的也兼容
+  onLoad() {
+    const v = app.globalData.verdict || {}
     let pacts = null
     if (Array.isArray(v.pacts) && v.pacts.length) {
       pacts = v.pacts.filter(p => p && p.title).slice(0, 3)
     } else if (v.pactTitle) {
       pacts = [{ title: v.pactTitle, desc: v.pactDesc || '' }].concat(FALLBACK.slice(0, 2))
     }
-
     this.setData({
       pacts: pacts && pacts.length ? pacts : FALLBACK,
-      fromAI: !!(pacts && pacts.length),
-      fromNotNow: options.from === 'notnow',
+      fromAI: !!(pacts && pacts.length)
     })
   },
-  toggleReview() {
-    this.setData({ wantReview: !this.data.wantReview })
+
+  onShow() {
+    const c = app.globalData.caseData
+    if (c.docId) notify.markSeen({ docId: c.docId, kind: 'pact' })
+    this.sync()
   },
-  pickPact(e) {
-    this.setData({ pactIdx: e.currentTarget.dataset.idx })
+
+  // 约定是双向的，每次进来都要看看对面走到哪一步了
+  sync() {
+    const c = app.globalData.caseData
+    if (!c.docId) return
+    casedb.getCase(c.docId).then(r => {
+      if (!r || !r.pact) return
+      c.pact = r.pact
+      this.setData({
+        chosen: r.pact,
+        stage: r.pactBoth ? 'done' : (r.pactMine ? 'wait' : 'confirm')
+      })
+    })
   },
-  confirmPact() {
-    if (this.data.pactIdx < 0) {
-      wx.showToast({ title: '先选一件小事', icon: 'none' })
-      return
-    }
+
+  toggleReview() { this.setData({ wantReview: !this.data.wantReview }) },
+  pickPact(e) { this.setData({ pactIdx: e.currentTarget.dataset.idx }) },
+
+  // 我来定这一件
+  choose() {
+    if (this.data.pactIdx < 0) return wx.showToast({ title: '先选一件小事', icon: 'none' })
+    if (this.data.submitting) return
+    this.setData({ submitting: true })
+
     const c = app.globalData.caseData
     const pact = this.data.pacts[this.data.pactIdx]
-    c.status = 'closed'
     c.pact = pact
-    wx.showToast({
-      title: this.data.wantReview ? '好，过几天本庭来问问' : '记下了',
-      icon: 'none', duration: 2000
-    })
-    if (this.data.wantReview) notify.askSubscribe(['review'])
-    if (c.docId) casedb.savePact(c.docId, pact, this.data.wantReview)
-    setTimeout(() => wx.redirectTo({ url: '/pages/history/history' }), 2000)
+
+    const done = () => {
+      this.setData({ submitting: false, chosen: pact, stage: 'wait' })
+      if (this.data.wantReview) notify.askSubscribe(['review'])
+    }
+    if (c.docId) casedb.savePact(c.docId, pact, this.data.wantReview).then(done)
+    else done()
   },
-  goPebble() {
-    wx.navigateTo({ url: '/pages/pebble/pebble' })
-  }
+
+  // TA 定了，我点头
+  confirm() {
+    if (this.data.submitting) return
+    this.setData({ submitting: true })
+    const c = app.globalData.caseData
+    if (!c.docId) {
+      this.setData({ submitting: false, stage: 'done' })
+      return
+    }
+    casedb.confirmPact(c.docId).then(r => {
+      const both = !!(r && r.both)
+      this.setData({ submitting: false, stage: both ? 'done' : 'wait' })
+      if (both) c.status = 'closed'
+      wx.showToast({ title: both ? '本案了结' : '已点头，等 TA', icon: 'none' })
+    })
+  },
+
+  goPebble() { wx.navigateTo({ url: '/pages/pebble/pebble' }) },
+  goHistory() { wx.redirectTo({ url: '/pages/history/history' }) }
 })

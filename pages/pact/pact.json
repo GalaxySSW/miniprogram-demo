@@ -1,1 +1,4 @@
-{ "navigationBarTitleText": "约定 · 递石子" }
+{
+  "usingComponents": { "cat": "/components/cat/cat" },
+  "navigationBarTitleText": "本庭约定"
+}

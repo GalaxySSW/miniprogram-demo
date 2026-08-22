@@ -5,6 +5,7 @@
 const app = getApp()
 const casedb = require('../../utils/casedb.js')
 const ai = require('../../utils/ai.js')
+const notify = require('../../utils/notify.js')
 
 // 表情是策展过的，不是全量选择器——少而有意，才像石子
 const EMOJIS = ['🌙', '☕️', '🌧', '🫧', '🐱', '🍜', '🌱', '🩹']
@@ -36,6 +37,7 @@ Page({
     }
     casedb.pebbleFeed(c.docId).then(r => {
       if (!r) return this.setData({ loading: false })
+      if (c.docId) notify.markSeen({ docId: c.docId, kind: 'pebble' })
       this.setData({
         list: r.list || [],
         rounds: r.rounds || 0,

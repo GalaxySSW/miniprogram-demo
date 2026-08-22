@@ -52,6 +52,8 @@ function projectCase(doc, openid) {
     myStatement: isA ? doc.aStatement : (doc.bOpenid === openid ? doc.bStatement : null),
     verdict: doc.verdict || null,
     pact: doc.pact || null,
+    pactMine: !!(doc.pact && (doc.pact.confirmedBy || []).indexOf(openid) >= 0),
+    pactBoth: doc.status === 'closed',
     topic: doc.topic || '',
     code: doc.code || '',
     note: doc.note || '',
@@ -195,8 +197,9 @@ exports.main = async (event) => {
       const wantReview = !!event.wantReview
       const reviewAt = new Date(Date.now() + 3 * 24 * 3600 * 1000)
       const doc = await db.collection('cases').doc(event._id).get()
+      // 只是「我选了这一件」，还不算结案——要等 TA 也点头
       await db.collection('cases').doc(event._id).update({
-        data: { pact: { ...event.pact, confirmedBy: [OPENID], wantReview, reviewAt }, status: 'closed' }
+        data: { pact: { ...event.pact, confirmedBy: [OPENID], wantReview, reviewAt } }
       })
       // 把这次试的方法记进模式，供下次开庭参考
       if (doc.data.coupleKey && doc.data.topic) {
@@ -204,7 +207,32 @@ exports.main = async (event) => {
           .where({ coupleKey: doc.data.coupleKey, topic: doc.data.topic })
           .update({ data: { lastPact: event.pact.title || '', lastResult: '待复盘' } })
       }
-      return { ok: true, result: { reviewAt } }
+      return { ok: true, result: { reviewAt, waiting: true } }
+    }
+
+    // 另一方点头：双方都确认了，本案才算了结
+    if (action === 'confirmPact') {
+      const doc = await db.collection('cases').doc(event._id).get()
+      const d = doc.data
+      const p = d.pact || {}
+      const list = (p.confirmedBy || []).slice()
+      if (list.indexOf(OPENID) < 0) list.push(OPENID)
+      // 单机演示时对方是派生身份，一个人点头即视为齐了
+      const demoPair = (d.bOpenid || '').indexOf('__demo') >= 0
+      const both = demoPair
+        ? true
+        : !!(d.aOpenid && d.bOpenid && list.indexOf(d.aOpenid) >= 0 && list.indexOf(d.bOpenid) >= 0)
+
+      const patch = { pact: { ...p, confirmedBy: list } }
+      if (both) patch.status = 'closed'
+      await db.collection('cases').doc(event._id).update({ data: patch })
+
+      if (both && d.coupleKey && d.topic) {
+        await db.collection('patterns')
+          .where({ coupleKey: d.coupleKey, topic: d.topic })
+          .update({ data: { lastPact: p.title || '', lastResult: '待复盘' } })
+      }
+      return { ok: true, result: { both, count: list.length } }
     }
 
     // 三天后复盘：约定到底有没有用——这才是最有价值的判据
@@ -314,11 +342,18 @@ exports.main = async (event) => {
       const items = []
       for (const d of res.data) {
         const isA = d.aOpenid === OPENID
-        if (isA && d.status === 'responded' && !d.verdict) {
+        // 通知要持久到「被看过」为止，不能挂在某个转瞬即逝的状态上
+        if (isA && d.bStatement && !d.verdict) {
           items.push({ docId: d._id, caseId: d.caseId, kind: 'responded', text: 'TA 已经应诉了，可以开庭' })
         }
-        if (d.verdict && d.status === 'tried') {
+        if (d.verdict) {
           items.push({ docId: d._id, caseId: d.caseId, kind: 'verdict', text: '判决书已经出来了' })
+        }
+        if (d.verdict && !d.pact) {
+          items.push({ docId: d._id, caseId: d.caseId, kind: 'pact', text: '判完了，还差一个约定' })
+        }
+        if (d.pact && (d.pact.confirmedBy || []).indexOf(OPENID) < 0) {
+          items.push({ docId: d._id, caseId: d.caseId, kind: 'pact', text: `TA 定了「${d.pact.title}」，等你点头` })
         }
         // 定时回访会变成打卡考核，也会在人过得好的时候把注意力拉回冲突。
         // 只有用户自己勾选了「过几天提醒我们」，本庭才开口。

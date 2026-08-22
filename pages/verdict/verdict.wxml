@@ -50,6 +50,31 @@
     <view class="faint center mt16">两片证词，拼成同一件事的全貌</view>
   </view>
 
+  <view wx:if="{{v.herNeed || v.hisNeed}}" class="mt48">
+    <text class="kicker">你们各自要的是什么</text>
+    <view wx:if="{{v.herNeed}}" class="card mt16">
+      <view class="faint">先开口的那位</view>
+      <view class="sub mt8" style="color: #1A1918;">{{v.herNeed}}</view>
+    </view>
+    <view wx:if="{{v.hisNeed}}" class="card mt24">
+      <view class="faint">后应诉的那位</view>
+      <view class="sub mt8" style="color: #1A1918;">{{v.hisNeed}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{v.loop}}" class="mt48">
+    <text class="kicker">你们正在转的圈</text>
+    <view class="card mt16" style="border-left: 6rpx solid #B0793F;">
+      <view class="sub" style="color: #1A1918;">{{v.loop}}</view>
+      <view class="faint mt8">这个圈没有谁先动手，两个人都在里面。</view>
+    </view>
+  </view>
+
+  <view wx:if="{{v.boundary}}" class="mt48">
+    <text class="kicker">这件事的边界</text>
+    <view class="card mt16"><view class="sub" style="color: #1A1918;">{{v.boundary}}</view></view>
+  </view>
+
   <view class="mt48">
     <text class="kicker">误会指数</text>
     <view class="card mt16 col" style="align-items: center; padding: 48rpx 40rpx;">
@@ -93,6 +118,24 @@
         <view class="sub mt8" style="color: #1A1918;">{{v.hisStep}}</view>
       </view>
       <view class="pill pill-honey" bindtap="copyStep" data-text="{{v.hisStep}}">复制</view>
+    </view>
+  </view>
+
+  <view wx:if="{{hasGuide}}" class="mt48">
+    <text class="kicker">具体可以怎么做</text>
+    <view wx:if="{{v.herGuide.length}}" class="card mt16">
+      <view class="faint">先开口的那位</view>
+      <view wx:for="{{v.herGuide}}" wx:key="index" class="row mt16" style="gap: 16rpx; align-items: flex-start;">
+        <text style="color: #B0793F; flex-shrink: 0;">·</text>
+        <view class="sub grow" style="color: #1A1918;">{{item}}</view>
+      </view>
+    </view>
+    <view wx:if="{{v.hisGuide.length}}" class="card mt24">
+      <view class="faint">后应诉的那位</view>
+      <view wx:for="{{v.hisGuide}}" wx:key="index" class="row mt16" style="gap: 16rpx; align-items: flex-start;">
+        <text style="color: #B0793F; flex-shrink: 0;">·</text>
+        <view class="sub grow" style="color: #1A1918;">{{item}}</view>
+      </view>
     </view>
   </view>
 

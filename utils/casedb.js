@@ -25,6 +25,7 @@ module.exports = {
   saveNote: (_id, note, brief) => call('saveNote', { _id, note, brief }),
   saveVerdict: (_id, verdict) => call('saveVerdict', { _id, verdict }),
   savePact: (_id, pact, wantReview) => call('savePact', { _id, pact, wantReview }),
+  confirmPact: (_id) => call('confirmPact', { _id }),
   pebble: (_id, type, payload) => call('pebble', { _id, type, payload }),
   pebbleFeed: (_id) => call('pebbleFeed', { _id }),
   receivePebble: (pebbleId) => call('receivePebble', { pebbleId }),

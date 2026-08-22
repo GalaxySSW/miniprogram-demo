@@ -1,6 +1,7 @@
 // 判决书：公文结构，双方同时可见，仅此一版
 // 判决主文按案件分型走不同措辞：纯误会 / 单边越界 / 认知错位
 const app = getApp()
+const notify = require('../../utils/notify.js')
 
 // 印章随案件类型变：判的是什么，章上就写什么
 const SEALS = {
@@ -19,11 +20,14 @@ Page({
     isMock: false,
     absent: false,
     hasWords: false,
-    hasSteps: false
+    hasSteps: false,
+    hasGuide: false
   },
   onLoad() {
     const g = app.globalData
     g.caseData.status = 'tried'
+    // 亲自看过判决书就不用再提醒了
+    if (g.caseData.docId) notify.markSeen({ docId: g.caseData.docId, kind: 'verdict' })
 
     const v = { ...g.verdict }
 
@@ -38,6 +42,9 @@ Page({
     // 从卷宗打开旧案时，云端那份可能缺字段——缺就整段不渲染，不留空标签
     const hasWords = !!(v.herWord && v.herMeaning) || !!(v.hisWord && v.hisMeaning)
     const hasSteps = !!(v.herStep || v.hisStep)
+    if (!Array.isArray(v.herGuide)) v.herGuide = []
+    if (!Array.isArray(v.hisGuide)) v.hisGuide = []
+    const hasGuide = v.herGuide.length > 0 || v.hisGuide.length > 0
 
     this.setData({
       caseId: g.caseData.id,
@@ -46,7 +53,8 @@ Page({
       isMock: g.aiUsed === false,
       absent: !!v.absent,
       hasWords,
-      hasSteps
+      hasSteps,
+      hasGuide
     })
     setTimeout(() => this.setData({ sealed: true }), 600)
   },
