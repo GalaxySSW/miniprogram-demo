@@ -4,19 +4,22 @@ const casedb = require('../../utils/casedb.js')
 
 Page({
   data: {
-    note: ''
+    note: '',
+    brief: ''
   },
   onLoad(options) {
     if (options.docId) {
       app.globalData.caseData.docId = options.docId
       casedb.getCase(options.docId).then(c => {
-        if (c && c.note) this.setData({ note: c.note })
+        if (!c) return
+        if (c.note) this.setData({ note: c.note })
+        if (c.brief) this.setData({ brief: c.brief })
       })
     }
     // 单机演示时云端可能还没写入，用本地那份兜底
-    if (!this.data.note && app.globalData.caseData.note) {
-      this.setData({ note: app.globalData.caseData.note })
-    }
+    const g = app.globalData.caseData
+    if (!this.data.note && g.note) this.setData({ note: g.note })
+    if (!this.data.brief && g.brief) this.setData({ brief: g.brief })
   },
   willTalk() {
     wx.redirectTo({ url: '/pages/their-statement/their-statement' })

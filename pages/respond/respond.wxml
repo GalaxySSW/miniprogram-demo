@@ -13,7 +13,11 @@
 
   <view class="mt32">
     <view class="h2">TA 已经先来说了</view>
-    <view class="sub mt8">在你开口前，本庭先向你承诺三件事：</view>
+    <view wx:if="{{brief}}" class="row mt24" style="gap: 16rpx; align-items: flex-start;">
+      <text class="pill pill-honey" style="flex-shrink: 0;">案由</text>
+      <view class="sub grow" style="color: #1A1918;">{{brief}}</view>
+    </view>
+    <view class="sub mt24">在你开口前，本庭先向你承诺三件事：</view>
   </view>
 
   <view class="mt32 col" style="gap: 24rpx;">

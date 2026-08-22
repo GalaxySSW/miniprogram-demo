@@ -14,11 +14,23 @@
       data-idx="{{index}}" bindtap="pickTpl">{{item}}</text>
   </view>
 
+  <view class="mt48">
+    <text class="kicker">案由 · TA 会看到这是关于什么事</text>
+    <view class="card mt16">
+      <view wx:if="{{briefLoading}}" class="faint">判官正在把你的陈述提炼成一句中立的案由…</view>
+      <textarea wx:else value="{{brief}}" bindinput="onBriefInput" auto-height maxlength="60"
+        placeholder="关于……这件事" placeholder-class="field-ph"
+        style="width: 100%; font-size: 28rpx; line-height: 1.7; min-height: 80rpx;" />
+    </view>
+    <view class="faint mt8">只说是哪件事，不带情绪也不带指责。TA 不会看到你的原话，但至少知道要聊什么。</view>
+  </view>
+
   <view class="hairline mt48" style="padding-top: 48rpx;">
     <view class="card">
       <text class="pill pill-matcha">TA 能看到</text>
       <view class="mt24 col" style="gap: 16rpx;">
         <view class="sub">· 你上面写的这句话</view>
+        <view class="sub">· 上面那句案由</view>
         <view class="sub">· 案号，和一只等着 TA 的猫猫判官</view>
         <view class="sub">· 三条承诺：不评输赢、互相保密、共见判决</view>
       </view>

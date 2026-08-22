@@ -55,6 +55,7 @@ function projectCase(doc, openid) {
     topic: doc.topic || '',
     code: doc.code || '',
     note: doc.note || '',
+    brief: doc.brief || '',
     review: doc.review || null,
     createdAt: doc.createdAt
   }
@@ -95,7 +96,7 @@ exports.main = async (event) => {
           caseId: id.display, serial: id.serial,
           code: makeCode(),
           aOpenid: OPENID, bOpenid: '', coupleKey: '',
-          aStatement: event.statement || {}, bStatement: null, note: '',
+          aStatement: event.statement || {}, bStatement: null, note: '', brief: '',
           status: 'created', verdict: null, pact: null,
           topic: '', review: null, createdAt: now
         }
@@ -152,9 +153,9 @@ exports.main = async (event) => {
 
     // A 写给 TA 的附言：卡片是信封，这句话才是信
     if (action === 'saveNote') {
-      await db.collection('cases').doc(event._id).update({
-        data: { note: String(event.note || '').slice(0, 60) }
-      })
+      const patch = { note: String(event.note || '').slice(0, 60) }
+      if (event.brief !== undefined) patch.brief = String(event.brief || '').slice(0, 60)
+      await db.collection('cases').doc(event._id).update({ data: patch })
       return { ok: true, result: { saved: true } }
     }
 

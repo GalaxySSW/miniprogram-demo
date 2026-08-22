@@ -3,7 +3,7 @@
 const cloud = require('wx-server-sdk')
 const https = require('https')
 const {
-  VERDICT_SYSTEM, QUICK_REPLY_SYSTEM, SCREENSHOT_SYSTEM,
+  VERDICT_SYSTEM, QUICK_REPLY_SYSTEM, SCREENSHOT_SYSTEM, BRIEF_SYSTEM,
   INTERVIEW_PLAN_SYSTEM, INTERVIEW_ASK_SYSTEM
 } = require('./prompts')
 
@@ -157,6 +157,14 @@ exports.main = async (event) => {
       const user = parts.join('\n\n')
       return { ok: true, result: await chat([
         { role: 'system', content: VERDICT_SYSTEM }, { role: 'user', content: user }
+      ]) }
+    }
+
+    // 案由：给对方看的中立背景，A 发出前可预览可改
+    if (action === 'brief') {
+      return { ok: true, result: await chat([
+        { role: 'system', content: BRIEF_SYSTEM },
+        { role: 'user', content: statementText('发起方陈述', event.myStatement) }
       ]) }
     }
 

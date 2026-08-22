@@ -1,6 +1,7 @@
 // 传票预览确认：明示 TA 能看到 / 看不到什么——隐私信任的关键屏
-// 卡片是信封，A 自己写的这句话才是信：让传票看起来是本人开口，不是平台通知
+// 两样东西会给对方看：A 自己写的一句话（信），以及一句中立案由（这事是关于什么）
 const app = getApp()
+const ai = require('../../utils/ai.js')
 const casedb = require('../../utils/casedb.js')
 
 const TEMPLATES = [
@@ -14,11 +15,24 @@ Page({
   data: {
     templates: TEMPLATES,
     tplIdx: 0,
-    note: TEMPLATES[0]
+    note: TEMPLATES[0],
+    brief: '',
+    briefLoading: true
   },
   onLoad() {
-    const saved = app.globalData.caseData.note
-    if (saved) this.setData({ note: saved, tplIdx: -1 })
+    const c = app.globalData.caseData
+    if (c.note) this.setData({ note: c.note, tplIdx: -1 })
+
+    if (c.brief) {
+      this.setData({ brief: c.brief, briefLoading: false })
+      return
+    }
+    // 让判官从陈述里提炼一句中立案由，剥掉情绪和指责
+    ai.caseBrief(c.myStatement).then(res => {
+      const brief = (res && res.brief) || '关于最近你们之间的一件事'
+      c.brief = brief
+      this.setData({ brief, briefLoading: false })
+    })
   },
   pickTpl(e) {
     const idx = e.currentTarget.dataset.idx
@@ -27,11 +41,15 @@ Page({
   onNoteInput(e) {
     this.setData({ note: e.detail.value, tplIdx: -1 })
   },
+  onBriefInput(e) {
+    this.setData({ brief: e.detail.value })
+  },
   confirm() {
     const c = app.globalData.caseData
     c.note = (this.data.note || '').trim()
+    c.brief = (this.data.brief || '').trim()
     const go = () => wx.navigateTo({ url: '/pages/share/share' })
-    if (c.docId && c.note) casedb.saveNote(c.docId, c.note).then(go)
+    if (c.docId) casedb.saveNote(c.docId, c.note, c.brief).then(go)
     else go()
   },
   edit() {

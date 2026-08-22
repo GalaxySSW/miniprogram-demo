@@ -43,6 +43,7 @@ module.exports = {
   generateVerdict: (myStatement, theirStatement, patterns) =>
     call('verdict', { myStatement, theirStatement, patterns: patterns || [] }),
   quickReplies: (myStatement) => call('quickReply', { myStatement }),
+  caseBrief: (myStatement) => call('brief', { myStatement }),
   interviewQuestions: (myStatement, theirStatement, side) =>
     call('interview', { myStatement, theirStatement, side }),
   readScreenshots: (fileIDs) => call('readScreenshots', { fileIDs }),
