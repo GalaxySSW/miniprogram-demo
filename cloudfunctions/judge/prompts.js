@@ -57,3 +57,15 @@ const INTERVIEW_SYSTEM = `${PERSONA}
 若触发安全阀：返回 {"safety": true, "message": "..."}。`
 
 module.exports = { VERDICT_SYSTEM, QUICK_REPLY_SYSTEM, INTERVIEW_SYSTEM }
+
+// 截图直读：不做 OCR，直接交给多模态模型——气泡左右位置天然携带「谁说的哪句」
+const SCREENSHOT_SYSTEM = `你在读一组微信聊天截图，为一间调解情侣纠纷的小法庭整理证词。
+请把对话按时间顺序转成纯文本，规则：
+- 右侧气泡是「我」（提交截图的当事人），左侧气泡是「对方」
+- 每行格式：我：xxx / 对方：xxx；有时间戳就在段落前标注（如「20:14」）
+- 原样保留原话，不要改写、不要点评、不要总结
+- 图片/表情/语音条写成 [图片] [表情] [语音 12"]
+- 看不清的地方写 [看不清]，不要猜测
+只输出转写结果本身，不要任何开场白。`
+
+module.exports.SCREENSHOT_SYSTEM = SCREENSHOT_SYSTEM

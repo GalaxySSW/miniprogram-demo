@@ -2,7 +2,7 @@
 
   <text class="kicker">立案 · 第一步</text>
   <view class="h2 mt16">呈上证据</view>
-  <view class="sub mt8">把你们的聊天截图交给本庭。放心，只有判官会看，判决后可一键销毁。</view>
+  <view class="sub mt8">把你们的聊天截图交给本庭。判官会自己看懂谁说了什么，你不用打字复述。</view>
 
   <view class="mt48" style="display: flex; flex-wrap: wrap; gap: 20rpx;">
     <view wx:for="{{images}}" wx:key="index" style="position: relative; width: 196rpx; height: 196rpx;">
@@ -17,11 +17,13 @@
     </view>
   </view>
 
-  <view class="faint mt24">也可以直接复制聊天文字，下一步粘贴进陈述里。</view>
+  <view class="faint mt24">截图只有判官会看，判决后可一键销毁。</view>
 
   <view class="grow"></view>
 
-  <view class="btn btn-primary" bindtap="next">下一步 · 我来陈述</view>
-  <view class="center mt24"><text class="faint" bindtap="next">没有截图，跳过这一步</text></view>
+  <view class="btn {{reading ? 'btn-disabled' : 'btn-primary'}}" bindtap="next">
+    {{reading ? '判官正在看证据…' : '下一步 · 我来陈述'}}
+  </view>
+  <view class="center mt24"><text class="faint" bindtap="skip">没有截图，跳过这一步</text></view>
 
 </view>

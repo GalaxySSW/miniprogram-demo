@@ -1,6 +1,7 @@
-// 立案 · 引导式陈述：2–3 个具体小问题，占位文案即示例答案
+// 立案 · 引导式陈述：2–3 个具体小问题，支持按住说话（语音优先）
 const app = getApp()
 const casedb = require('../../utils/casedb.js')
+const voice = require('../../utils/voice.js')
 
 Page({
   data: {
@@ -12,37 +13,70 @@ Page({
     answers: {},
     extra: false,
     extraText: '',
-    submitting: false
+    submitting: false,
+    activeKey: 'what',   // 语音结果写入哪一栏
+    recording: false,
+    transcribing: false,
+    hasEvidence: false
+  },
+  onLoad() {
+    this.setData({ hasEvidence: !!app.globalData.caseData.screenshotText })
   },
   onInput(e) {
-    const key = e.currentTarget.dataset.key
-    this.setData({ [`answers.${key}`]: e.detail.value })
+    this.setData({ [`answers.${e.currentTarget.dataset.key}`]: e.detail.value })
+  },
+  onFocus(e) {
+    this.setData({ activeKey: e.currentTarget.dataset.key })
   },
   onExtraInput(e) {
     this.setData({ extraText: e.detail.value })
   },
   addExtra() {
-    this.setData({ extra: true })
+    this.setData({ extra: true, activeKey: 'extra' })
   },
+
+  // —— 按住说话 ——
+  recStart() {
+    this.setData({ recording: true })
+    voice.start()
+  },
+  recEnd() {
+    if (!this.data.recording) return
+    this.setData({ recording: false, transcribing: true })
+    voice.stop().then(text => {
+      this.setData({ transcribing: false })
+      if (!text) return wx.showToast({ title: '没听清，再说一次？', icon: 'none' })
+      const key = this.data.activeKey
+      if (key === 'extra') {
+        this.setData({ extraText: (this.data.extraText || '') + text })
+      } else {
+        const cur = this.data.answers[key] || ''
+        this.setData({ [`answers.${key}`]: cur + text })
+      }
+    }).catch(() => {
+      this.setData({ transcribing: false })
+      wx.showToast({ title: '录音出了点问题', icon: 'none' })
+    })
+  },
+
   submit() {
     if (this.data.submitting) return
     this.setData({ submitting: true })
 
     const c = app.globalData.caseData
-    c.myStatement = { ...this.data.answers, extra: this.data.extraText }
+    c.myStatement = {
+      ...this.data.answers,
+      extra: this.data.extraText,
+      screenshots: c.screenshotText || ''
+    }
 
     // 提交的第一反馈永远是判官的「接住」，然后才是流程
     wx.showToast({ title: '我在，我先认真看看', icon: 'none', duration: 1600 })
 
     casedb.createCase(c.myStatement).then(res => {
-      if (res) {
-        c.docId = res._id
-        c.id = res.caseId
-      }
+      if (res) { c.docId = res._id; c.id = res.caseId }
       c.status = 'accepted'
-      setTimeout(() => {
-        wx.redirectTo({ url: '/pages/accept/accept' })
-      }, 1600)
+      setTimeout(() => wx.redirectTo({ url: '/pages/accept/accept' }), 1600)
     })
   }
 })
