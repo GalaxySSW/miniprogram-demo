@@ -57,6 +57,20 @@ Page({
       hasGuide
     })
     setTimeout(() => this.setData({ sealed: true }), 600)
+
+    // 深度分析是并行生成的，回来了就补进页面；没有也不影响判决书本体
+    const depth = app.globalData.depthPromise
+    if (depth && !v.herNeed) {
+      depth.then(d => {
+        if (!d) return
+        const merged = { ...app.globalData.verdict, ...d }
+        app.globalData.verdict = merged
+        const m = { ...this.data.v, ...d }
+        if (!Array.isArray(m.herGuide)) m.herGuide = []
+        if (!Array.isArray(m.hisGuide)) m.hisGuide = []
+        this.setData({ v: m, hasGuide: m.herGuide.length > 0 || m.hisGuide.length > 0 })
+      })
+    }
   },
   copyStep(e) {
     const text = e.currentTarget.dataset.text

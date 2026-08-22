@@ -3,7 +3,7 @@
 const cloud = require('wx-server-sdk')
 const https = require('https')
 const {
-  VERDICT_SYSTEM, QUICK_REPLY_SYSTEM, SCREENSHOT_SYSTEM, BRIEF_SYSTEM,
+  VERDICT_SYSTEM, VERDICT_DEPTH_SYSTEM, QUICK_REPLY_SYSTEM, SCREENSHOT_SYSTEM, BRIEF_SYSTEM,
   INTERVIEW_PLAN_SYSTEM, INTERVIEW_ASK_SYSTEM, INTERVIEW_TURN_SYSTEM, SUPPLEMENT_SYSTEM
 } = require('./prompts')
 
@@ -168,6 +168,21 @@ exports.main = async (event) => {
         if (r.caseType === 'breach') r.caseType = 'mismatch'
       }
       return { ok: true, result: r }
+    }
+
+    // 深度分析：与首屏判决并行生成，用户读前几段时它在后台跑完
+    if (action === 'verdictDepth') {
+      const t2 = event.theirStatement
+      const absent2 = !t2 || !(t2.text || t2.what || t2.mood || (t2.followups || []).length)
+      const user = [
+        statementText('甲方（发起方）陈述', event.myStatement),
+        absent2
+          ? '乙方尚未到庭：本案为缺席审判，另一方还没有提交任何说法。'
+          : statementText('乙方（应诉方）陈述', t2)
+      ].join('\n\n')
+      return { ok: true, result: await chat([
+        { role: 'system', content: VERDICT_DEPTH_SYSTEM }, { role: 'user', content: user }
+      ]) }
     }
 
     // 案由：给对方看的中立背景，A 发出前可预览可改

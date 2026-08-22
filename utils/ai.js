@@ -42,6 +42,8 @@ module.exports = {
   upload,
   generateVerdict: (myStatement, theirStatement, patterns) =>
     call('verdict', { myStatement, theirStatement, patterns: patterns || [] }),
+  // 深度分析单独一次调用，与首屏判决并行，避免 20 秒的单次生成
+  verdictDepth: (myStatement, theirStatement) => call('verdictDepth', { myStatement, theirStatement }),
   quickReplies: (myStatement) => call('quickReply', { myStatement }),
   caseBrief: (myStatement) => call('brief', { myStatement }),
   interviewQuestions: (myStatement, theirStatement, side) =>
