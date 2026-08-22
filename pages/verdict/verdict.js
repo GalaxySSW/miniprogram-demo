@@ -29,7 +29,12 @@ Page({
     const type = SEALS[v.caseType] ? v.caseType : 'misunderstanding'
     if (!v.verdictTitle) v.verdictTitle = '本案不存在被告。'
 
-    this.setData({ caseId: g.caseData.id, v, seal: SEALS[type] })
+    this.setData({
+      caseId: g.caseData.id,
+      v,
+      seal: SEALS[type],
+      isMock: g.aiUsed === false   // 调试标识：判决来自样例而非大模型
+    })
     setTimeout(() => this.setData({ sealed: true }), 600)
   },
   copyStep(e) {

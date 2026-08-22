@@ -6,6 +6,10 @@
     <view class="faint mt8">案号 {{caseId}}</view>
   </view>
 
+  <view wx:if="{{isMock}}" class="faint center mt16" style="color: #C9573F;">
+    ⚠︎ 本次未接通判官，以下为样例判决
+  </view>
+
   <view class="hairline mt32"></view>
 
   <view wx:if="{{v.memory && v.memory.count > 1}}" class="card mt32" style="border-left: 6rpx solid #B0793F;">
