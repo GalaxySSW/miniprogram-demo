@@ -41,12 +41,25 @@ function billingEnvelope({ requestId, quote, status, charged = 0, balance = null
   }
 }
 
+// 黑客松期间积分系统整体关闭：不预扣、不拦截、不需要初始化账户。
+// 要恢复：把 BILLING_DISABLED 改回 false，并在控制台设 BILLING_MODE=enforced。
+const BILLING_DISABLED = true
+
 function billingMode() {
-  // 黑客松验收以真实账本为准；本地需要演示时显式设置 BILLING_MODE=mock。
-  return String(process.env.BILLING_MODE || 'enforced').toLowerCase()
+  if (BILLING_DISABLED) return 'mock'
+  // 默认 shadow：照常记账，但不拦截 AI 调用。
+  //
+  // 改这个默认值是因为 enforced 会在账本里预扣积分，而账户未初始化时 reserve 直接抛
+  // ACCOUNT_NOT_INITIALIZED——结果是所有计费动作（判决、语音、截图直读…）全部失败，
+  // 前端的 demo 静默开关只让前端不弹窗，挡不住服务端。演示环境不能带着这个风险。
+  //
+  // 要恢复真实扣费：在云函数控制台把环境变量 BILLING_MODE 设为 enforced，
+  // 并先用 billing-admin 给参与演示的 openid 发放积分。
+  return String(process.env.BILLING_MODE || 'shadow').toLowerCase()
 }
 
 function isBillable(action) {
+  if (BILLING_DISABLED) return false
   const quote = quoteAction(action)
   return Boolean(quote && quote.cost > 0)
 }

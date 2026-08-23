@@ -12,6 +12,8 @@ const ACTION_COSTS = {
 }
 
 // 当前项目处于 Demo 阶段。真实模式由上层显式设置 app.globalData.billingDemo = false。
+// 黑客松期间积分系统关闭：前端不查账户、不前置拦截、不弹额度提示
+const BILLING_DISABLED = true
 const DEFAULT_BILLING_DEMO = true
 
 function callAccount() {
@@ -54,6 +56,7 @@ function refresh() {
 
 function ensureBeforeCall(action) {
   const q = quote(action)
+  if (BILLING_DISABLED) return Promise.resolve({ allowed: true, quote: q, account: null, mode: 'off' })
   if (!q.cost) return Promise.resolve({ allowed: true, quote: q, account: null })
   const app = getApp()
 
