@@ -1,20 +1,40 @@
 <view class="col preview-page">
 
-  <view class="h2 mt16">用你自己的话开口</view>
-  <view class="card mt32 preview-editor accent-card">
-    <textarea value="{{note}}" bindinput="onNoteInput" auto-height maxlength="60"
-      placeholder="写一句你自己的话" placeholder-class="field-ph"
-      class="field field-note qa-preview-note" />
-  </view>
-  <view class="mt24">
-    <text wx:for="{{templates}}" wx:key="index" class="chip {{tplIdx === index ? 'chip-on' : ''}}"
-      data-idx="{{index}}" bindtap="pickTpl">{{item}}</text>
+  <view class="h2 mt16">传票上有两句话</view>
+  <view class="sub mt8">都会给 TA 看，发之前你可以改。</view>
+
+  <!-- 第一句：你亲口说的 -->
+  <view class="mt40">
+    <view class="row" style="gap: 12rpx; align-items: baseline;">
+      <text class="pv-no">①</text>
+      <text class="pv-title">你想带给 TA 的一句话</text>
+    </view>
+    <view class="card mt16 preview-editor accent-card">
+      <textarea value="{{note}}" bindinput="onNoteInput" auto-height maxlength="60"
+        placeholder="写一句你自己的话" placeholder-class="field-ph"
+        class="field field-note qa-preview-note" />
+    </view>
+    <view class="mt16">
+      <text class="faint" bindtap="toggleTpl">{{showTpl ? '收起' : '不知道怎么开口？看看别人怎么说 →'}}</text>
+    </view>
+    <view wx:if="{{showTpl}}" class="mt16">
+      <text wx:for="{{templates}}" wx:key="index" class="chip {{tplIdx === index ? 'chip-on' : ''}}"
+        data-idx="{{index}}" bindtap="pickTpl">{{item}}</text>
+    </view>
   </view>
 
-  <view class="mt48">
-    <text class="kicker">案由 · TA 会看到这是关于什么事</text>
+  <!-- 第二句：判官代拟的案由 -->
+  <view class="mt40">
+    <view class="row" style="gap: 12rpx; align-items: baseline;">
+      <text class="pv-no">②</text>
+      <text class="pv-title">判官总结的案由</text>
+      <text class="faint">让 TA 知道是哪件事</text>
+    </view>
     <view class="card mt16 preview-editor">
-      <view wx:if="{{briefLoading}}" class="faint">判官正在把你的陈述提炼成一句中立的案由…</view>
+      <view wx:if="{{briefLoading}}" class="thinking">
+        <view class="thinking-dots"><view class="td"></view><view class="td"></view><view class="td"></view></view>
+        <text class="faint" style="margin-left: 12rpx;">判官正在提炼案由</text>
+      </view>
       <block wx:else>
         <view wx:if="{{briefError}}" class="state-card qa-preview-brief-error">
           <view class="sub">{{briefError}}</view>

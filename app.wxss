@@ -318,3 +318,34 @@ button.btn::after { border: none; }
   font-size: var(--panpan-typography-caption-size);
   color: var(--panpan-text-tertiary);
 }
+
+
+/* AI 等待动效：三个依次呼吸的小点，用在所有「判官正在…」的场景 */
+.thinking { display: inline-flex; align-items: center; gap: 12rpx; }
+.thinking-dots { display: inline-flex; gap: 8rpx; }
+.thinking-dots .td {
+  width: 10rpx; height: 10rpx; border-radius: 50%;
+  background: #B0793F; opacity: 0.25;
+}
+.thinking-dots .td:nth-child(1) { animation: tdPulse 1.3s ease-in-out infinite; }
+.thinking-dots .td:nth-child(2) { animation: tdPulse 1.3s ease-in-out 0.2s infinite; }
+.thinking-dots .td:nth-child(3) { animation: tdPulse 1.3s ease-in-out 0.4s infinite; }
+@keyframes tdPulse {
+  0%, 100% { opacity: 0.2; transform: translateY(0); }
+  50% { opacity: 0.9; transform: translateY(-6rpx); }
+}
+
+/* 录音中的声浪：五根高低起伏的短线 */
+.rec-wave { display: inline-flex; align-items: center; gap: 6rpx; height: 32rpx; }
+.rec-wave .rw {
+  width: 5rpx; border-radius: 4rpx; background: #FAF7F2; height: 12rpx;
+}
+.rec-wave .rw:nth-child(1) { animation: rwBounce 0.9s ease-in-out infinite; }
+.rec-wave .rw:nth-child(2) { animation: rwBounce 0.9s ease-in-out 0.12s infinite; }
+.rec-wave .rw:nth-child(3) { animation: rwBounce 0.9s ease-in-out 0.24s infinite; }
+.rec-wave .rw:nth-child(4) { animation: rwBounce 0.9s ease-in-out 0.36s infinite; }
+.rec-wave .rw:nth-child(5) { animation: rwBounce 0.9s ease-in-out 0.48s infinite; }
+@keyframes rwBounce {
+  0%, 100% { height: 10rpx; }
+  50% { height: 30rpx; }
+}

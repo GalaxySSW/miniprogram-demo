@@ -17,7 +17,7 @@
     <text class="kicker">本庭听到的</text>
 
     <view wx:if="{{loading}}" class="card mt16 state-card qa-accept-loading">
-      <view class="faint">判官正在把你说的话理一遍…</view>
+      <view class="thinking"><view class="thinking-dots"><view class="td"></view><view class="td"></view><view class="td"></view></view><text class="faint" style="margin-left: 12rpx;">判官正在把你说的话理一遍</text></view>
     </view>
 
     <view wx:elif="{{error}}" class="card mt16 state-card qa-accept-error">

@@ -56,7 +56,7 @@
     <view id="qa-statement-voice" class="voice-button {{recording || transcribing ? 'voice-button-active' : ''}}"
       bindtouchstart="recStart" bindtouchend="recEnd" bindtouchcancel="recEnd">
       <text class="voice-icon">♩</text>
-      <text>{{transcribing ? '正在听写…' : (recording ? '正在录音…' : '按住说话')}}</text>
+      <text>{{transcribing ? '判官正在听写' : (recording ? '松开结束' : '按住说话')}}</text>
     </view>
   </view>
 </view>

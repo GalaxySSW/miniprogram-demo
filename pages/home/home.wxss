@@ -228,7 +228,10 @@
   background: #FAF7F2;
   color: #1A1918;
   font-size: 26rpx;
-  line-height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 .home-secondary-button::after { border: 0; }
 

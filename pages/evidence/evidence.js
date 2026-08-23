@@ -2,11 +2,35 @@
 // 下一步时把截图上传云存储，交给多模态模型直读（不做 OCR）
 const app = getApp()
 const ai = require('../../utils/ai.js')
+const voice = require('../../utils/voice.js')
 
 Page({
   data: {
     images: [],
-    reading: false
+    reading: false,
+    ventText: '',       // 语音倾诉的转写结果，是这一步的主要输入
+    recording: false,
+    transcribing: false
+  },
+  recStart() {
+    if (this.data.recording || this.data.transcribing || this.data.reading) return
+    this.setData({ recording: true })
+    voice.start()
+  },
+  recEnd() {
+    if (!this.data.recording) return
+    this.setData({ recording: false, transcribing: true })
+    voice.stop().then(({ text, error }) => {
+      this.setData({ transcribing: false })
+      if (!text) {
+        if (voice.handle(error)) return
+        return wx.showToast({ title: voice.tip(error), icon: 'none', duration: 2200 })
+      }
+      this.setData({ ventText: (this.data.ventText ? this.data.ventText + ' ' : '') + text })
+    })
+  },
+  clearVent() {
+    this.setData({ ventText: '' })
   },
   goBack() {
     wx.navigateBack({ delta: 1, fail: () => wx.reLaunch({ url: '/pages/home/home' }) })
@@ -44,6 +68,10 @@ Page({
   },
   next() {
     if (this.data.reading) return
+    if (this.data.ventText) {
+      const c = app.globalData.caseData
+      c.myStatement = { ...(c.myStatement || {}), what: this.data.ventText }
+    }
     const imgs = this.data.images
     if (!imgs.length) return wx.navigateTo({ url: '/pages/statement/statement' })
 

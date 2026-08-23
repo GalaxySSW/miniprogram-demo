@@ -6,13 +6,38 @@
   <view class="evidence-content">
     <view class="step-indicator">
       <text class="step-label">立案 · 第一步</text>
-      <text class="evidence-title">呈上证据</text>
-      <text class="evidence-subtitle">判官看得懂谁说了什么。</text>
+      <text class="evidence-title">先说说这件事</text>
+      <text class="evidence-subtitle">按住，想到什么说什么。</text>
     </view>
 
+    <!-- 语音倾诉：这一步的主角 -->
+    <view class="vent-card">
+      <view wx:if="{{ventText}}" class="vent-result">
+        <text class="vent-text">{{ventText}}</text>
+        <text class="faint mt8" bindtap="clearVent">重新说</text>
+      </view>
+
+      <view class="vent-mic {{recording ? 'vent-mic-on' : ''}}"
+        bindtouchstart="recStart" bindtouchend="recEnd" bindtouchcancel="recEnd">
+        <block wx:if="{{transcribing}}">
+          <view class="thinking-dots"><view class="td"></view><view class="td"></view><view class="td"></view></view>
+          <text class="vent-mic-label">判官正在听写</text>
+        </block>
+        <block wx:elif="{{recording}}">
+          <view class="rec-wave"><view class="rw"></view><view class="rw"></view><view class="rw"></view><view class="rw"></view><view class="rw"></view></view>
+          <text class="vent-mic-label">松开结束</text>
+        </block>
+        <block wx:else>
+          <text class="vent-mic-icon">🎙</text>
+          <text class="vent-mic-label">{{ventText ? '按住 · 再补充' : '按住说话'}}</text>
+        </block>
+      </view>
+    </view>
+
+    <!-- 聊天截图：补充证据 -->
     <view class="evidence-upload-card">
       <view class="evidence-upload-heading">
-        <text class="evidence-upload-title">聊天截图</text>
+        <text class="evidence-upload-title">聊天截图（可选）</text>
         <text class="evidence-upload-count">{{images.length}}/9</text>
       </view>
       <view class="evidence-grid">
@@ -22,21 +47,23 @@
         </view>
         <button wx:if="{{images.length < 9}}" id="qa-evidence-picker" class="evidence-add" bindtap="chooseImage" disabled="{{reading}}">
           <text class="evidence-add-icon">＋</text>
-          <text class="evidence-add-label">添加图片</text>
         </button>
       </view>
     </view>
 
     <view id="qa-evidence-privacy" class="privacy-notice">
       <text class="privacy-icon">▣</text>
-      <text>截图只有判官会看，判决后可一键销毁。</text>
+      <text>只有判官会看，判决后可一键销毁。</text>
     </view>
 
     <view class="evidence-actions">
-      <button id="qa-evidence-next" class="btn {{reading ? 'btn-disabled' : 'btn-primary'}}" loading="{{reading}}" disabled="{{reading}}" bindtap="next">
-        {{reading ? '判官正在看证据…' : '下一步 · 我来陈述'}}
+      <button id="qa-evidence-next" class="btn {{reading ? 'btn-disabled' : 'btn-primary'}}" disabled="{{reading}}" bindtap="next">
+        <block wx:if="{{reading}}">
+          <view class="thinking"><view class="thinking-dots"><view class="td"></view><view class="td"></view><view class="td"></view></view><text style="margin-left: 12rpx;">判官正在看证据</text></view>
+        </block>
+        <block wx:else>下一步</block>
       </button>
-      <button id="qa-evidence-skip" class="evidence-skip" bindtap="skip" disabled="{{reading}}">没有截图，跳过这一步</button>
+      <button id="qa-evidence-skip" class="evidence-skip" bindtap="skip" disabled="{{reading}}">先跳过</button>
     </view>
   </view>
 </view>

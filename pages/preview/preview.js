@@ -20,7 +20,8 @@ Page({
     briefLoading: true,
     briefError: '',
     saving: false,
-    saveError: ''
+    saveError: '',
+    showTpl: false
   },
   onLoad() {
     const c = app.globalData.caseData
@@ -39,6 +40,9 @@ Page({
       c.brief = brief
       this.setData({ brief, briefLoading: false })
     }).catch(() => this.setData({ briefLoading: false, briefError: '案由暂时提炼失败，可以先手动写一句。' }))
+  },
+  toggleTpl() {
+    this.setData({ showTpl: !this.data.showTpl })
   },
   pickTpl(e) {
     const idx = e.currentTarget.dataset.idx

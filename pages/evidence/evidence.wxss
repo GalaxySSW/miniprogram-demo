@@ -130,3 +130,22 @@
   line-height: 1.5;
 }
 .evidence-skip::after { border: 0; }
+
+
+/* 语音倾诉：第一步的主角 */
+.vent-card {
+  background: #FFFFFF; border: 1rpx solid #E1DACE; border-radius: 28rpx;
+  padding: 36rpx 32rpx; margin-bottom: 28rpx;
+  display: flex; flex-direction: column; gap: 24rpx;
+}
+.vent-result { display: flex; flex-direction: column; }
+.vent-text { font-size: 28rpx; line-height: 1.8; }
+.vent-mic {
+  height: 132rpx; border-radius: 24rpx;
+  background: #1A1918; color: #FAF7F2;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8rpx;
+}
+.vent-mic-on { background: #B0793F; }
+.vent-mic-icon { font-size: 40rpx; line-height: 1; }
+.vent-mic-label { font-size: 24rpx; letter-spacing: 2rpx; }
+.vent-mic .thinking-dots .td { background: #FAF7F2; }

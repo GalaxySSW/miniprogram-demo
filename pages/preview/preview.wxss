@@ -7,3 +7,6 @@
 .privacy-section { padding-top: 48rpx; }
 .state-card { background: #FFFDF9; }
 .action-stack { gap: 24rpx; }
+
+.pv-no { font-size: 26rpx; font-weight: 600; color: #B0793F; }
+.pv-title { font-size: 30rpx; font-weight: 500; }
