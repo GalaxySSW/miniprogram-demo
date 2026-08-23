@@ -28,6 +28,19 @@
 - 并发请求不会出现负余额或重复账本。
 - 普通用户不能修改账户或查看他人账本。
 - 后台操作带操作者、原因和时间。
+- AI 调用过程中不出现积分 modal/toast。
+- 最后庭审结束页以内嵌区域展示一次本次庭审累计消耗；`shadow/mock/not_charged` 显示预计消耗。
+- 额度不足、调用失败和未知账单状态均为页面内非阻塞状态；`released` 不计入消耗。
+
+## Demo 账单展示验证矩阵
+
+| 场景 | 结束页文案口径 | 过程交互 | 通过条件 |
+|---|---|---|---|
+| `settled` | 本次消耗 N 积分 | 无积分 modal/toast | 只展示一次页面内摘要 |
+| `shadow/mock/not_charged` | 本次预计消耗 N 积分 | 无积分 modal/toast | 不宣称真实扣费 |
+| 额度不足 | 页面内额度不足状态 | 不阻塞，可返回/重试 | 未调用模型 |
+| 失败并 `released` | 页面内失败/已释放状态 | 不阻塞，可重试 | 释放金额不计入消耗 |
+| 未知账单状态 | 页面内账单待核对 | 不阻塞 | 不展示伪造数字 |
 
 ## 检查结果
 
@@ -44,6 +57,7 @@
 - MCP 截图：已保存 [statement-input-smoke.png](../../qa/credit-system/statement-input-smoke.png)。
 - MCP 健康检查：已恢复，WebSocket 9420 可达；本轮连接初始化曾因控制台日志启用超时，重试后 automator 会话建立成功。
 - MCP 关键入口冒烟：Home、History、Case Detail、Profile 均已通过；Profile 积分卡在 `billing-account` 尚未部署时正确显示“暂不可用”。
+- Demo 静默积分和庭审结束页账单摘要：已完成静态检查；积分层 Demo 静默放行、真实额度不足非阻塞路径和汇总语义脚本通过；MCP 已连接 `pages/verdict/verdict`，注入 Demo 摘要状态后 `qa-verdict-billing` 元素可读。未执行真实云端扣费/释放链路。
 - 真机/双设备：未执行。
 
 ## 证据
@@ -76,6 +90,8 @@
 | `ADMIN_OPENIDS` | 未配置 | `whoami` 临时云函数已在本地创建，尚未上传；取得管理员 OPENID 后再配置 |
 | 积分集合与索引 | 未创建 | 当前 CLI 未提供数据库管理命令 |
 4. 最后执行管理员 action 和并发请求验证；完成后才考虑默认切换到 `enforced`。
+
+5. 云端账务可用后，用模拟器/MCP 复核：至少一次正常结束、一次 `not_charged`、一次额度不足和一次失败释放；确认过程中无积分 modal/toast。
 
 ## 结论
 

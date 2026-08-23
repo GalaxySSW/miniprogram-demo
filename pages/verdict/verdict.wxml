@@ -14,6 +14,20 @@
     ⚠︎ 本次未接通判官，以下为样例判决
   </view>
 
+  <view wx:if="{{billingSummary.visible}}" class="card mt24 verdict-billing-card verdict-billing-{{billingSummary.tone}} qa-verdict-billing">
+    <view class="row verdict-billing-main">
+      <view class="grow">
+        <view class="kicker">本庭积分</view>
+        <view class="sub mt8" style="color: #1A1918;">{{billingSummary.title}}</view>
+      </view>
+      <view wx:if="{{billingSummary.amountVisible}}" class="verdict-billing-amount">
+        <text>{{billingSummary.amount}}</text><text class="faint"> 积分</text>
+      </view>
+    </view>
+    <view class="faint mt12">{{billingSummary.detail}}</view>
+    <view wx:if="{{billingSummary.hasRemaining}}" class="faint mt8">当前可用 {{billingSummary.remaining}} 积分</view>
+  </view>
+
   <view wx:if="{{depthLoading}}" class="card mt24 state-card qa-verdict-loading">
     <view class="faint">本庭正在补充更深一层的解读…</view>
   </view>

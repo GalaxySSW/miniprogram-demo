@@ -4,7 +4,7 @@
 
 - 允许修改的文件：`cloudfunctions/judge/`、`cloudfunctions/billing-admin/`、必要的 `utils/ai.js`、相关额度提示页面、`docs/specs/active/2026-08-23-ai-credit-system/`。
 - 不修改的文件：Home 页面主流程、支付系统、真实账户数据、外部平台密钥。
-- 页面和路由：不新增业务路由；在现有 AI 调用页面增加额度、失败和重试状态。
+- 页面和路由：不新增业务路由；AI 调用页面只显示非阻塞的失败/重试状态，最后庭审结束页增加本次账单摘要卡片。
 - 工具模块：扩展 AI 请求结果协议，补充 requestId 和 billing 信息。
 - 云函数 action：Phase 1 在 `judge` 内接入账本模块，减少一次云函数间网络跳转；后台管理员 action 独立在 `billing-admin`，`casedb` 继续只负责案件，不承载积分账户。
 - 数据字段：Phase 1 先落地 `ai_accounts`、`ai_credit_ledger`、`ai_usage` 三个核心集合；管理员审计使用 `ai_admin_audit`，套餐配置 `ai_plans` 可在后台配置阶段补齐。
@@ -18,6 +18,13 @@
 5. 调用预处理模型和 `deepseek/deepseek-v4-flash`。
 6. 结果通过 Schema/隐私/业务校验后结算；失败则释放或退款。
 7. 写入 `ai_usage` 和 `ai_credit_ledger`，响应统一 billing 字段。
+
+### Demo 阶段展示规则
+
+- AI action 执行期间不展示积分 modal、toast 或其他打断式提示。
+- 本次庭审以同一轮运行标识累计账单；只有进入最后庭审结束页后，才显示一次页面内摘要。
+- `settled` 显示“本次消耗”；`shadow/mock/not_charged` 显示“预计消耗”；`released` 不计入消耗并显示失败释放状态。
+- 额度不足、调用失败和未知账单状态只在当前页面以内嵌方式说明，不阻塞用户操作；不得用预计消耗冒充真实扣费。
 
 MVP 计费边界：`verdict` 与 `verdictDepth` 先分别扣费；`interview` 按一个逻辑 action 的固定预算计费，内部多次模型调用只记录 `subCallCount`，不临时拆分扣费。合并 trial bundle 属于 Phase 2，前置条件是服务端具备 `trialRunId`、`caseDocId`、`caseVersion` 和 `billingGroupId`。
 
@@ -125,6 +132,7 @@ flowchart TB
 - 空数据：不发起模型调用，或按 action 返回明确的输入错误，不消耗积分。
 - 网络/云函数失败：释放预扣积分，返回可重试状态。
 - AI 超时或格式错误：释放预扣积分；不使用 Mock 结果伪装 live 结果。
+- Demo 展示：不弹积分 modal/toast；额度不足和失败使用页面内状态，最后庭审结束页只展示累计摘要。
 - 权限不足：管理员 action 返回统一拒绝；普通用户只能读取自己的余额摘要。
 - 并发请求：必须用数据库事务或条件更新，不能使用“先读余额再普通更新”。
 

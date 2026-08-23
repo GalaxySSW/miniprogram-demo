@@ -22,6 +22,8 @@ Page({
   },
   startTrial() {
     const c = app.globalData.caseData
+    // 以本次审理开始时间切分账单历史，结案页只展示这一庭，不串入上一庭记录。
+    app.globalData.trialBillingStartAt = Date.now()
     this.setData({ loading: true, error: '', musing: '', steps: this.data.steps.map(s => ({ ...s, done: false })) })
 
     const animation = new Promise(resolve => {
@@ -63,7 +65,13 @@ Page({
         return
       }
       if (app.globalData.cloudReady && !result) {
-        return this.setData({ loading: false, error: '本庭暂时没有拿到真实判决，先不展示样例判决。请重试。' })
+        const notice = app.globalData.creditNotice
+        return this.setData({
+          loading: false,
+          error: notice && notice.message
+            ? notice.message
+            : '本庭暂时没有拿到真实判决，先不展示样例判决。请重试。'
+        })
       }
       if (result && result.ruling) {
         // 这个主题以前判过几次？算上本次
@@ -80,7 +88,13 @@ Page({
       wx.redirectTo({ url: '/pages/verdict/verdict' })
     }).catch(() => {
       if (this.musingTimer) clearInterval(this.musingTimer)
-      this.setData({ loading: false, error: '本庭暂时没能完成审理。原话仍保留在本地，可以重试。' })
+      const notice = app.globalData.creditNotice
+      this.setData({
+        loading: false,
+        error: notice && notice.message
+          ? notice.message
+          : '本庭暂时没能完成审理。原话仍保留在本地，可以重试。'
+      })
     })
   },
   retry() {

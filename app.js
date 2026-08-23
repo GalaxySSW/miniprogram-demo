@@ -11,6 +11,8 @@ App({
   },
   globalData: {
     cloudReady: false,
+    // 仅控制客户端预检交互：Demo 阶段静默放行，不弹积分确认框；服务端账本仍是最终权威。
+    billingDemo: true,
     aiUsed: null,        // 本次判决是否真的由大模型生成（调试用，上线可移除展示）
     creditAccount: null,
     // 当前案件的模拟状态机：created → accepted → summoned → responded → tried → closed

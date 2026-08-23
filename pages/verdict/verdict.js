@@ -3,6 +3,7 @@
 const app = getApp()
 const notify = require('../../utils/notify.js')
 const ai = require('../../utils/ai.js')
+const credits = require('../../utils/credits.js')
 
 // 印章随案件类型变：判的是什么，章上就写什么
 const SEALS = {
@@ -10,6 +11,110 @@ const SEALS = {
   breach: { top: '有错', bottom: '可改' },
   mismatch: { top: '未曾', bottom: '对齐' },
   absent: { top: '待', bottom: '重审' }
+}
+
+const TRIAL_ACTIONS = ['verdict', 'verdictDepth']
+
+function numberOrNull(value) {
+  const n = Number(value)
+  return Number.isFinite(n) ? n : null
+}
+
+function billingRecords(g) {
+  const history = g.aiBillingHistory || g.aiUsageHistory || g.aiBillingRecords
+  if (Array.isArray(history) && history.length) return history
+    .map(item => ({
+      action: item.action || (item.billing || {}).action,
+      at: item.at || item.createdAt || item.timestamp,
+      billing: item.billing || item
+    }))
+    .filter(item => !item.action || TRIAL_ACTIONS.indexOf(item.action) !== -1)
+
+  const last = g.aiLastResponse
+  if (last && last.billing) {
+    return [{ action: last.action, at: last.at, billing: last.billing }]
+  }
+  return []
+}
+
+function buildBillingSummary(g) {
+  const startAt = Number(g.trialBillingStartAt || 0)
+  const records = billingRecords(g).filter(item => {
+    if (!startAt || !item.at) return true
+    return Number(item.at) >= startAt
+  })
+
+  let settled = 0
+  let estimated = 0
+  let released = 0
+  let unknown = 0
+  let hasSettled = false
+  let hasEstimate = false
+
+  records.forEach(item => {
+    const billing = item.billing || {}
+    const status = String(billing.status || '').toLowerCase()
+    const cost = numberOrNull(billing.cost)
+    const charged = numberOrNull(billing.charged)
+    if (status === 'settled') {
+      settled += charged === null ? (cost || 0) : charged
+      hasSettled = true
+    } else if (['not_charged', 'shadow', 'mock', 'quoted'].indexOf(status) !== -1) {
+      estimated += cost || 0
+      hasEstimate = true
+    } else if (['released', 'failed', 'cancelled', 'canceled'].indexOf(status) !== -1) {
+      released += 1
+    } else {
+      unknown += 1
+    }
+  })
+
+  // 本地 Demo 没有真实账单记录，但仍把本庭两次 AI 调用的预估成本讲清楚。
+  const isLocalDemo = !g.cloudReady && records.length === 0
+  if (isLocalDemo) {
+    estimated = credits.quote('verdict').cost + credits.quote('verdictDepth').cost
+    hasEstimate = true
+  }
+
+  const account = g.creditAccount
+  const available = account && account.status === 'active' ? numberOrNull(account.available) : null
+  if (hasSettled) {
+    return {
+      visible: true,
+      title: '本次庭审消耗',
+      amountVisible: true,
+      amount: settled,
+      tone: 'settled',
+      detail: released || unknown ? '失败或释放的调用未计入本次消耗。' : '判决相关调用已完成结算。',
+      hasRemaining: available !== null,
+      remaining: available
+    }
+  }
+  if (hasEstimate) {
+    return {
+      visible: true,
+      title: '本次庭审预计消耗',
+      amountVisible: true,
+      amount: estimated,
+      tone: 'estimated',
+      detail: '当前为 Demo / shadow 模式，仅展示预估值，不代表已扣除积分。',
+      hasRemaining: false,
+      remaining: null
+    }
+  }
+  if (released || unknown || (g.cloudReady && g.aiUsed === false)) {
+    return {
+      visible: true,
+      title: '本次庭审未确认消耗',
+      amountVisible: false,
+      amount: 0,
+      tone: 'unknown',
+      detail: '失败、释放或未完成的调用未计入积分消耗。',
+      hasRemaining: false,
+      remaining: null
+    }
+  }
+  return { visible: false, amountVisible: false, amount: 0, tone: '', detail: '', hasRemaining: false, remaining: null }
 }
 
 Page({
@@ -24,7 +129,20 @@ Page({
     hasSteps: false,
     hasGuide: false,
     depthLoading: false,
-    depthError: ''
+    depthError: '',
+    billingSummary: {
+      visible: false,
+      amountVisible: false,
+      amount: 0,
+      title: '',
+      detail: '',
+      tone: '',
+      hasRemaining: false,
+      remaining: null
+    }
+  },
+  onShow() {
+    this.refreshBillingSummary()
   },
   onLoad() {
     const g = app.globalData
@@ -57,7 +175,8 @@ Page({
       absent: !!v.absent,
       hasWords,
       hasSteps,
-      hasGuide
+      hasGuide,
+      billingSummary: buildBillingSummary(g)
     })
     setTimeout(() => this.setData({ sealed: true }), 2500)   // 跟着「本庭判决」那一段落下
 
@@ -69,13 +188,21 @@ Page({
     }
   },
   applyDepth(d) {
-    if (!d) return this.setData({ depthLoading: false })
+    if (!d) {
+      this.setData({ depthLoading: false })
+      this.refreshBillingSummary()
+      return
+    }
     const merged = { ...app.globalData.verdict, ...d }
     app.globalData.verdict = merged
     const m = { ...this.data.v, ...d }
     if (!Array.isArray(m.herGuide)) m.herGuide = []
     if (!Array.isArray(m.hisGuide)) m.hisGuide = []
     this.setData({ v: m, depthLoading: false, depthError: '', hasGuide: m.herGuide.length > 0 || m.hisGuide.length > 0 })
+    this.refreshBillingSummary()
+  },
+  refreshBillingSummary() {
+    this.setData({ billingSummary: buildBillingSummary(app.globalData) })
   },
   retryDepth() {
     if (this.data.depthLoading) return

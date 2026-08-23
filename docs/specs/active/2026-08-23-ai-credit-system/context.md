@@ -3,7 +3,7 @@
 - 最后更新：2026-08-23
 - 当前分支：`rainno`
 - 当前提交：`4bdf528`
-- 当前状态：CloudBase 适配器、后台 action 和 DevTools/MCP 冒烟已实现/通过；真实云端账务写入尚未执行
+- 当前状态：CloudBase 适配器、后台 action 和 DevTools/MCP 冒烟已实现/通过；真实云端账务写入尚未执行；Demo 账单静默展示规则已冻结，页面实现待验证
 
 ## 本次已完成
 
@@ -31,6 +31,8 @@
 - 文本模型标识为 `deepseek/deepseek-v4-flash`。
 - 图片/语音费用按预处理 + 统一文本处理链设计，可按最终配置调整。
 - 现阶段不实现支付、充值、订阅或动态 Token 计费。
+- Demo 阶段 AI 调用过程中不弹积分 modal/toast；最后庭审结束页以内嵌区域展示本次累计消耗或预计消耗。
+- `settled` 记为实际消耗，`shadow/mock/not_charged` 记为预计消耗，`released` 不计入消耗；额度不足和未知状态只做页面内非阻塞提示。
 - 单体入口 `judge/index.js`、`casedb/index.js` 和 `utils/ai.js` 不允许多个 agent 同时修改，由主 agent 统一集成。
 - 已完成首批 `billing/index.js`、`billing/ledger.js` 和 `ledger.test.js`；默认 `BILLING_MODE=shadow`，不会真实扣费。
 - `judge` 默认文本模型已统一为 `deepseek/deepseek-v4-flash`；前端请求已携带 `requestId` 和并发期幂等键。
@@ -44,7 +46,8 @@
 - Phase 1 当前调用者/案件发起方的归属策略。
 - 管理员白名单还是角色集合。
 - 云端集合/索引、服务端认证和管理员 OPENID 白名单尚未在当前环境配置。
-- 第一版是否在用户页面展示余额。
+- 结束页余额仅在服务端返回可用余额时展示；没有余额时不补造数字。
+- 结束页账单摘要已实现；静态检查、积分层行为脚本和 MCP 结案卡渲染通过，真实云端四类账务场景仍待部署后补测。
 - 当前 subagent 并发槽位受平台上限影响，后续恢复后按 `plan.md` 的 Wave 1 启动并行任务。
 
 ## 验证结果

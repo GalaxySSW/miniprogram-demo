@@ -46,7 +46,7 @@
 - **Gate 1：静态检查**：JS/JSON、action 白名单、模型标识、敏感日志、Git 文件边界通过。
 - **Gate 2：账务核心**：余额不足不调用模型；并发不出现负余额；同一幂等键最多一次预扣和一次终态结算。
 - **Gate 3：云函数集成**：所有 judge 出口都能进入 `settled / released / refunded` 之一。
-- **Gate 4：开发者工具**：本地 Mock 编译通过，额度不足和失败不产生伪成功。
+- **Gate 4：开发者工具**：本地 Mock 编译通过；调用过程中无积分弹窗，额度不足/失败为页面内非阻塞状态，结束页账单口径正确。
 - **Gate 5：MCP 冒烟**：正常、额度不足、模型失败、重复点击、图片和语音链路都有路由/数据断言。
 
 推荐通过开关逐步启用：`BILLING_MODE=shadow → mock → enforced`。账务异常时先回到 `mock` 或 `shadow`，不删除账本，用补偿流水修复。
@@ -60,6 +60,7 @@
 
 - [x] T1 统一生成 requestId 和 idempotencyKey；文件：`cloudfunctions/judge/index.js`、`utils/ai.js`；验收：每个 action 都能关联一次请求；验证：并发中的重复调用复用同一幂等键。
 - [ ] T2 记录模型、Prompt/Schema 版本、耗时和 token usage；文件：`cloudfunctions/judge/index.js`、`ai_usage` 设计；验收：不记录完整陈述和 Prompt；验证：脱敏检查。当前只完成响应中的模型和价格版本，token usage 待账本适配器接入。
+- [x] T2.1 固化 Demo 账单展示规则；文件：相关 spec 与结束页适配；验收：调用过程中无积分 modal/toast，最后庭审结束页只展示一次页面内的累计消耗/预计消耗；验证：静态检查、积分层行为脚本和 MCP 结案卡渲染已通过，真实四类云端账务场景仍待部署后补测。
 
 ## P1：服务端账本
 
@@ -89,6 +90,6 @@
 
 ## 下一步
 
-1. 先完成 T0–T0.1，不写积分 UI，也不接支付；先把 trial bundle 从 MVP 范围移除。
+1. 先完成 T0–T0.1 和 T2.1，不接支付；先把 trial bundle 从 MVP 范围移除。
 2. 冻结方案后先做 T1–T2 只读计量，确保不会影响现有 Mock 主流程。
 3. 通过验证后再实现 T3–T6 服务端账本。

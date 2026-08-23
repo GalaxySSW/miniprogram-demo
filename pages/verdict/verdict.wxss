@@ -2,3 +2,9 @@
 .verdict-header { justify-content: space-between; min-height: 44rpx; }
 .state-card { background: #FFFDF9; }
 .action-stack { gap: 24rpx; }
+.verdict-billing-card { background: #FFFDF9; border-left: 6rpx solid #B0793F; }
+.verdict-billing-settled { border-left-color: #7E9B72; }
+.verdict-billing-estimated { border-left-color: #B0793F; }
+.verdict-billing-unknown { border-left-color: #9C958A; }
+.verdict-billing-main { align-items: center; gap: 24rpx; }
+.verdict-billing-amount { color: #1A1918; font-size: 42rpx; font-weight: 500; white-space: nowrap; }

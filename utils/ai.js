@@ -15,9 +15,36 @@ function idempotencyKey(action, data, nonce) {
 
 const inFlightKeys = {}
 
+function appendBillingHistory(action, envelope, requestId) {
+  const app = getApp()
+  const history = app.globalData.aiBillingHistory || []
+  history.push({
+    action,
+    requestId: (envelope && envelope.requestId) || requestId,
+    billing: (envelope && envelope.billing) || null,
+    at: Date.now()
+  })
+  // 这是客户端展示用的短历史，不作为服务端账本；避免长时间运行后无限增长。
+  app.globalData.aiBillingHistory = history.slice(-100)
+}
+
 function call(action, data) {
   const app = getApp()
   if (!wx.cloud || !app.globalData.cloudReady) {
+    const mockRequestId = requestId()
+    const mockQuote = credits.quote(action)
+    app.globalData.aiLastResponse = {
+      requestId: mockRequestId,
+      source: 'mock',
+      billing: {
+        status: 'not_charged',
+        requestId: mockRequestId,
+        cost: mockQuote.cost,
+        charged: 0,
+        errorCode: 'LOCAL_MOCK'
+      }
+    }
+    appendBillingHistory(action, app.globalData.aiLastResponse, mockRequestId)
     console.warn(`[ai] 云开发未就绪，${action} 回退 mock`)
     app.globalData.aiUsed = false
     return Promise.resolve(null)
@@ -43,6 +70,7 @@ function call(action, data) {
           source: envelope.source || 'unknown',
           billing: envelope.billing || null
         }
+        appendBillingHistory(action, envelope, reqId)
         if (res.result && res.result.ok) {
           console.log(`[ai] ${action} 成功，耗时 ${(ms / 1000).toFixed(1)}s`)
           app.globalData.aiUsed = true
@@ -62,6 +90,10 @@ function call(action, data) {
           source: 'fallback',
           billing: { status: 'unknown', requestId: reqId, errorCode: 'CLOUD_CALL_FAILED' }
         }
+        appendBillingHistory(action, {
+          requestId: reqId,
+          billing: { status: 'unknown', requestId: reqId, errorCode: 'CLOUD_CALL_FAILED' }
+        }, reqId)
         app.globalData.aiUsed = false
         return null
       })
