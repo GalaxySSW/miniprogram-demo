@@ -110,6 +110,11 @@ Page({
   },
   skip() {
     if (this.data.reading) return
+    // 「先跳过」跳的是截图，不是跳你说的话——输入过的内容照样带走
+    if (this.data.ventText) {
+      const c = app.globalData.caseData
+      c.myStatement = { ...(c.myStatement || {}), what: this.data.ventText }
+    }
     wx.navigateTo({ url: '/pages/statement/statement' })
   }
 })

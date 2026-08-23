@@ -64,6 +64,14 @@ Page({
   startCase() {
     if (this.data.starting) return
     this.setData({ starting: true })
+    // 新案从干净状态开始：上一桩的陈述、判决、口令都不该带进来
+    app.globalData.caseData = {
+      id: '', docId: '', code: '', status: 'created',
+      myStatement: {}, theirStatement: {}, note: '', brief: '',
+      screenshotText: '', pebblesToday: 0
+    }
+    app.globalData.intakePromise = null
+    app.globalData.depthPromise = null
     wx.navigateTo({
       url: '/pages/evidence/evidence',
       complete: () => this.setData({ starting: false })
