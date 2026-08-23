@@ -38,9 +38,9 @@
 - [ ] T17 视觉 QA；证据：Token/Typography/组件/390×844 页面截图与 Figma 只读导出对照。
 - [ ] T18 真机/双设备/云端分层验证；证据：单独标记 `Real verified` 或 `Blocked`，不从 Mock 推导真实能力。
 - [x] T14 静态检查；证据：全量 `node --check`、JSON 解析、WXML 标签检查、`git diff --check` 已通过。
-- [ ] T15 Mock 冒烟；当前阻塞：DevTools 无活动页面，需先手动编译/启动。
-- [ ] T16 MCP 行为验证；当前阻塞：`mp_ensureConnection` 健康但 `currentRoute=null`，导航返回 automator undefined 错误。
-- [ ] T17 视觉 QA；等待 DevTools 页面和串行截图。
+- [ ] T15 Mock 冒烟；Home → Evidence → Statement 首段已通过，P0 全链路、失败恢复、草稿保留和 Case Detail 不串案仍待补齐。
+- [x] T16 MCP 行为验证；已完成重启恢复、Home 路由/元素断言、Home → Evidence → Statement 路由断言和 Statement 输入数据断言；截图按串行规则执行。
+- [x] T17 视觉 QA（首轮）；Home 和 Statement 已在 iPhone 15 Pro Max 模拟器完成真实渲染截图，并按移动端 Token/组件结构与 Figma CSS 只读证据校对；全 20 route 对照仍待补齐。
 - [ ] T18 真机/双设备/云端分层验证；未授权且未执行。
 - [x] T19 更新本 Spec 的 `verification.md`；已记录真实静态结果、DevTools 连接状态和阻塞证据。
 
@@ -57,7 +57,7 @@
 
 - 运行时 Token 与 handoff-board Token 需要实现前冻结映射。
 - 真机权限、双设备、云端数据和 `expired/revoked/bound` 邀请状态不在本轮可假设范围。
-- DevTools 当前没有活动页面，导致 MCP 导航和 Mock 冒烟未闭环；不能把静态检查或连接健康表述为编译/运行时通过。
+- P0 全链路、P1 页面、真机/双设备、云端数据和 `expired/revoked/bound` 邀请状态仍未完成；本轮只把已验证的首段标记为通过。
 
 ## 下一步
 

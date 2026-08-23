@@ -2,7 +2,7 @@
 
 - 功能 ID：`2026-08-23-figma-ui-alignment`
 - 目标代码目录：`07-代码/miniprogram-demo/`
-- 当前阶段：Spec/Plan 已完成，Foundation 与 P0 页面已实现，等待微信开发者工具编译和 MCP 冒烟
+- 当前阶段：Spec/Plan、Foundation 与 P0 首轮切片已完成；已修复一次真实 WXML 编译错误，并完成 DevTools 编译、Home/创建案件首段 MCP 冒烟和首轮视觉截图校对
 - 本轮实际修改：本目录 Spec 文档、`app.wxss`、公共 UI 组件、Home/首段流程和其余 P0 页面
 - 本轮明确不修改：Figma 文件、云函数数据结构、真实数据、支付、发布配置
 
@@ -44,6 +44,12 @@ Figma 导出中存在两种颜色上下文，后续实现不得混用：
 - UI 交互必须显式表达 `RequestState`、`PersistenceState`、`RuntimeMode`，不得用 mock 输出掩盖失败或显示假成功。
 - 任何涉及敏感关系内容、语音、截图、外部 AI、真实云环境、支付或发布的动作均不在本轮授权范围内。
 
+## 本轮验证发现
+
+- 微信开发者工具首次编译定位到 `components/recovery-panel/recovery-panel.wxml:2` 的错误属性 `wx:else"`；已修复为 `wx:else`，修复后 DevTools 模拟器成功渲染 Home，错误计数为 0。
+- MCP 重启后恢复成功，当前页面可读取为 `pages/home/home`；Home → Evidence → Statement 路由和关键 `qa-*` 元素已通过短场景断言。
+- Statement 输入 `#qa-statement-field-what` 后，`answers.what` 正确更新，第二个问题按渐进披露规则出现；已保存串行截图用于视觉复核。
+
 ## 未决问题
 
 - Figma 运行时 Token 与现有 `app.wxss` 的变量值存在两套历史映射；实现前需完成一次逐项 Token 审计并冻结最终值。
@@ -52,4 +58,4 @@ Figma 导出中存在两种颜色上下文，后续实现不得混用：
 
 ## 本轮产出与下一步
 
-本轮已产出本目录六份 Spec 文档，并完成 Foundation、Home、创建案件首段和 P0 页面代码落地。下一步是微信开发者工具本地编译、MCP 短场景验证和视觉截图；P1 页面、公共组件页面接入和真机/双设备验证仍按 `tasks.md` 保留为后续任务。
+本轮已产出本目录六份 Spec 文档，并完成 Foundation、Home、创建案件首段和 P0 页面代码落地。下一步是补齐 P0 其余流程、P1 页面、公共组件逐页接入和真机/双设备验证；当前 DevTools 编译、Home/首段 MCP 冒烟和首轮视觉截图已具备真实证据。

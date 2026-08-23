@@ -2,7 +2,7 @@
 
 - 日期：2026-08-23
 - 环境：本地仓库、微信开发者工具连接（自动化端口 9420）；未调用 Figma 写入能力
-- 结论阶段：Spec/Plan、Foundation 和 P0 代码已落地；静态检查通过；DevTools 当前无活动页面，MCP 导航被阻塞
+- 结论阶段：Spec/Plan、Foundation 和 P0 首轮代码已落地；真实 DevTools 编译通过；Home/创建案件首段 MCP 冒烟和首轮视觉截图通过；P0 全链路与 P1 仍待继续验证
 
 ## 本轮修改范围
 
@@ -14,6 +14,7 @@
 - `docs/specs/active/2026-08-23-figma-ui-alignment/plan.md`
 - `docs/specs/active/2026-08-23-figma-ui-alignment/tasks.md`
 - `docs/specs/active/2026-08-23-figma-ui-alignment/verification.md`
+- `components/recovery-panel/recovery-panel.wxml`（修复真实编译错误）
 
 明确没有修改：
 
@@ -34,16 +35,16 @@
 | Figma 写入 | 本轮不得写入 | 未执行任何 Figma 写入操作 | 通过 |
 | JS 语法 | 业务代码无语法错误 | `find pages utils components cloudfunctions ... node --check` 通过 | 通过 |
 | JSON 语法 | 项目 JSON 配置可解析 | 排除依赖目录后全量 `jq empty` 通过 | 通过 |
-| WXML 结构 | 页面/组件标签成对闭合 | 归一化模板表达式后静态标签栈检查通过 | 通过 |
+| WXML 结构 | 页面/组件标签成对闭合 | 归一化模板表达式后静态标签栈检查通过；DevTools 又发现并修复 `wx:else"` 属性错误 | 通过 |
 | diff 检查 | 无尾随空格/冲突标记 | `git diff --check` 通过 | 通过 |
 
 ## 20 route 验收矩阵（实现阶段）
 
 | 场景组 | 覆盖范围 | 证据要求 | 当前状态 |
 |---|---|---|---|
-| Route/Screen | 20 route | `app.json`、Figma Screen、页面契约逐项对照 | Spec 已定义，代码未验证 |
-| Home 三态 | `first-use/action-center/relationship-home` | 页面数据、主 CTA、路由和截图 | 未验证 |
-| P0 立案链路 | `home → evidence → statement → accept → preview → share` | Mock 路由/数据断言、草稿、隐私提示 | 未验证 |
+| Route/Screen | 20 route | `app.json`、Figma Screen、页面契约逐项对照 | Spec 已定义，首段已验证 |
+| Home 三态 | `first-use/action-center/relationship-home` | 页面数据、主 CTA、路由和截图 | Home 当前 mock 状态已验证；其余状态待验证 |
+| P0 立案链路 | `home → evidence → statement → accept → preview → share` | Mock 路由/数据断言、草稿、隐私提示 | `home → evidence → statement` 已验证；后续页面待验证 |
 | P0 应诉链路 | `waiting/respond/their-statement/interview/trial/verdict/pact` | 双方状态、私密隔离、超时/暂停 | 未验证 |
 | Case Detail | History/Home/inbox 携带 `docId` | A/B 连续打开不串案；缺失/无权/冲突恢复 | 未验证 |
 | P1 页面 | `reply/poster/pebble/review/profile` | 权限、生成失败、删除、复盘、额度 | 未验证 |
@@ -77,8 +78,8 @@
 
 ## 未验证事项与风险
 
-- 本轮没有验证代码视觉是否已对齐 Figma；Spec 不是实现完成证明。
-- 本轮没有运行微信开发者工具、MCP、真机、双设备、云函数或真实权限流程。
+- 本轮已完成 Home 和 Statement 的模拟器视觉初检，但还没有完成 20 route 的逐页视觉对照；Spec 不是全量实现完成证明。
+- 本轮已运行微信开发者工具、MCP 和本地 mock 首段；真机、双设备、云函数和真实权限流程仍未执行。
 - 当前 `app.globalData`、mock fallback、Promise/固定延时和 `casedb` null 结果协议可能造成旧案串案、卡 loading 或假成功；实现阶段必须按 Plan 修正或明确隔离。
 - 真机相册、麦克风、Canvas、保存相册和订阅权限仍需独立验证。
 - `expired/revoked/bound` 邀请状态和完整安全转介不在当前实现承诺内。
@@ -87,13 +88,17 @@
 
 | 场景 | 预期 | 实际结果 | 状态 |
 |---|---|---|---|
-| `mp_ensureConnection` | 连接当前项目，端口 9420 | `connected`，`projectPath` 正确，`needsRecovery=false` | 通过 |
-| `mp_healthCheck` | DevTools/WS/automator 全部可用 | 三项均可用，但 `currentRoute=null`，无活动页面 | 部分通过 |
-| `reLaunch pages/home/home` | 进入 Home 并定位 `#qa-home-primary` | MCP 返回 `Cannot read properties of undefined (reading 'indexOf')`；未产生路由断言 | Blocked |
-| `wx.reLaunch` | 通过微信 API 进入 Home | automator 响应超时；未继续重试或触碰恢复连接 | Blocked |
+| `mp_ensureConnection` | 连接当前项目，端口 9420 | 重启后恢复；`projectPath` 正确，`currentPage=pages/home/home` | 通过 |
+| `mp_healthCheck` | DevTools/WS/automator 全部可用 | `devtoolsOnline=true`、`wsReachable=true`、`automatorConnected=true`、`currentRoute=pages/home/home`、无 errors | 通过 |
+| DevTools 编译 | WXML/WXSS/JS 编译无错误并显示模拟器 | 首次发现 `components/recovery-panel/recovery-panel.wxml:2:146` 的 `wx:else"`；修复后模拟器成功显示 Home，错误计数为 0 | 通过（含修复） |
+| Home smoke | Home 路由和主入口可定位 | `#qa-home-primary`、`#qa-home-history`、`#qa-home-summons` 均可见；snapshot 读取文字/尺寸和 mock 数据 | 通过 |
+| Home → Evidence | 主 CTA 进入证据页 | `pages/evidence/evidence`，`#qa-evidence-picker`、`#qa-evidence-skip`、`#qa-evidence-privacy` 均可见 | 通过 |
+| Evidence → Statement | 跳过截图进入陈述页 | `pages/statement/statement`；`#qa-statement-field-what`、隐私提示、提交按钮可见 | 通过 |
+| Statement input | 输入写入页面状态并渐进披露 | 输入后 `answers.what` 等于测试文本，`#qa-statement-field-hurt` 出现 | 通过 |
+| 串行截图 | 获取真实模拟器视觉证据 | Home 桌面截图与 Statement MCP 截图成功；Statement 截图显示问题卡、隐私提示、CTA、语音 dock | 通过 |
 
-阻塞证据：DevTools 连接健康，但当前模拟器没有活动页面；本轮没有把连接健康误报为编译成功，也没有发送新的外部 AI 请求。需在微信开发者工具中手动完成一次本地编译/启动后，再复跑 Home 和 P0 短场景。
+阻塞/边界：P0 后续页面、P1 页面、真机/双设备和真实云端能力仍未验证；本轮没有发送新的外部 AI 请求，也没有把模拟器结果表述为真实敏感数据可用。
 
 ## 结论
 
-`Spec documented` / `Figma read-only checked` / `Foundation implemented` / `P0 implemented` / `Static checked` / `Mock runtime blocked` / `Real not verified` / `Figma not modified`。
+`Spec documented` / `Figma read-only checked` / `Foundation implemented` / `P0 first slice implemented` / `Static checked` / `DevTools compiled` / `Mock first slice verified` / `Visual first pass verified` / `P0 full flow pending` / `Real not verified` / `Figma not modified`。

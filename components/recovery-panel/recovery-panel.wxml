@@ -1,5 +1,5 @@
 <view class="pp-recovery pp-recovery--{{state}}" data-qa="{{qaId}}" data-state="{{state}}">
-  <view class="pp-recovery__icon"><text wx:if="{{state === 'offline'}}">⌁</text><text wx:elif="{{state === 'timeout'}}">…</text><text wx:else">!</text></view>
+  <view class="pp-recovery__icon"><text wx:if="{{state === 'offline'}}">⌁</text><text wx:elif="{{state === 'timeout'}}">…</text><text wx:else>!</text></view>
   <view class="pp-recovery__copy"><text class="pp-recovery__title">{{title}}</text><text class="pp-recovery__description">{{description}}</text></view>
   <view class="pp-recovery__actions">
     <button class="pp-recovery__primary" data-qa="{{qaId}}-retry" bindtap="onRetry">{{primaryText}}</button>
