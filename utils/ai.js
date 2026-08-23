@@ -57,10 +57,25 @@ function call(action, data) {
     const idemKey = inFlightKeys[fingerprint] || idempotencyKey(action, data, Date.now())
     inFlightKeys[fingerprint] = idemKey
     const clearKey = () => { delete inFlightKeys[fingerprint] }
-    return wx.cloud.callFunction({
+    // 判决这类耗时十秒以上的调用，会偶发 -404010（微信客户端拉取结果超时，
+    // 与云函数自身的超时无关）。这种失败重试一次基本都能成，演示时不能靠运气。
+    const invoke = (attempt) => wx.cloud.callFunction({
       name: 'judge',
-      data: { action, ...data, requestId: reqId, idempotencyKey: idemKey }
+      data: {
+        action, ...data,
+        requestId: attempt > 1 ? reqId + '_r' + attempt : reqId,
+        idempotencyKey: attempt > 1 ? idemKey + '_r' + attempt : idemKey
+      }
+    }).catch(err => {
+      const msg = (err && err.errMsg) || String(err)
+      if (attempt < 2 && /404010|expired|timeout/i.test(msg)) {
+        console.warn(`[ai] ${action} 第 ${attempt} 次拉取结果超时，重试一次`)
+        return invoke(attempt + 1)
+      }
+      throw err
     })
+
+    return invoke(1)
       .then(res => {
         clearKey()
         const ms = Date.now() - t0

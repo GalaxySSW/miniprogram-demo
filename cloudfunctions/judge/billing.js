@@ -4,14 +4,14 @@
 const PRICE_VERSION = process.env.AI_PRICE_VERSION || 'mvp-v1'
 
 const ACTIONS = {
-  intake: { cost: 1, model: 'deepseek/deepseek-v4-flash' },
-  brief: { cost: 1, model: 'deepseek/deepseek-v4-flash' },
-  quickReply: { cost: 1, model: 'deepseek/deepseek-v4-flash' },
-  interviewTurn: { cost: 2, model: 'deepseek/deepseek-v4-flash' },
-  supplement: { cost: 2, model: 'deepseek/deepseek-v4-flash' },
-  interview: { cost: 3, model: 'deepseek/deepseek-v4-flash' },
-  verdict: { cost: 6, model: 'deepseek/deepseek-v4-flash' },
-  verdictDepth: { cost: 4, model: 'deepseek/deepseek-v4-flash' },
+  intake: { cost: 1, model: 'deepseek-v4-flash' },
+  brief: { cost: 1, model: 'deepseek-v4-flash' },
+  quickReply: { cost: 1, model: 'deepseek-v4-flash' },
+  interviewTurn: { cost: 2, model: 'deepseek-v4-flash' },
+  supplement: { cost: 2, model: 'deepseek-v4-flash' },
+  interview: { cost: 3, model: 'deepseek-v4-flash' },
+  verdict: { cost: 6, model: 'deepseek-v4-flash' },
+  verdictDepth: { cost: 4, model: 'deepseek-v4-flash' },
   readScreenshots: { cost: 3, model: process.env.AI_VISION_MODEL || 'gpt-4o-mini' },
   transcribe: { cost: 2, model: process.env.AI_ASR_MODEL || 'gpt-4o-transcribe' },
   ping: { cost: 0, model: 'none' }

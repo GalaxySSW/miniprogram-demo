@@ -19,7 +19,8 @@ try { localSecret = require('./secret') } catch (e) { /* 生产用环境变量 *
 const API_KEY = process.env.AI_API_KEY || localSecret.apiKey || ''
 const HOST = process.env.AI_HOST || 'api.openai-next.com'
 // 所有文本 action 统一走平台模型标识；图片/语音先预处理，再由文本链路处理。
-const MODEL = process.env.AI_MODEL || 'deepseek/deepseek-v4-flash'
+// 中转站上这个模型叫 deepseek-v4-flash，没有 deepseek/ 前缀——带前缀会被上游直接拒掉
+const MODEL = process.env.AI_MODEL || 'deepseek-v4-flash'
 const VISION_MODEL = process.env.AI_VISION_MODEL || 'gpt-4o-mini'
 // 中转站的 whisper-1 / whisper-large-v3 都不可用，实测 gpt-4o-transcribe 正常
 const ASR_MODEL = process.env.AI_ASR_MODEL || 'gpt-4o-transcribe'
