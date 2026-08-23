@@ -100,6 +100,7 @@
 
     <view class="grow"></view>
     <view class="btn btn-ghost qa-pact-history" bindtap="goHistory">去卷宗看看</view>
+    <view class="home-exit" bindtap="goHome">回首页</view>
   </block>
 
   <view wx:if="{{stage !== 'choose'}}" class="hairline mt64 pact-footer">

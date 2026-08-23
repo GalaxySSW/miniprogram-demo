@@ -11,6 +11,9 @@ const FALLBACK = [
 ]
 
 Page({
+  goHome() {
+    wx.reLaunch({ url: '/pages/home/home' })
+  },
   data: {
     stage: 'choose',      // choose 我来选 | wait 等 TA 点头 | confirm TA 选了等我点头 | done 双方齐了
     pacts: FALLBACK,

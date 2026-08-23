@@ -87,4 +87,7 @@
     </view>
   </block>
 
+
+  <view class="home-exit" bindtap="goHome">回首页</view>
+
 </view>

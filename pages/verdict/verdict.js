@@ -118,6 +118,9 @@ function buildBillingSummary(g) {
 }
 
 Page({
+  goHome() {
+    wx.reLaunch({ url: '/pages/home/home' })
+  },
   data: {
     caseId: '',
     v: {},

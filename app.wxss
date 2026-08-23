@@ -309,3 +309,12 @@ button.btn::after { border: none; }
   0%, 100% { opacity: 0.2; }
   50%      { opacity: 0.85; }
 }
+
+
+/* 终点页的回首页出口：只在流程走完、且返回键已被 redirectTo 吃掉的页面出现 */
+.home-exit {
+  text-align: center;
+  padding: 32rpx 0 8rpx;
+  font-size: var(--panpan-typography-caption-size);
+  color: var(--panpan-text-tertiary);
+}

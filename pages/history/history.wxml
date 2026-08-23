@@ -35,4 +35,7 @@
   <view class="grow"></view>
   <view class="faint center qa-history-retention">判决后 7 天，证据自动销毁，卷宗只留下金句</view>
 
+
+  <view class="home-exit" bindtap="goHome">回首页</view>
+
 </view>

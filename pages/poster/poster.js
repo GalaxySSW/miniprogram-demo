@@ -11,6 +11,9 @@ const LINE = '#E1DACE'
 const MUTE = '#9C958A'
 
 Page({
+  goHome() {
+    wx.reLaunch({ url: '/pages/home/home' })
+  },
   data: {
     imgPath: '',
     building: true,

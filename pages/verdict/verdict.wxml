@@ -175,4 +175,7 @@
     <view class="center mt16"><text class="faint qa-verdict-history" bindtap="goHistory">回卷宗查看</text></view>
   </view>
 
+
+  <view class="home-exit" bindtap="goHome">回首页</view>
+
 </view>

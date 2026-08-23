@@ -52,6 +52,7 @@
   <view class="col action-stack">
     <view class="btn btn-ghost qa-share-simulate qa-share-demo" bindtap="simulateTa">演示：切到 TA 视角</view>
     <view class="center"><text class="faint qa-share-waiting" bindtap="goWaiting">发好了 · 去等 TA</text></view>
+    <view class="home-exit" bindtap="goHome">回首页</view>
   </view>
 
 </view>

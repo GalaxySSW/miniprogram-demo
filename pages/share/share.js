@@ -3,6 +3,9 @@ const app = getApp()
 const casedb = require('../../utils/casedb.js')
 
 Page({
+  goHome() {
+    wx.reLaunch({ url: '/pages/home/home' })
+  },
   data: {
     caseId: '',
     docId: '',

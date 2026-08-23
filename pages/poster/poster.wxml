@@ -25,6 +25,9 @@
     <view class="faint center">保存后可以发朋友圈，或者直接发给 TA</view>
   </view>
 
+
+  <view class="home-exit" bindtap="goHome">回首页</view>
+
 </view>
 
 <!-- 离屏画布：不显示，只用来出图 -->
