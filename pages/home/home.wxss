@@ -269,3 +269,5 @@
 .home-news-body { display: flex; flex-direction: column; gap: 6rpx; flex: 1; }
 .home-news-text { font-size: 26rpx; font-weight: 500; }
 .home-news-meta { font-size: 20rpx; color: var(--panpan-text-tertiary); }
+
+.home-completed-arrow { margin-left: 8rpx; color: var(--panpan-text-tertiary); font-size: 24rpx; }
