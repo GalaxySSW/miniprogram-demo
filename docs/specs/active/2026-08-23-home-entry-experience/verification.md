@@ -20,8 +20,8 @@
 | 检查 | 命令 | 状态 | 证据 |
 |---|---|---|---|
 | JavaScript 语法 | `node --check app.js` 及 pages/utils/cloudfunctions 全量检查 | 已通过 | `node --check` 全量执行，无语法错误 |
-| JSON 语法 | `jq empty` 检查全部 JSON | 已通过 | `jq -e '.pages | length == 19' app.json` |
-| 页面注册 | 核对 `app.json` 与 19 个现有页面 | 已通过 | `app.json` 注册 19 个 route，`pages/` 对应文件均存在 |
+| JSON 语法 | 本轮变更 JSON 定向解析 | 已通过 | `app.json`、`case-detail.json`、`billing-account/package.json` 解析通过；仓库全量 `jq` 受既有非标准 JSON/依赖目录干扰 |
+| 页面注册 | 核对 `app.json` 与 20 个页面 | 已通过 | `app.json` 注册 20 个 route，`pages/case-detail/` 文件存在 |
 | 路由引用 | 检查所有新旧路径存在 | 待实现后执行 | 待补 |
 
 ## P0 安全与数据适配
@@ -45,7 +45,7 @@
 | 云端空数据 | 普通打开 | 可理解空状态，不显示虚构云端历史 | 待验证 |
 | 云端失败 | 普通打开 | 保留基础入口，提供重试或回 Home | 待验证 |
 
-## 19 页页面契约
+## 20 页页面契约
 
 每个页面必须补齐以下字段，状态为“已完成”前不得只以正常态截图作为证据：
 
@@ -126,13 +126,13 @@ failure & retry / back & cancel / data saved / qa-* selector / priority
 
 | 交付对象 | 预期 | 状态 |
 |---|---|---|
-| UI Contract | 19 页均有入口、角色、隐私、异步、返回、保存和 `qa-*` 标注 | 已通过初版 |
+| UI Contract | 20 页均有入口、角色、隐私、异步、返回、保存和 `qa-*` 标注 | 已通过初版 |
 | UI Foundations | 设计变量能映射现有/最终 `app.wxss` token | 已通过初版 | UI Figma 变量 + `app.wxss` CSS variables |
 | UI Components | 公共组件有 Variants，包含正常、加载、失败和禁用 | 已通过初版 | `02 Components` + 组件契约矩阵 |
 | Core/Extended Screens | P0/P1 页面主态和关键系统态完成 | 已通过初版 | `04 P0 Screens`、`05 P1 Screens`、`06 System States` |
 | System States | 跨页面异常、权限、删除、安全状态集中出稿 | 已通过初版 | `06 System States` 8 类状态 |
 | Prototype | 正常流程、失败恢复、安全暂停三条链路可点击 | 已通过初版 | `07 Prototype` 三条流程 |
-| Handoff | 页面 ID、状态名、CTA、动效和研发标注完整 | 已通过初版 | `08 Handoff`：19/19 route、19/19 QA 字段、0 个占位文案 |
+| Handoff | 页面 ID、状态名、CTA、动效和研发标注完整 | 需重新生成 | 旧 Handoff 已有 19 个 route，新增 `case-detail` 后由 Figma Agent 补齐 |
 
 ## 运行时证据要求
 
@@ -146,7 +146,7 @@ failure & retry / back & cancel / data saved / qa-* selector / priority
 - 实际结果：路由为 `pages/home/home`；页面正常渲染，截图无明显溢出或重叠。
 - 是否需要人工真机确认：需要；当前仅为微信开发者工具模拟器证据。
 - 证据：`/private/tmp/panpan-home-token-qa.png`；MCP 返回 `currentPage.path=pages/home/home`。
-- 追加路由冒烟：2026-08-23 使用 `mp_navigate(reLaunch)` + `page_waitRoute` 逐一验证 `app.json` 注册的 19 个 route，结果 19/19 `matched=true`；仅验证页面可打开，不等同于业务状态和真机验收。
+- 本轮静态路由核对：`app.json` 注册 20 个 route，包含 `pages/case-detail/case-detail`；微信开发者工具/MCP 运行时路由冒烟尚未执行。
 
 实现完成后，必须补充：
 

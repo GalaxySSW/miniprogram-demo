@@ -1,1 +1,4 @@
-/* pages/history/history.wxss */
+.history-page { min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx; }
+.history-header { justify-content: space-between; min-height: 44rpx; }
+.history-list { gap: 24rpx; }
+.state-card { background: #FFFDF9; }

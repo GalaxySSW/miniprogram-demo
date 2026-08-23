@@ -1,11 +1,16 @@
-<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx; justify-content: center; align-items: center;">
+<view class="col trial-page">
+
+  <view class="row trial-header">
+    <text class="faint qa-trial-back" bindtap="back">‹ 返回</text>
+    <text class="kicker">开庭</text>
+  </view>
 
   <cat mood="sleep" breathe="{{true}}" />
 
   <view class="h2 mt48">开庭中</view>
   <view class="sub mt8">两边的话，本庭都要再听一遍。</view>
 
-  <view class="mt64 col" style="gap: 32rpx; width: 100%; max-width: 520rpx;">
+  <view class="mt64 col trial-step-list qa-trial-step">
     <view wx:for="{{steps}}" wx:key="index" class="row" style="gap: 24rpx;">
       <view style="width: 36rpx; height: 36rpx; border-radius: 50%; border: 3rpx solid {{item.done ? '#7E9B72' : '#E1DACE'}}; display: flex; align-items: center; justify-content: center;">
         <text wx:if="{{item.done}}" style="color: #7E9B72; font-size: 22rpx;">✓</text>
@@ -14,6 +19,13 @@
     </view>
   </view>
 
-  <view wx:if="{{musing}}" class="faint mt48">{{musing}}</view>
+  <view wx:if="{{musing}}" class="faint mt48 qa-trial-musing">{{musing}}</view>
+
+  <view wx:if="{{error}}" class="card mt48 trial-error qa-trial-error">
+    <view class="sub">{{error}}</view>
+    <view class="btn btn-ghost mt24 qa-trial-retry" bindtap="retry">重试审理</view>
+  </view>
+
+  <view class="faint center mt24 qa-trial-home" bindtap="goHome">先回首页</view>
 
 </view>

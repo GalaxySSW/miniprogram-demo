@@ -1,1 +1,6 @@
-/* pages/pact/pact.wxss */
+.pact-page { min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx; }
+.pact-header { justify-content: space-between; min-height: 44rpx; }
+.state-card { background: #FFFDF9; }
+.pact-choice { border-color: #E8D9C8; border-width: 1rpx; }
+.pact-choice-selected { border-color: #B0793F; border-width: 3rpx; }
+.pact-footer { padding-top: 48rpx; }

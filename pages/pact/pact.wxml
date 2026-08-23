@@ -1,4 +1,17 @@
-<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+<view class="col pact-page">
+
+  <view class="row pact-header">
+    <text class="faint qa-pact-back" bindtap="back">‹ 返回</text>
+    <text class="kicker">本庭约定</text>
+  </view>
+
+  <view wx:if="{{syncLoading}}" class="card mt24 state-card qa-pact-loading">
+    <view class="faint">正在看看双方最新的点头状态…</view>
+  </view>
+  <view wx:if="{{error}}" class="card mt24 state-card qa-pact-error">
+    <view class="sub">{{error}}</view>
+    <view class="btn btn-ghost mt24 qa-pact-retry" bindtap="retry">重新同步</view>
+  </view>
 
   <!-- 我来选 -->
   <block wx:if="{{stage === 'choose'}}">
@@ -8,7 +21,7 @@
 
     <view class="mt48 col" style="gap: 24rpx;">
       <view wx:for="{{pacts}}" wx:key="index" bindtap="pickPact" data-idx="{{index}}"
-        class="card" style="border-color: {{pactIdx === index ? '#B0793F' : '#E1DACE'}}; border-width: {{pactIdx === index ? '3rpx' : '1rpx'}};">
+        class="card pact-choice {{pactIdx === index ? 'pact-choice-selected' : ''}} qa-pact-choice">
         <view class="row" style="justify-content: space-between;">
           <text style="font-size: 30rpx; font-weight: 500;">{{item.title}}</text>
           <text wx:if="{{pactIdx === index}}" style="color: #B0793F;">✓</text>
@@ -17,7 +30,7 @@
       </view>
     </view>
 
-    <view class="card mt32 row" style="gap: 20rpx; align-items: flex-start;" bindtap="toggleReview">
+    <view class="card mt32 row qa-pact-review" style="gap: 20rpx; align-items: flex-start;" bindtap="toggleReview">
       <view style="flex-shrink: 0; width: 36rpx; height: 36rpx; border-radius: 10rpx; border: 2rpx solid {{wantReview ? '#B0793F' : '#E1DACE'}}; background: {{wantReview ? '#B0793F' : '#FFFFFF'}}; display: flex; align-items: center; justify-content: center;">
         <text wx:if="{{wantReview}}" style="color: #FAF7F2; font-size: 22rpx;">✓</text>
       </view>
@@ -27,7 +40,7 @@
       </view>
     </view>
 
-    <view class="btn {{submitting ? 'btn-disabled' : 'btn-primary'}} mt32" bindtap="choose">就这件 · 交给 TA 点头</view>
+    <view class="btn {{submitting ? 'btn-disabled' : 'btn-primary'}} mt32 qa-pact-choose qa-pact-submit" bindtap="choose">{{submitting ? '正在保存…' : '就这件 · 交给 TA 点头'}}</view>
     <view class="faint center mt16">约定要两个人都同意才算数</view>
   </block>
 
@@ -49,7 +62,7 @@
     <view class="center mt48"><cat mood="sleep" breathe="{{true}}" style="display: inline-block;" /></view>
 
     <view class="grow"></view>
-    <view class="btn btn-ghost" bindtap="goHistory">先回卷宗</view>
+    <view class="btn btn-ghost qa-pact-history" bindtap="goHistory">先回卷宗</view>
   </block>
 
   <!-- TA 定了，等我点头 -->
@@ -68,7 +81,7 @@
     </view>
 
     <view class="grow"></view>
-    <view class="btn {{submitting ? 'btn-disabled' : 'btn-primary'}}" bindtap="confirm">我也同意 · 就这件</view>
+    <view class="btn {{submitting ? 'btn-disabled' : 'btn-primary'}} qa-pact-confirm" bindtap="confirm">{{submitting ? '正在保存…' : '我也同意 · 就这件'}}</view>
     <view class="center mt24"><text class="faint" bindtap="goPebble">还没想好，先递颗石子</text></view>
   </block>
 
@@ -87,11 +100,11 @@
     </view>
 
     <view class="grow"></view>
-    <view class="btn btn-ghost" bindtap="goHistory">去卷宗看看</view>
+    <view class="btn btn-ghost qa-pact-history" bindtap="goHistory">去卷宗看看</view>
   </block>
 
-  <view wx:if="{{stage !== 'choose'}}" class="hairline mt64" style="padding-top: 48rpx;">
-    <view class="faint center" bindtap="goPebble">说不出话的时候，还可以递颗石子 →</view>
+  <view wx:if="{{stage !== 'choose'}}" class="hairline mt64 pact-footer">
+    <view class="faint center qa-pact-pebble" bindtap="goPebble">说不出话的时候，还可以递颗石子 →</view>
   </view>
 
 </view>

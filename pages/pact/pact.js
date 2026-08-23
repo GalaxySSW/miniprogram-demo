@@ -18,7 +18,9 @@ Page({
     pactIdx: -1,
     wantReview: false,
     chosen: null,
-    submitting: false
+    submitting: false,
+    syncLoading: false,
+    error: ''
   },
 
   onLoad() {
@@ -45,14 +47,16 @@ Page({
   sync() {
     const c = app.globalData.caseData
     if (!c.docId) return
+    this.setData({ syncLoading: true, error: '' })
     casedb.getCase(c.docId).then(r => {
-      if (!r || !r.pact) return
+      if (!r || !r.pact) return this.setData({ syncLoading: false })
       c.pact = r.pact
       this.setData({
+        syncLoading: false,
         chosen: r.pact,
         stage: r.pactBoth ? 'done' : (r.pactMine ? 'wait' : 'confirm')
       })
-    })
+    }).catch(() => this.setData({ syncLoading: false, error: '本庭暂时没同步到最新约定，请重试。' }))
   },
 
   toggleReview() { this.setData({ wantReview: !this.data.wantReview }) },
@@ -62,7 +66,7 @@ Page({
   choose() {
     if (this.data.pactIdx < 0) return wx.showToast({ title: '先选一件小事', icon: 'none' })
     if (this.data.submitting) return
-    this.setData({ submitting: true })
+    this.setData({ submitting: true, error: '' })
 
     const c = app.globalData.caseData
     const pact = this.data.pacts[this.data.pactIdx]
@@ -72,27 +76,34 @@ Page({
       this.setData({ submitting: false, chosen: pact, stage: 'wait' })
       if (this.data.wantReview) notify.askSubscribe(['review'])
     }
-    if (c.docId) casedb.savePact(c.docId, pact, this.data.wantReview).then(done)
+    if (c.docId) casedb.savePact(c.docId, pact, this.data.wantReview).then(result => {
+      if (app.globalData.cloudReady && !result) return this.setData({ submitting: false, error: '这件约定没有保存成功，请重试。' })
+      done()
+    })
+      .catch(() => this.setData({ submitting: false, error: '这件约定暂时没保存好，请重试。' }))
     else done()
   },
 
   // TA 定了，我点头
   confirm() {
     if (this.data.submitting) return
-    this.setData({ submitting: true })
+    this.setData({ submitting: true, error: '' })
     const c = app.globalData.caseData
     if (!c.docId) {
       this.setData({ submitting: false, stage: 'done' })
       return
     }
     casedb.confirmPact(c.docId).then(r => {
+      if (app.globalData.cloudReady && !r) return this.setData({ submitting: false, error: '点头状态没有保存成功，请重试。' })
       const both = !!(r && r.both)
       this.setData({ submitting: false, stage: both ? 'done' : 'wait' })
       if (both) c.status = 'closed'
       wx.showToast({ title: both ? '本案了结' : '已点头，等 TA', icon: 'none' })
-    })
+    }).catch(() => this.setData({ submitting: false, error: '点头状态暂时没保存好，请重试。' }))
   },
 
   goPebble() { wx.navigateTo({ url: '/pages/pebble/pebble' }) },
-  goHistory() { wx.redirectTo({ url: '/pages/history/history' }) }
+  goHistory() { wx.redirectTo({ url: '/pages/history/history' }) },
+  retry() { this.sync() },
+  back() { wx.navigateBack({ delta: 1, fail: () => wx.reLaunch({ url: '/pages/home/home' }) }) }
 })

@@ -1,5 +1,7 @@
 // 前端 AI 调用层：云开发就绪时走云函数，否则返回 null（页面回退到本地 mock）。
 // 请求携带 requestId/idempotencyKey；页面暂时继续接收原始 result，billing 信息写入全局调试状态。
+const credits = require('./credits.js')
+
 function requestId() {
   return `req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
 }
@@ -20,46 +22,50 @@ function call(action, data) {
     app.globalData.aiUsed = false
     return Promise.resolve(null)
   }
-  const t0 = Date.now()
-  const reqId = requestId()
-  const fingerprint = `${action}:${JSON.stringify(data || {})}`
-  const idemKey = inFlightKeys[fingerprint] || idempotencyKey(action, data, Date.now())
-  inFlightKeys[fingerprint] = idemKey
-  const clearKey = () => { delete inFlightKeys[fingerprint] }
-  return wx.cloud.callFunction({
-    name: 'judge',
-    data: { action, ...data, requestId: reqId, idempotencyKey: idemKey }
+  return credits.ensureBeforeCall(action).then(preflight => {
+    if (!preflight.allowed) return null
+    const t0 = Date.now()
+    const reqId = requestId()
+    const fingerprint = `${action}:${JSON.stringify(data || {})}`
+    const idemKey = inFlightKeys[fingerprint] || idempotencyKey(action, data, Date.now())
+    inFlightKeys[fingerprint] = idemKey
+    const clearKey = () => { delete inFlightKeys[fingerprint] }
+    return wx.cloud.callFunction({
+      name: 'judge',
+      data: { action, ...data, requestId: reqId, idempotencyKey: idemKey }
+    })
+      .then(res => {
+        clearKey()
+        const ms = Date.now() - t0
+        const envelope = res.result || {}
+        app.globalData.aiLastResponse = {
+          requestId: envelope.requestId || reqId,
+          source: envelope.source || 'unknown',
+          billing: envelope.billing || null
+        }
+        if (res.result && res.result.ok) {
+          console.log(`[ai] ${action} 成功，耗时 ${(ms / 1000).toFixed(1)}s`)
+          app.globalData.aiUsed = true
+          credits.refresh()
+          return envelope.result
+        }
+        console.warn(`[ai] ${action} 返回异常（${(ms / 1000).toFixed(1)}s）:`, envelope.error, envelope.billing)
+        app.globalData.aiUsed = false
+        return null
+      })
+      .catch(err => {
+        clearKey()
+        const ms = Date.now() - t0
+        console.warn(`[ai] ${action} 调用失败（${(ms / 1000).toFixed(1)}s），回退 mock:`, err && err.errMsg || err)
+        app.globalData.aiLastResponse = {
+          requestId: reqId,
+          source: 'fallback',
+          billing: { status: 'unknown', requestId: reqId, errorCode: 'CLOUD_CALL_FAILED' }
+        }
+        app.globalData.aiUsed = false
+        return null
+      })
   })
-    .then(res => {
-      clearKey()
-      const ms = Date.now() - t0
-      const envelope = res.result || {}
-      app.globalData.aiLastResponse = {
-        requestId: envelope.requestId || reqId,
-        source: envelope.source || 'unknown',
-        billing: envelope.billing || null
-      }
-      if (res.result && res.result.ok) {
-        console.log(`[ai] ${action} 成功，耗时 ${(ms / 1000).toFixed(1)}s`)
-        app.globalData.aiUsed = true
-        return envelope.result
-      }
-      console.warn(`[ai] ${action} 返回异常（${(ms / 1000).toFixed(1)}s）:`, envelope.error, envelope.billing)
-      app.globalData.aiUsed = false
-      return null
-    })
-    .catch(err => {
-      clearKey()
-      const ms = Date.now() - t0
-      console.warn(`[ai] ${action} 调用失败（${(ms / 1000).toFixed(1)}s），回退 mock:`, err && err.errMsg || err)
-      app.globalData.aiLastResponse = {
-        requestId: reqId,
-        source: 'fallback',
-        billing: { status: 'unknown', requestId: reqId, errorCode: 'CLOUD_CALL_FAILED' }
-      }
-      app.globalData.aiUsed = false
-      return null
-    })
 }
 
 // 上传本地文件到云存储，返回 fileID

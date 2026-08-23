@@ -1,0 +1,14 @@
+<view class="pp-scaffold {{compact ? 'pp-scaffold--compact' : ''}}" data-qa="{{qaId}}">
+  <view class="pp-scaffold__header {{centered ? 'pp-scaffold__header--centered' : ''}}">
+    <slot name="header">
+      <view class="pp-scaffold__topline">
+        <button wx:if="{{showBack}}" class="pp-scaffold__back" data-qa="{{qaId}}-back" bindtap="onBack">{{backText}}</button>
+        <text wx:if="{{eyebrow}}" class="pp-scaffold__eyebrow">{{eyebrow}}</text>
+      </view>
+      <text wx:if="{{title}}" class="pp-scaffold__title">{{title}}</text>
+      <text wx:if="{{subtitle}}" class="pp-scaffold__subtitle">{{subtitle}}</text>
+    </slot>
+  </view>
+  <view class="pp-scaffold__content"><slot /></view>
+  <view class="pp-scaffold__footer"><slot name="footer" /></view>
+</view>

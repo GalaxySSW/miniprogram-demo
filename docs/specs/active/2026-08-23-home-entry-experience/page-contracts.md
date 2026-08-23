@@ -1,8 +1,8 @@
-# 19 页 UI Contract：关系首页与案件回访入口
+# 20 页 UI Contract：关系首页与案件回访入口
 
 > 状态：方案阶段，待代码与 Figma 实现后逐项补充 `qa-*` 运行时证据。
 >
-> 规则：页面数量以 `app.json` 的 19 个注册页面为准；异常、权限、隐私和恢复状态通过页面状态或公共组件承载，不默认新增业务路由。
+> 规则：当前代码有 20 个注册页面，包含 P0 `case-detail`。异常、权限、隐私和恢复状态仍通过页面状态或公共组件承载。
 
 ## 字段定义
 
@@ -40,6 +40,7 @@
 | `pact` | verdict | 双方 | `joint` | 判决、约定选项、双方选择 | `savePact`、`confirmPact` | `pebble` / `review` / Home | 双方选择冲突时重新选择；保存失败可重试 | 回 verdict | `qa-pact-choice`、`qa-pact-confirm` | P0 |
 | `pebble` | pact / Home / waiting | 双方 | `joint` | `pebbleFeed`、每日额度 | `pebble`、`receivePebble` | Home / 重新开庭 | 图片上传/权限失败可重试；额度上限明确 | 回 Home | `qa-pebble-send`、`qa-pebble-receive` | P1 |
 | `history` | Home 卷宗 | 我 / 双方 | `public-redacted` | `myCases`、安全投影、复盘状态 | 删除/打开/复盘入口 | `waiting` / `trial` / `verdict` / `pact` / `review` | 加载失败显示恢复态，不显示旧全局案件 | 回 Home | `qa-history-card`、`qa-history-empty` | P0 基础入口 / P1 完整能力 |
+| `case-detail` | Home / History / inbox / share，携带 `docId` | 我 / TA / 双方 | `public-redacted` / `joint` | `getCase(docId)`、案件安全投影、状态与进度 | 仅导航；目标页负责业务写入 | `evidence` / `preview` / `share` / `waiting` / `trial` / `verdict` / `pact` / `review` / `pebble` | 案件不存在、无权限、版本冲突、字段缺失 → `RecoveryPanel`，重试/回卷宗/Home | 按 `source` 回 Home 或 History；栈为空回 Home | `qa-case-detail-status`、`qa-case-detail-primary`、`qa-case-detail-retry` | P0 |
 | `review` | Home / History / inbox | 双方 | `joint` | 约定、提醒、复盘状态 | `saveReview` | Home / History | 保存失败保留选择；允许重试 | 回 Home | `qa-review-choice`、`qa-review-submit` | P1 |
 | `profile` | Home 我的 | 我 / 双方 | `joint` / `public-redacted` | `myPatterns`、案件约定统计 | `forgetPatterns`、删除确认 | Home | 删除失败可重试；区分原文删除与模式清空 | 回 Home | `qa-profile-patterns`、`qa-profile-forget` | P1 |
 
@@ -57,6 +58,6 @@ PrivacyScope: private-me / private-ta / joint / public-redacted
 ## 当前技术边界
 
 - `expired`、`revoked`、`bound` 邀请状态先作为设计预留；当前后端没有足够字段可靠判断。
-- 19 页页面契约不等于代码已实现；所有“待验证”项目必须在 `verification.md` 补证据。
+- 20 页页面契约不等于代码已实现；所有“待验证”项目必须在 `verification.md` 补证据。
 - `qa-*` 选择器是设计与研发约定，接入代码前不得假设它们已经存在。
 - P0/P1 描述的是交付优先级，不代表当前页面能力已经完成。

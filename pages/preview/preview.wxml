@@ -1,13 +1,17 @@
-<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+<view class="col preview-page">
 
-  <text class="kicker">发出前 · 最后确认</text>
+  <view class="row preview-header">
+    <text class="faint qa-preview-back" bindtap="back">‹ 返回</text>
+    <text class="kicker">发出前 · 最后确认</text>
+  </view>
+
   <view class="h2 mt16">用你自己的话开口</view>
   <view class="sub mt8">TA 先看到的是这句话，不是本庭的通知。可以直接改成你想说的。</view>
 
-  <view class="card mt32" style="border-left: 6rpx solid #B0793F;">
+  <view class="card mt32 preview-editor accent-card">
     <textarea value="{{note}}" bindinput="onNoteInput" auto-height maxlength="60"
       placeholder="写一句你自己的话" placeholder-class="field-ph"
-      style="width: 100%; font-size: 30rpx; line-height: 1.7; min-height: 90rpx;" />
+      class="field field-note qa-preview-note" />
   </view>
   <view class="mt24">
     <text wx:for="{{templates}}" wx:key="index" class="chip {{tplIdx === index ? 'chip-on' : ''}}"
@@ -16,17 +20,23 @@
 
   <view class="mt48">
     <text class="kicker">案由 · TA 会看到这是关于什么事</text>
-    <view class="card mt16">
+    <view class="card mt16 preview-editor">
       <view wx:if="{{briefLoading}}" class="faint">判官正在把你的陈述提炼成一句中立的案由…</view>
-      <textarea wx:else value="{{brief}}" bindinput="onBriefInput" auto-height maxlength="60"
-        placeholder="关于……这件事" placeholder-class="field-ph"
-        style="width: 100%; font-size: 28rpx; line-height: 1.7; min-height: 80rpx;" />
+      <block wx:else>
+        <view wx:if="{{briefError}}" class="state-card qa-preview-brief-error">
+          <view class="sub">{{briefError}}</view>
+          <view class="faint mt8">你仍然可以手动写一句案由。</view>
+        </view>
+        <textarea value="{{brief}}" bindinput="onBriefInput" auto-height maxlength="60"
+          placeholder="关于……这件事" placeholder-class="field-ph"
+          class="field field-brief qa-preview-brief" />
+      </block>
     </view>
     <view class="faint mt8">只说是哪件事，不带情绪也不带指责。TA 不会看到你的原话，但至少知道要聊什么。</view>
   </view>
 
-  <view class="hairline mt48" style="padding-top: 48rpx;">
-    <view class="card">
+  <view class="hairline mt48 privacy-section">
+    <view class="card qa-preview-privacy">
       <text class="pill pill-matcha">TA 能看到</text>
       <view class="mt24 col" style="gap: 16rpx;">
         <view class="sub">· 你上面写的这句话</view>
@@ -48,9 +58,16 @@
 
   <view class="grow" style="min-height: 48rpx;"></view>
 
-  <view class="col" style="gap: 24rpx;">
-    <view class="btn btn-primary" bindtap="confirm">确认，去发传票</view>
-    <view class="btn btn-ghost" bindtap="edit">我再改改陈述</view>
+  <view wx:if="{{saveError}}" class="card state-card qa-preview-save-error">
+    <view class="sub">{{saveError}}</view>
+    <view class="btn btn-ghost mt24 qa-preview-retry" bindtap="retryConfirm">重试保存</view>
+  </view>
+
+  <view class="col action-stack">
+    <view class="btn {{saving ? 'btn-disabled' : 'btn-primary'}} qa-preview-confirm qa-preview-send" bindtap="confirm">
+      {{saving ? '正在保存…' : '确认，去发传票'}}
+    </view>
+    <view class="btn btn-ghost qa-preview-edit" bindtap="edit">我再改改陈述</view>
   </view>
 
 </view>

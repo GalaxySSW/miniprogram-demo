@@ -2,6 +2,7 @@
 // 判决主文按案件分型走不同措辞：纯误会 / 单边越界 / 认知错位
 const app = getApp()
 const notify = require('../../utils/notify.js')
+const ai = require('../../utils/ai.js')
 
 // 印章随案件类型变：判的是什么，章上就写什么
 const SEALS = {
@@ -21,7 +22,9 @@ Page({
     absent: false,
     hasWords: false,
     hasSteps: false,
-    hasGuide: false
+    hasGuide: false,
+    depthLoading: false,
+    depthError: ''
   },
   onLoad() {
     const g = app.globalData
@@ -61,16 +64,26 @@ Page({
     // 深度分析是并行生成的，回来了就补进页面；没有也不影响判决书本体
     const depth = app.globalData.depthPromise
     if (depth && !v.herNeed) {
-      depth.then(d => {
-        if (!d) return
-        const merged = { ...app.globalData.verdict, ...d }
-        app.globalData.verdict = merged
-        const m = { ...this.data.v, ...d }
-        if (!Array.isArray(m.herGuide)) m.herGuide = []
-        if (!Array.isArray(m.hisGuide)) m.hisGuide = []
-        this.setData({ v: m, hasGuide: m.herGuide.length > 0 || m.hisGuide.length > 0 })
-      })
+      this.setData({ depthLoading: true })
+      depth.then(d => this.applyDepth(d)).catch(() => this.setData({ depthLoading: false, depthError: '深度解读暂时没能补上，不影响这份判决书。' }))
     }
+  },
+  applyDepth(d) {
+    if (!d) return this.setData({ depthLoading: false })
+    const merged = { ...app.globalData.verdict, ...d }
+    app.globalData.verdict = merged
+    const m = { ...this.data.v, ...d }
+    if (!Array.isArray(m.herGuide)) m.herGuide = []
+    if (!Array.isArray(m.hisGuide)) m.hisGuide = []
+    this.setData({ v: m, depthLoading: false, depthError: '', hasGuide: m.herGuide.length > 0 || m.hisGuide.length > 0 })
+  },
+  retryDepth() {
+    if (this.data.depthLoading) return
+    const c = app.globalData.caseData
+    this.setData({ depthLoading: true, depthError: '' })
+    ai.verdictDepth(c.myStatement, c.theirStatement)
+      .then(d => this.applyDepth(d))
+      .catch(() => this.setData({ depthLoading: false, depthError: '还是没补上深度解读，可以先看本庭判决。' }))
   },
   copyStep(e) {
     const text = e.currentTarget.dataset.text
@@ -87,5 +100,11 @@ Page({
   },
   goPact() {
     wx.navigateTo({ url: '/pages/pact/pact' })
+  },
+  goHistory() {
+    wx.redirectTo({ url: '/pages/history/history' })
+  },
+  back() {
+    wx.navigateBack({ delta: 1, fail: () => wx.reLaunch({ url: '/pages/home/home' }) })
   }
 })

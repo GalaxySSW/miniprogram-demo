@@ -13,10 +13,16 @@ Page({
       { text: '正在琢磨你们各自要什么', done: false },
       { text: '正在锁定真正的被告……', done: false }
     ],
-    musing: ''
+    musing: '',
+    loading: true,
+    error: ''
   },
   onLoad() {
+    this.startTrial()
+  },
+  startTrial() {
     const c = app.globalData.caseData
+    this.setData({ loading: true, error: '', musing: '', steps: this.data.steps.map(s => ({ ...s, done: false })) })
 
     const animation = new Promise(resolve => {
       this.data.steps.forEach((s, i) => {
@@ -56,6 +62,9 @@ Page({
         })
         return
       }
+      if (app.globalData.cloudReady && !result) {
+        return this.setData({ loading: false, error: '本庭暂时没有拿到真实判决，先不展示样例判决。请重试。' })
+      }
       if (result && result.ruling) {
         // 这个主题以前判过几次？算上本次
         const prev = (this.patterns || []).find(p => p.topic === result.topic)
@@ -69,6 +78,19 @@ Page({
         }
       }
       wx.redirectTo({ url: '/pages/verdict/verdict' })
+    }).catch(() => {
+      if (this.musingTimer) clearInterval(this.musingTimer)
+      this.setData({ loading: false, error: '本庭暂时没能完成审理。原话仍保留在本地，可以重试。' })
     })
+  },
+  retry() {
+    if (this.data.loading) return
+    this.startTrial()
+  },
+  back() {
+    wx.navigateBack({ delta: 1, fail: () => wx.reLaunch({ url: '/pages/home/home' }) })
+  },
+  goHome() {
+    wx.reLaunch({ url: '/pages/home/home' })
   }
 })

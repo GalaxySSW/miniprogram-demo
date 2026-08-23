@@ -12,6 +12,7 @@ App({
   globalData: {
     cloudReady: false,
     aiUsed: null,        // 本次判决是否真的由大模型生成（调试用，上线可移除展示）
+    creditAccount: null,
     // 当前案件的模拟状态机：created → accepted → summoned → responded → tried → closed
     caseData: {
       id: '2026 情字第 0822 号',

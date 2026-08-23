@@ -1,6 +1,22 @@
-<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+<view class="col respond-page">
 
-  <view wx:if="{{note}}" class="mt48">
+  <view class="row respond-header">
+    <text class="faint qa-respond-back" bindtap="back">‹ 返回</text>
+    <text class="kicker">应诉</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="card mt48 state-card qa-respond-loading qa-invite-state">
+    <view class="faint">正在调出传票内容…</view>
+  </view>
+
+  <view wx:elif="{{error}}" class="card mt48 state-card qa-respond-error qa-invite-state">
+    <view class="sub">{{error}}</view>
+    <view class="btn btn-ghost mt24 qa-respond-retry" bindtap="retry">重新调取</view>
+  </view>
+
+  <block wx:else>
+
+  <view wx:if="{{note}}" class="mt48 qa-respond-note">
     <text class="kicker">TA 想先跟你说</text>
     <view class="card mt16" style="border-left: 6rpx solid #B0793F; padding: 40rpx;">
       <view style="font-size: 32rpx; line-height: 1.8;">{{note}}</view>
@@ -38,8 +54,15 @@
   <view class="grow" style="min-height: 48rpx;"></view>
 
   <view class="col" style="gap: 24rpx;">
-    <view class="btn btn-primary" bindtap="willTalk">好，我也说说</view>
-    <view class="btn btn-ghost" bindtap="notNow">我现在不想聊这个</view>
+    <view class="btn btn-primary qa-respond-continue qa-respond-start" bindtap="willTalk">好，我也说说</view>
+    <view class="btn btn-ghost qa-respond-cancel qa-respond-later" bindtap="notNow">我现在不想聊这个</view>
   </view>
+
+  <view class="privacy-note mt24 qa-respond-privacy">
+    <text class="pill pill-matcha">对你保密</text>
+    <text class="faint grow">你只会看到邀请语和案由，不会看到 TA 的陈述原话或截图。</text>
+  </view>
+
+  </block>
 
 </view>

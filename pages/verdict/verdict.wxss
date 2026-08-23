@@ -1,1 +1,4 @@
-/* pages/verdict/verdict.wxss */
+.verdict-page { box-sizing: border-box; padding: 24rpx 50rpx 60rpx; }
+.verdict-header { justify-content: space-between; min-height: 44rpx; }
+.state-card { background: #FFFDF9; }
+.action-stack { gap: 24rpx; }

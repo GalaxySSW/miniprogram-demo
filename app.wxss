@@ -1,45 +1,70 @@
 /**
- * 爱情判官 UI v2 — 线稿猫 · 奶油纸 · 平面无衬线
- * 奶油纸底 + 墨黑主按钮；色彩只做小面积点缀：
- * 陶土 #C9573F（印章）、蜜色 #B0793F（标签）、抹茶 #7E9B72 / 杏色 #D9A05B（状态）
- * 无渐变、无厚投影；卡片圆角 40rpx + 1px 描边；胶囊按钮高 104rpx
+ * 判判 UI Design System v2
+ * Figma handoff: warm paper surface, cocoa ink, restrained status colors.
+ * This file keeps the legacy classes used by existing pages and adds the
+ * shared pp-* vocabulary used by the new public components.
  */
 page {
-  /* 判判 UI Tokens：与 20260822_panpan_UI_design / 判判 UI Tokens 对齐 */
-  --panpan-bg-page: #FFF9F1;
-  --panpan-surface-paper: #F4E9DE;
-  --panpan-brand-cocoa: #5B4636;
-  --panpan-text-primary: #2B2118;
-  --panpan-action-primary: #2B2118;
-  --panpan-accent-peach: #F6B59D;
-  --panpan-status-honey: #DDBB7A;
-  --panpan-status-sage: #A8B89A;
-  --panpan-status-danger: #D9785B;
-  --panpan-border-soft: #E8D9C8;
-  --panpan-text-secondary: #806F60;
-  --panpan-text-tertiary: #A79686;
+  /* 移动端运行时 Token：来自 Figma UI Design System / v2。 */
+  --panpan-bg-page: #FAF7F2;
+  --panpan-surface-paper: #FFFDF9;
+  --panpan-brand-cocoa: #3B2919;
+  --panpan-text-primary: #1A1918;
+  --panpan-action-primary: #3B2919;
+  --panpan-accent-peach: #FFD9C7;
+  --panpan-status-honey: #B0793F;
+  --panpan-status-sage: #7E9B72;
+  --panpan-status-danger: #C9573F;
+  --panpan-border-soft: #E1DACE;
+  --panpan-text-secondary: #6E685F;
+  --panpan-text-tertiary: #9C958A;
   --panpan-radius-card: 32rpx;
   --panpan-radius-control: 16rpx;
   --panpan-radius-pill: 999rpx;
   --panpan-space-page: 24rpx;
   --panpan-space-section: 32rpx;
   --panpan-space-control: 16rpx;
+  --panpan-space-xxs: 8rpx;
+  --panpan-space-xs: 12rpx;
+  --panpan-space-sm: 16rpx;
+  --panpan-space-md: 24rpx;
+  --panpan-space-lg: 32rpx;
+  --panpan-space-xl: 48rpx;
+  --panpan-typography-display-size: 64rpx;
+  --panpan-typography-display-line: 80rpx;
+  --panpan-typography-heading-size: 48rpx;
+  --panpan-typography-heading-line: 64rpx;
+  --panpan-typography-body-size: 32rpx;
+  --panpan-typography-body-line: 52rpx;
+  --panpan-typography-label-size: 26rpx;
+  --panpan-typography-label-line: 40rpx;
+  --panpan-typography-caption-size: 22rpx;
+  --panpan-typography-caption-line: 32rpx;
   background: var(--panpan-bg-page);
   color: var(--panpan-text-primary);
   font-family: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
-  font-size: 26rpx;
-  line-height: 1.8;
+  font-size: var(--panpan-typography-body-size);
+  line-height: var(--panpan-typography-body-line);
 }
 
-.wrap { padding: var(--panpan-space-page) 50rpx 60rpx 50rpx; }
+.wrap { padding: var(--panpan-space-page) 48rpx 60rpx; }
 
 /* 排印 */
-.kicker { font-size: 20rpx; letter-spacing: 0.28em; color: var(--panpan-brand-cocoa); }
-.h1 { font-size: 56rpx; font-weight: 500; line-height: 1.5; letter-spacing: 2rpx; }
-.h2 { font-size: 40rpx; font-weight: 500; line-height: 1.5; }
-.sub { font-size: 26rpx; color: var(--panpan-text-secondary); line-height: 1.85; }
-.faint { font-size: 22rpx; color: var(--panpan-text-tertiary); line-height: 1.85; }
+.kicker { font-size: var(--panpan-typography-label-size); line-height: var(--panpan-typography-label-line); letter-spacing: 0.12em; color: var(--panpan-brand-cocoa); }
+.h1 { font-size: var(--panpan-typography-display-size); font-weight: 600; line-height: var(--panpan-typography-display-line); letter-spacing: 0; }
+.h2 { font-size: var(--panpan-typography-heading-size); font-weight: 600; line-height: var(--panpan-typography-heading-line); }
+.sub { font-size: var(--panpan-typography-body-size); color: var(--panpan-text-secondary); line-height: var(--panpan-typography-body-line); }
+.faint { font-size: var(--panpan-typography-caption-size); color: var(--panpan-text-tertiary); line-height: var(--panpan-typography-caption-line); }
 .center { text-align: center; }
+
+/* Figma typography aliases: 1px = 2rpx for the 375px mini-program viewport. */
+.pp-display { font-size: 64rpx; line-height: 80rpx; font-weight: 600; }
+.pp-heading { font-size: 48rpx; line-height: 64rpx; font-weight: 600; }
+.pp-body { font-size: 32rpx; line-height: 52rpx; font-weight: 400; }
+.pp-label { font-size: 26rpx; line-height: 40rpx; font-weight: 500; }
+.pp-caption { font-size: 22rpx; line-height: 32rpx; font-weight: 400; }
+.pp-muted { color: var(--panpan-text-secondary); }
+.pp-tertiary { color: var(--panpan-text-tertiary); }
 
 /* 卡片：白底 1px 描边，无投影 */
 .card {
@@ -53,12 +78,14 @@ page {
 
 /* 胶囊按钮 */
 .btn {
-  height: 104rpx;
+  min-height: 96rpx;
+  height: 96rpx;
   border-radius: var(--panpan-radius-pill);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 30rpx;
+  font-size: 32rpx;
+  line-height: 52rpx;
   font-weight: 500;
   letter-spacing: 4rpx;
 }
@@ -125,8 +152,8 @@ button.btn::after { border: none; }
   border: 1rpx solid var(--panpan-border-soft);
   border-radius: var(--panpan-radius-control);
   padding: 28rpx 32rpx;
-  font-size: 28rpx;
-  line-height: 1.7;
+  font-size: 32rpx;
+  line-height: 52rpx;
   width: 100%;
   box-sizing: border-box;
   min-height: 160rpx;
@@ -140,6 +167,23 @@ button.btn::after { border: none; }
 .grow { flex-grow: 1; }
 .row { display: flex; align-items: center; }
 .col { display: flex; flex-direction: column; }
+
+/* Public component host helpers. These are intentionally additive so the
+ * existing page classes remain valid during incremental page migration. */
+.pp-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: var(--panpan-bg-page);
+  color: var(--panpan-text-primary);
+}
+.pp-surface {
+  background: var(--panpan-surface-paper);
+  border: 1rpx solid var(--panpan-border-soft);
+  border-radius: var(--panpan-radius-card);
+}
+.pp-action-primary { background: var(--panpan-action-primary); color: var(--panpan-bg-page); }
+.pp-action-secondary { background: var(--panpan-bg-page); color: var(--panpan-text-primary); border: 1rpx solid var(--panpan-border-soft); }
+.pp-safe-bottom { padding-bottom: calc(24rpx + env(safe-area-inset-bottom)); }
 
 /* 判决书分段揭晓：一段一段浮上来，让判决有揭晓感而不是一次性铺开 */
 .reveal {

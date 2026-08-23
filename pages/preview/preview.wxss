@@ -1,1 +1,9 @@
-/* pages/preview/preview.wxss */
+.preview-page { min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx; }
+.preview-header { justify-content: space-between; min-height: 44rpx; }
+.preview-editor { background: #FFFDF9; }
+.accent-card { border-left: 6rpx solid #B0793F; }
+.field-note { min-height: 90rpx; padding: 0; background: transparent; border: 0; }
+.field-brief { min-height: 80rpx; padding: 0; background: transparent; border: 0; }
+.privacy-section { padding-top: 48rpx; }
+.state-card { background: #FFFDF9; }
+.action-stack { gap: 24rpx; }

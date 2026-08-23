@@ -15,6 +15,18 @@
     <view class="faint mt8">做不到也没关系，本庭会换个更小的方子。</view>
   </view>
 
+  <view class="card mt24">
+    <view class="row" style="justify-content: space-between; align-items: center;">
+      <text class="pill pill-honey">AI 积分</text>
+      <text wx:if="{{creditLoading}}" class="faint">读取中…</text>
+      <text wx:elif="{{creditAccount && creditAccount.status === 'active'}}" style="font-size: 34rpx; font-weight: 600;">{{creditAccount.available}} 分</text>
+      <text wx:elif="{{creditAccount && creditAccount.initialized === false}}" class="faint">待配置</text>
+      <text wx:else class="faint">暂不可用</text>
+    </view>
+    <view class="sub mt16">AI 调用前会显示预计消耗；额度由后台按账号配置。</view>
+    <view wx:if="{{creditAccount && creditAccount.reserved}}" class="faint mt8">处理中预留 {{creditAccount.reserved}} 分</view>
+  </view>
+
   <view class="mt64">
     <view class="row" style="justify-content: space-between; align-items: baseline;">
       <text class="kicker">本庭记得</text>

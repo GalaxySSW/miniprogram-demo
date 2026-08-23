@@ -1,0 +1,54 @@
+<view class="col case-detail-page">
+  <view class="row case-detail-header">
+    <text class="faint qa-case-detail-back" bindtap="back">‹ 返回</text>
+    <text class="kicker">案件详情</text>
+    <text class="faint qa-case-detail-history" bindtap="goHistory">卷宗</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="card mt48 state-card qa-case-detail-loading">
+    <view class="faint">正在调出这桩案件…</view>
+  </view>
+
+  <block wx:else>
+
+  <view class="mt48">
+    <text class="faint">{{caseView.caseId}}</text>
+    <view class="h2 mt16">{{caseView.title}}</view>
+    <view class="row mt24 qa-case-detail-status" style="gap: 16rpx; align-items: center;">
+      <text class="pill pill-honey">{{caseView.statusText}}</text>
+      <text class="faint">{{caseView.source === 'cloud' ? '已同步' : '演示/回退状态'}}</text>
+    </view>
+  </view>
+
+  <view class="card mt48 qa-case-detail-progress" style="border-left: 6rpx solid #B0793F;">
+    <view class="row" style="justify-content: space-between; align-items: center;">
+      <text style="font-size: 30rpx; font-weight: 500;">现在到哪一步了</text>
+      <cat mood="calm" />
+    </view>
+    <view class="sub mt16">{{caseView.progress}}</view>
+    <view wx:if="{{caseView.hasB}}" class="faint mt16">双方已经进入同一桩案件，原话仍然彼此隔离。</view>
+  </view>
+
+  <view wx:if="{{caseView.verdict}}" class="card mt24">
+    <text class="pill pill-matcha">共同结果</text>
+    <view class="sub mt16">{{caseView.verdict.ruling || '判决书已经准备好'}}</view>
+  </view>
+
+  <view wx:if="{{error}}" class="card mt24 state-card qa-case-detail-error">
+    <view class="sub">{{error}}</view>
+    <view class="btn btn-ghost mt24 qa-case-detail-retry" bindtap="retry">重新调卷</view>
+  </view>
+
+  <view class="privacy-note mt24 qa-case-detail-privacy">
+    <text class="pill pill-matcha">隐私边界</text>
+    <text class="faint grow">双方原话彼此隔离，卷宗只保留共同结果和必要状态。</text>
+  </view>
+
+  <view class="grow"></view>
+  <view class="col action-stack">
+    <view class="btn btn-primary qa-case-detail-next qa-case-detail-primary" bindtap="openNext">{{caseView.nextText}}</view>
+    <view class="btn btn-ghost qa-case-detail-home" bindtap="goHome">回到首页</view>
+  </view>
+
+  </block>
+</view>

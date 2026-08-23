@@ -17,7 +17,8 @@ Page({
     code: '',
     hint: '本庭在等 TA。你可以先去做点别的，有进展我会记着。',
     pebbleWaiting: 0,
-    canAbsent: false
+    canAbsent: false,
+    syncState: 'waiting'
   },
 
   onLoad() {
@@ -28,7 +29,11 @@ Page({
     const created = c.createdAt || Date.now()
     this.setData({ canAbsent: Date.now() - created > 24 * 3600 * 1000 })
 
-    this.live = live.start(c.docId, (t) => this.apply(t))
+    if (!c.docId) {
+      this.setData({ syncState: 'offline', hint: '这是本地演示案件，暂时没有可轮询的云端进度。' })
+    } else {
+      this.live = live.start(c.docId, (t) => this.apply(t))
+    }
   },
 
   onUnload() {
@@ -62,6 +67,13 @@ Page({
     if (!this.data.code) return
     wx.setClipboardData({ data: this.data.code, success: () => wx.showToast({ title: '口令已复制', icon: 'none' }) })
   },
+  retry() {
+    const c = app.globalData.caseData
+    if (!c.docId) return this.setData({ syncState: 'offline' })
+    if (this.live) this.live.stop()
+    this.setData({ syncState: 'waiting', hint: '本庭重新去看一眼 TA 的进度。' })
+    this.live = live.start(c.docId, (t) => this.apply(t))
+  },
   goPebble() {
     wx.navigateTo({ url: '/pages/pebble/pebble' })
   },
@@ -80,5 +92,8 @@ Page({
   unlockAbsent() {
     this.setData({ canAbsent: true })
     wx.showToast({ title: '已放出缺席审判', icon: 'none' })
+  },
+  back() {
+    wx.navigateBack({ delta: 1, fail: () => wx.reLaunch({ url: '/pages/home/home' }) })
   }
 })

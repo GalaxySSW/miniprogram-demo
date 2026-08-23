@@ -8,7 +8,11 @@ Page({
     images: [],
     reading: false
   },
+  goBack() {
+    wx.navigateBack({ delta: 1, fail: () => wx.reLaunch({ url: '/pages/home/home' }) })
+  },
   chooseImage() {
+    if (this.data.reading) return
     const remain = 9 - this.data.images.length
     if (remain <= 0) return
     // 真机上优先从聊天记录选图，模拟器用相册兜底
@@ -39,6 +43,7 @@ Page({
     this.setData({ images })
   },
   next() {
+    if (this.data.reading) return
     const imgs = this.data.images
     if (!imgs.length) return wx.navigateTo({ url: '/pages/statement/statement' })
 
@@ -73,6 +78,7 @@ Page({
       })
   },
   skip() {
+    if (this.data.reading) return
     wx.navigateTo({ url: '/pages/statement/statement' })
   }
 })

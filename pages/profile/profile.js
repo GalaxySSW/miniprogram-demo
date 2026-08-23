@@ -4,15 +4,20 @@
 // 不该是使用产品的前置门槛。绑定会把承诺放在价值之前，也会带来分手时的解绑难题。
 // 退出机制就是下面那个「让本庭忘掉」。
 const casedb = require('../../utils/casedb.js')
+const credits = require('../../utils/credits.js')
 
 Page({
   data: {
     together: false,
     pactDone: 0,
     pactTried: 0,
-    patterns: []
+    patterns: [],
+    creditAccount: null,
+    creditLoading: true
   },
   onShow() {
+    this.setData({ creditLoading: true })
+    credits.refresh().then(account => this.setData({ creditAccount: account, creditLoading: false }))
     casedb.myCases().then(list => {
       if (!list) return
       // 「全产品只有一个数字」是 PRD 原则，这里不再展示立案次数这类虚荣计数，

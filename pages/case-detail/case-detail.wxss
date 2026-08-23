@@ -1,0 +1,5 @@
+.case-detail-page { min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx; }
+.case-detail-header { justify-content: space-between; min-height: 44rpx; }
+.state-card { background: #FFFDF9; }
+.privacy-note { display: flex; align-items: center; gap: 16rpx; }
+.action-stack { gap: 20rpx; }

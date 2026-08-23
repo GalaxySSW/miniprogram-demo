@@ -1,4 +1,9 @@
-<view class="col" style="box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+<view class="col verdict-page">
+
+  <view class="row verdict-header">
+    <text class="faint qa-verdict-back" bindtap="back">‹ 返回</text>
+    <text class="kicker">判决书</text>
+  </view>
 
   <view class="center mt24">
     <cat mood="happy" style="display: inline-block;" />
@@ -6,11 +11,19 @@
     <view class="faint mt8">案号 {{caseId}}</view>
   </view>
 
-  <view wx:if="{{isMock}}" class="faint center mt16" style="color: #C9573F;">
+  <view wx:if="{{isMock}}" class="faint center mt16 qa-verdict-mock" style="color: #C9573F;">
     ⚠︎ 本次未接通判官，以下为样例判决
   </view>
 
-  <view wx:if="{{absent}}" class="reveal card mt24" style="border-left: 6rpx solid #B0793F;">
+  <view wx:if="{{depthLoading}}" class="card mt24 state-card qa-verdict-loading">
+    <view class="faint">本庭正在补充更深一层的解读…</view>
+  </view>
+  <view wx:if="{{depthError}}" class="card mt24 state-card qa-verdict-error">
+    <view class="sub">{{depthError}}</view>
+    <view class="btn btn-ghost mt24 qa-verdict-retry" bindtap="retryDepth">重试解读</view>
+  </view>
+
+  <view wx:if="{{absent}}" class="reveal card mt24 qa-verdict-absent" style="border-left: 6rpx solid #B0793F;">
     <text class="pill pill-honey">缺席审判</text>
     <view class="sub mt16" style="color: #1A1918;">TA 还没有到庭，这份判决只听了一面之词。</view>
     <view class="faint mt8">等 TA 来了，本庭会重新审一次。在那之前，下面这些只是本庭的推测。</view>
@@ -28,7 +41,7 @@
     <view class="faint mt8">本庭记的是你们之间反复出现的这件事，不是谁的性格。</view>
   </view>
 
-  <view class="reveal mt48" style="animation-delay: 0.3s">
+  <view class="reveal mt48 qa-verdict-section" style="animation-delay: 0.3s">
     <text class="kicker">案情还原</text>
     <view class="card mt16"><view class="sub" style="color: #1A1918;">{{v.caseBrief}}</view></view>
   </view>
@@ -110,14 +123,14 @@
         <view class="faint">先开口的那位 · 可以这样说</view>
         <view class="sub mt8" style="color: #1A1918;">{{v.herStep}}</view>
       </view>
-      <view class="pill pill-honey" bindtap="copyStep" data-text="{{v.herStep}}">复制</view>
+      <view class="pill pill-honey qa-verdict-copy" bindtap="copyStep" data-text="{{v.herStep}}">复制</view>
     </view>
     <view wx:if="{{v.hisStep}}" class="card mt24 row" style="gap: 24rpx;">
       <view class="col grow">
         <view class="faint">后应诉的那位 · 可以这样说</view>
         <view class="sub mt8" style="color: #1A1918;">{{v.hisStep}}</view>
       </view>
-      <view class="pill pill-honey" bindtap="copyStep" data-text="{{v.hisStep}}">复制</view>
+      <view class="pill pill-honey qa-verdict-copy" bindtap="copyStep" data-text="{{v.hisStep}}">复制</view>
     </view>
   </view>
 
@@ -139,13 +152,14 @@
     </view>
   </view>
 
-  <view class="reveal mt64 col" style="gap: 24rpx; animation-delay: 2.95s;">
-    <view class="btn btn-primary" bindtap="goPact">落成本庭约定</view>
-    <view class="btn btn-ghost" bindtap="saveImage">存成长图 · 分享此案</view>
+  <view class="reveal mt64 col action-stack" style="animation-delay: 2.95s;">
+    <view class="btn btn-primary qa-verdict-pact" bindtap="goPact">落成本庭约定</view>
+    <view class="btn btn-ghost qa-verdict-save" bindtap="saveImage">存成长图 · 分享此案</view>
     <view class="center mt16">
-      <text class="faint" bindtap="supplement">判得不对？我还有话要补充 →</text>
+      <text class="faint qa-verdict-supplement" bindtap="supplement">判得不对？我还有话要补充 →</text>
     </view>
-    <view class="faint center">分享卡片只含判决金句，不含任何隐私</view>
+    <view class="faint center qa-verdict-privacy">分享卡片只含判决金句，不含任何隐私</view>
+    <view class="center mt16"><text class="faint qa-verdict-history" bindtap="goHistory">回卷宗查看</text></view>
   </view>
 
 </view>

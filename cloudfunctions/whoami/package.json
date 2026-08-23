@@ -1,0 +1,9 @@
+{
+  "name": "whoami",
+  "version": "1.0.0",
+  "description": "临时获取当前云开发调用者 OPENID",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

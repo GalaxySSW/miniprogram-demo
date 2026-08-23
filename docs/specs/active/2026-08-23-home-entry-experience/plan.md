@@ -4,9 +4,10 @@
 
 ### 允许修改的文件
 
-- `app.json`：首轮不新增业务页面；仅在后续确认 P2 案件详情页时再修改。
+- `app.json`：新增 P0 页面 `pages/case-detail/case-detail`。
 - `pages/home/home.js`、`pages/home/home.wxml`、`pages/home/home.wxss`：首页三态和任务中心。
 - `pages/history/history.js`、`pages/history/history.wxml`、`pages/history/history.wxss`：卷宗列表和状态展示。
+- `pages/case-detail/case-detail.js`、`pages/case-detail/case-detail.wxml`、`pages/case-detail/case-detail.wxss`、`pages/case-detail/case-detail.json`：单案件状态中枢、下一步和恢复态。
 - `utils/case-router.js`：案件状态到用户动作、页面和文案的映射。
 - `utils/navigation.js`：Home、流程内返回和页面栈兜底。
 - `utils/casedb.js`：统一云函数结果协议，区分云端成功、业务失败、网络失败、Mock 和本地草稿。
@@ -32,9 +33,13 @@
 - 卷宗：`/pages/history/history`
 - 我的：`/pages/profile/profile`
 
-首轮不新增业务路由。19 个现有页面覆盖产品业务流程；案件详情表达由 `history` 状态摘要卡和现有 `waiting / verdict / pact / review` 目标页承载。
+当前 `app.json` 已注册 20 个页面，包含本轮新增的 P0 `case-detail`。
 
-独立 `case-detail` 只作为 P2 备选，不进入当前实现边界。
+新增 P0 路由：
+
+- 案件详情：`/pages/case-detail/case-detail?docId=...&source=history`
+
+`history` 负责全部案件列表，`case-detail` 负责单案状态和下一步，`waiting / verdict / pact / review` 继续承载具体任务。
 
 ### 工具模块
 
@@ -199,10 +204,11 @@ onShow
 - 传票/分享上下文：如果能解析有效 `docId` 或口令，直接进入 `respond` 或现有应诉入口。
 - 入口上下文无效：回到 Home，并显示“传票口令无效，请重新输入”的可恢复提示。
 
-### 3. 历史案件状态摘要与目标页路由
+### 3. 历史案件与 Case Detail 路由
 
 - `history` 的卡片和入口只使用案件安全投影，不展示双方私密陈述。
-- 点击案件时先由 `getCaseNextRoute()` 判断目标页，再调用 `casedb.getCase(docId)`。
+- 点击案件时必须先携带 `docId` 进入 `case-detail`；详情页再由 `getCase(docId)` 读取安全投影。
+- `case-detail` 由 `getCaseNextRoute()` 判断目标页，并展示案件状态、双方进度和唯一主操作。
 - 进入判决页、约定页或复盘页前，显式写入当前案件 `docId`；不能只依赖上一次的 `app.globalData.caseData`。
 - 目标页加载后仍需校验 `docId` 与当前案件，避免连续打开两桩案件时串用数据。
 
@@ -259,7 +265,7 @@ size = avatar / inline / hero / poster
 - 结案节点优先使用 `reLaunch('/pages/home/home')` 清理失效页面栈。
 - 不把 `redirectTo` 当成全局返回机制；它只用于明确的单向流程替换。
 
-### 7. 19 页页面契约
+### 7. 20 页页面契约
 
 设计和研发交接表必须为每个现有页面记录以下字段：
 
@@ -268,7 +274,7 @@ route / entryCondition / actor / privacyScope / asyncState
 failureRetry / backCancel / dataSaved / qaSelector / priority
 ```
 
-页面数量以 `app.json` 的 19 个注册页面为准；系统态通过组件、弹层或全屏状态覆盖，不用为了每个异常状态继续增加业务页面。
+页面数量以目标版 `app.json` 的 20 个注册页面为准；系统态通过组件、弹层或全屏状态覆盖，不用为了每个异常状态继续增加业务页面。
 
 ### 8. Figma 交付结构
 
@@ -343,8 +349,8 @@ find . -name '*.json' -not -path './node_modules/*' -print0 | xargs -0 -n1 jq em
 ### 微信开发者工具
 
 - 编译通过。
-- 19 个既有业务页面均能被路由打开，并能映射到页面契约。
-- 19 个既有页面均能映射到页面契约表。
+- 20 个业务页面均能被路由打开，并能映射到页面契约。
+- 20 个页面均能映射到页面契约表。
 - Home 三态能够通过本地 Mock 数据切换。
 - 页面无 WXML 绑定错误、控制台异常和明显溢出。
 
@@ -367,9 +373,9 @@ find . -name '*.json' -not -path './node_modules/*' -print0 | xargs -0 -n1 jq em
 
 ## 不采用的方案
 
-### 不新增独立 Landing Page 或 P0 独立案件详情页
+### 不新增独立 Landing Page
 
-判判是高情绪、强任务型产品，用户进入时通常已经有具体案件或传票。独立 Landing 会增加一次点击，且分享/传票入口不需要品牌浏览流程。当前 19 个业务页面已经覆盖主链路，案件详情先由卷宗状态摘要卡和目标页承载，避免在系统态尚未补齐时继续增加路由。
+判判是高情绪、强任务型产品，用户进入时通常已经有具体案件或传票。独立 Landing 会增加一次点击，且分享/传票入口不需要品牌浏览流程。关系首页承担普通打开的解释和入口，案件详情承担已进入案件后的状态中枢。
 
 ### 不在首轮新增情侣绑定
 

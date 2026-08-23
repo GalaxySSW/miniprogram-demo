@@ -1,10 +1,15 @@
-<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+<view class="col accept-page">
+
+  <view class="row accept-header">
+    <text class="faint qa-accept-back" bindtap="back">‹ 返回</text>
+    <text class="kicker">受理确认</text>
+  </view>
 
   <view class="mt32 center">
     <cat mood="calm" style="display: inline-block;" />
   </view>
 
-  <view class="card mt32" style="position: relative; padding: 44rpx 40rpx;">
+  <view class="card mt32 accept-case-card">
     <text class="kicker">受理通知</text>
     <view class="h2 mt16">本庭已受理</view>
     <view class="faint mt16">案号 {{caseId}}</view>
@@ -14,16 +19,21 @@
   </view>
 
   <!-- 本庭听到的：发传票前的最后一次校对 -->
-  <view class="mt48">
+  <view class="mt48 qa-accept-heard">
     <text class="kicker">本庭听到的是这样</text>
 
-    <view wx:if="{{loading}}" class="card mt16">
+    <view wx:if="{{loading}}" class="card mt16 state-card qa-accept-loading">
       <view class="faint">判官正在把你说的话理一遍…</view>
     </view>
 
+    <view wx:elif="{{error}}" class="card mt16 state-card qa-accept-error">
+      <view class="sub">{{error}}</view>
+      <view class="btn btn-ghost mt24 qa-accept-retry" bindtap="retry">重新整理</view>
+    </view>
+
     <block wx:else>
-      <view class="card mt16 reveal" style="border-left: 6rpx solid #B0793F;">
-        <view class="sub" style="color: #1A1918;">{{heard || '你说的本庭都收下了。'}}</view>
+      <view class="card mt16 reveal accent-card">
+        <view class="sub">{{heard || '你说的本庭都收下了。'}}</view>
 
         <view wx:if="{{care.length}}" class="mt24">
           <view class="faint">你真正在意的是</view>
@@ -36,17 +46,22 @@
       </view>
 
       <view class="center mt16">
-        <text class="faint" bindtap="amend">听岔了？我再补充一点 →</text>
+        <text class="faint qa-accept-amend qa-accept-edit" bindtap="amend">听岔了？我再补充一点 →</text>
       </view>
     </block>
   </view>
 
+  <view class="privacy-note mt24 qa-accept-privacy">
+    <text class="pill pill-matcha">仅你可见</text>
+    <text class="faint grow">这段复述只给你校对，TA 不会看到你的原话。</text>
+  </view>
+
   <view class="grow" style="min-height: 48rpx;"></view>
 
-  <view class="col" style="gap: 24rpx;">
-    <view class="btn btn-primary" bindtap="sendSummons">没错，去发传票</view>
-    <view class="btn btn-ghost" bindtap="quickReply">先帮我回 TA 一句</view>
-    <view class="center"><text class="faint" bindtap="later">等等再说，我先缓缓</text></view>
+  <view class="col action-stack">
+    <view class="btn btn-primary qa-accept-submit qa-accept-confirm" bindtap="sendSummons">没错，去发传票</view>
+    <view class="btn btn-ghost qa-accept-quick-reply qa-accept-reply" bindtap="quickReply">先帮我回 TA 一句</view>
+    <view class="center"><text class="faint qa-accept-later" bindtap="later">等等再说，我先缓缓</text></view>
   </view>
 
 </view>

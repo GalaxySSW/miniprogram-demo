@@ -1,0 +1,7 @@
+.pp-privacy { display: flex; align-items: flex-start; gap: 16rpx; padding: 24rpx; box-sizing: border-box; background: var(--panpan-surface-paper, #F4E9DE); border-radius: 8rpx; color: var(--panpan-text-secondary, #806F60); }
+.pp-privacy--quiet { padding: 16rpx 0; background: transparent; border-top: 1rpx solid var(--panpan-border-soft, #E8D9C8); border-bottom: 1rpx solid var(--panpan-border-soft, #E8D9C8); }
+.pp-privacy__scope { flex-shrink: 0; display: flex; align-items: center; gap: 12rpx; min-height: 56rpx; padding: 6rpx 16rpx; box-sizing: border-box; background: var(--panpan-bg-page, #FFF9F1); border: 1rpx solid var(--panpan-border-soft, #E8D9C8); border-radius: 16rpx; font-size: 22rpx; line-height: 32rpx; color: var(--panpan-text-tertiary, #A79686); }
+.pp-privacy__dot { width: 20rpx; height: 20rpx; border-radius: 50%; }
+.pp-privacy__copy { min-width: 0; display: flex; flex-direction: column; gap: 4rpx; padding-top: 4rpx; }
+.pp-privacy__text { font-size: 26rpx; line-height: 40rpx; }
+.pp-privacy__detail { font-size: 22rpx; line-height: 32rpx; color: var(--panpan-text-tertiary, #A79686); }

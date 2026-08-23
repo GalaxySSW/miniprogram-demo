@@ -1,0 +1,6 @@
+.waiting-page { min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx; }
+.waiting-header { justify-content: space-between; min-height: 44rpx; }
+.timeline-list { gap: 36rpx; }
+.accent-card { border-left: 6rpx solid #B0793F; }
+.state-card { background: #FFFDF9; }
+.action-stack { gap: 20rpx; }

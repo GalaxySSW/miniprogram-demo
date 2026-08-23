@@ -6,13 +6,24 @@ Page({
   data: {
     quotes: [],
     pending: null,   // 缓着没发传票的案子，随时可以捡回来
-    news: []         // 站内提醒：TA 应诉了 / 判决出来了 / 递来石子 / 该复盘了
+    news: [],         // 站内提醒：TA 应诉了 / 判决出来了 / 递来石子 / 该复盘了
+    recentCases: [],
+    starting: false
   },
   onLoad() {
     this.setData({ quotes: app.globalData.quotes })
   },
   onShow() {
     notify.fetch().then(items => this.setData({ news: items || [] }))
+    casedb.myCases().then(list => {
+      if (!list) return
+      this.setData({ recentCases: list.slice(0, 3).map(c => ({
+        docId: c._id,
+        id: c.caseId,
+        title: c.topic ? `${c.topic}案` : (c.status === 'created' ? '待应诉' : '一桩案件'),
+        statusText: c.review ? '已复盘' : (c.verdict ? '判决已出' : (c.status === 'closed' ? '待复盘' : '审理中'))
+      })) })
+    })
     const c = app.globalData.caseData
     if (c.docId && (c.status === 'pending' || c.status === 'accepted')) {
       this.setData({ pending: { id: c.id } })
@@ -37,20 +48,20 @@ Page({
     const g = app.globalData.caseData
     g.docId = item.docId
     g.id = item.caseId
-    const route = {
-      responded: '/pages/trial/trial',
-      verdict: '/pages/verdict/verdict',
-      pebble: '/pages/pebble/pebble',
-      review: '/pages/review/review'
-    }[item.kind] || '/pages/history/history'
-    wx.navigateTo({ url: route })
+    wx.navigateTo({ url: `/pages/case-detail/case-detail?docId=${encodeURIComponent(item.docId)}&source=inbox` })
   },
 
   resume() {
-    wx.navigateTo({ url: '/pages/preview/preview' })
+    const docId = app.globalData.caseData.docId
+    wx.navigateTo({ url: docId ? `/pages/case-detail/case-detail?docId=${encodeURIComponent(docId)}&source=home` : '/pages/preview/preview' })
   },
   startCase() {
-    wx.navigateTo({ url: '/pages/evidence/evidence' })
+    if (this.data.starting) return
+    this.setData({ starting: true })
+    wx.navigateTo({
+      url: '/pages/evidence/evidence',
+      complete: () => this.setData({ starting: false })
+    })
   },
   // 未认证的小程序转发受限，所以留一条口令入口
   gotSummons() {
@@ -93,5 +104,10 @@ Page({
   },
   goProfile() {
     wx.navigateTo({ url: '/pages/profile/profile' })
+  },
+  openRecent(e) {
+    const docId = e.currentTarget.dataset.docid
+    if (!docId) return
+    wx.navigateTo({ url: `/pages/case-detail/case-detail?docId=${encodeURIComponent(docId)}&source=home` })
   }
 })

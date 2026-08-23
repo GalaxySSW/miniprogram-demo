@@ -1,0 +1,4 @@
+<view class="pp-status pp-status--{{statusClass}} {{compact ? 'pp-status--compact' : ''}}" data-qa="{{qaId}}" data-status="{{status}}">
+  <view class="pp-status__dot"></view>
+  <text>{{displayText}}</text>
+</view>

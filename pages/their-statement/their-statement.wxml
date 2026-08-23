@@ -1,31 +1,48 @@
-<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 220rpx 50rpx;">
+<view class="col their-statement-page">
 
-  <text class="kicker">你的陈述</text>
+  <view class="row statement-header">
+    <text class="faint qa-their-statement-back" bindtap="back">‹ 返回</text>
+    <text class="kicker">你的陈述</text>
+  </view>
+
   <view class="h2 mt16">这件事，你怎么看？</view>
   <view class="sub mt8">随便说，说多说少都行。TA 不会看到原话。</view>
 
-  <view class="card mt48">
+  <view class="card mt48 statement-editor qa-their-statement-input qa-their-statement">
     <textarea placeholder="示例：那天真的是临时加班。回到家看到她脸色不对，我就不知道怎么开口了……"
       placeholder-class="field-ph" value="{{text}}" bindinput="onInput" auto-height maxlength="800"
-      style="width: 100%; font-size: 28rpx; line-height: 1.7; min-height: 200rpx;" />
+      class="field statement-field" />
+  </view>
+
+  <view class="privacy-note mt24 qa-their-statement-privacy">
+    <text class="pill pill-matcha">对 TA 保密</text>
+    <text class="faint grow">TA 不会看到这段原话，判官只会用它理解这件事。</text>
+  </view>
+
+  <view wx:if="{{submitError}}" class="card mt24 state-card qa-their-statement-submit-error">
+    <view class="sub">{{submitError}}</view>
+    <view class="btn btn-ghost mt24 qa-their-retry" bindtap="retrySubmit">重试保存</view>
   </view>
 
   <view class="mt48">
     <view style="font-size: 28rpx; font-weight: 500;">这几天你更多是什么感觉？</view>
-    <view class="mt24">
+    <view class="mt24 qa-their-mood">
       <text wx:for="{{moods}}" wx:key="index" class="chip {{moodIdx === index ? 'chip-on' : ''}}"
         data-idx="{{index}}" bindtap="pickMood">{{item}}</text>
     </view>
   </view>
 
-  <view class="btn btn-primary mt48" bindtap="submit">呈上本庭 · 请求开庭</view>
+  <view class="btn {{submitting ? 'btn-disabled' : 'btn-primary'}} mt48 qa-their-statement-submit qa-their-submit" bindtap="submit">
+    {{submitting ? '正在呈上…' : '呈上本庭 · 请求开庭'}}
+  </view>
 </view>
 
-<view style="position: fixed; left: 0; right: 0; bottom: 0; padding: 20rpx 50rpx 40rpx; background: #FAF7F2; border-top: 1rpx solid #E1DACE;">
-  <view class="faint center" style="margin-bottom: 12rpx;">
+<view class="voice-bar">
+  <view wx:if="{{voiceError}}" class="faint center qa-their-statement-voice-error qa-their-retry" bindtap="retryVoice">{{voiceError}} · 点此重试</view>
+  <view wx:else class="faint center voice-hint">
     {{transcribing ? '判官正在听写…' : (recording ? '松开结束 · 说完这段' : '不想打字？按住说就行')}}
   </view>
-  <view class="btn {{recording ? 'btn-disabled' : 'btn-ghost'}}"
+  <view class="btn {{recording ? 'btn-disabled' : 'btn-ghost'}} qa-their-statement-voice qa-their-voice"
     bindtouchstart="recStart" bindtouchend="recEnd" bindtouchcancel="recEnd">
     {{recording ? '正在录音…' : '🎙 按住说话'}}
   </view>

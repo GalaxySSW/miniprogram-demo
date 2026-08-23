@@ -1,0 +1,9 @@
+<view class="pp-progress pp-progress--{{orientation}} {{compact ? 'pp-progress--compact' : ''}} pp-progress--actor-{{actor}}" data-qa="{{qaId}}" data-actor="{{actor}}">
+  <block wx:for="{{renderedSteps}}" wx:key="id">
+    <view class="pp-progress__item pp-progress__item--{{item.state}}" data-index="{{index}}" data-qa="{{qaId}}-step-{{item.id}}" bindtap="onStepTap">
+      <view class="pp-progress__node"><text wx:if="{{item.state === 'done'}}">✓</text><text wx:else>{{index + 1}}</text></view>
+      <text class="pp-progress__label">{{item.label}}</text>
+    </view>
+    <view wx:if="{{index < renderedSteps.length - 1}}" class="pp-progress__line pp-progress__line--{{item.state}}"></view>
+  </block>
+</view>

@@ -524,7 +524,7 @@ async function runEnforced(event, context, requestId, quote) {
   }
 }
 
-// 计费接缝：默认 shadow，不改变已有本地 Mock/开发者工具流程；enforced 才走真实账本。
+// 计费接缝：默认 enforced；本地演示必须显式设置 BILLING_MODE=mock，避免绕过真实账本。
 exports.main = async (event = {}, context = {}) => {
   const action = event.action
   const requestId = event.requestId || `req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`

@@ -25,6 +25,7 @@ Page({
     recording: false,
     transcribing: false,
     done: false,
+    error: '',
     mode: 'interview',
     scrollTo: ''
   },
@@ -49,7 +50,7 @@ Page({
   // 向判官要下一句：它会先回应 TA 刚才那句，再问下去
   nextTurn(first) {
     const c = app.globalData.caseData
-    this.setData({ thinking: true })
+    this.setData({ thinking: true, error: '' })
 
     const ask = this.mode === 'supplement'
       ? ai.supplement(c.myStatement, c.theirStatement, this.side, app.globalData.verdict, this.history)
@@ -96,6 +97,7 @@ Page({
         this.push('judge', text)
         this.setData({ asked: this.data.asked + 1 })
       })
+      .catch(() => this.setData({ thinking: false, loading: false, error: '判官暂时没能接上这轮问话。你的回答已留在本页，可以重试。' }))
   },
 
   finish(closing, reply) {
@@ -149,5 +151,12 @@ Page({
       c[target] = { ...(c[target] || {}), followups: prev.concat(answered) }
     }
     wx.redirectTo({ url: '/pages/trial/trial' })
+  },
+  retryTurn() {
+    if (this.data.thinking || this.data.done) return
+    this.nextTurn(!this.data.messages.length)
+  },
+  back() {
+    wx.navigateBack({ delta: 1, fail: () => wx.reLaunch({ url: '/pages/home/home' }) })
   }
 })

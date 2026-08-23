@@ -1,0 +1,8 @@
+.pp-status { display: inline-flex; align-items: center; gap: 12rpx; min-height: 48rpx; padding: 4rpx 20rpx; box-sizing: border-box; border-radius: 999rpx; background: var(--panpan-border-soft, #E8D9C8); color: var(--panpan-text-tertiary, #A79686); font-size: 22rpx; line-height: 32rpx; font-weight: 500; }
+.pp-status__dot { width: 12rpx; height: 12rpx; border-radius: 50%; background: currentColor; }
+.pp-status--compact { min-height: 40rpx; padding: 4rpx 16rpx; }
+.pp-status--invited, .pp-status--waiting, .pp-status--in-progress { background: rgba(221, 187, 122, .22); color: #8A6B3F; }
+.pp-status--responded, .pp-status--accepted { background: rgba(168, 184, 154, .22); color: #627255; }
+.pp-status--verdict-ready, .pp-status--expired, .pp-status--cancelled, .pp-status--failed { background: rgba(217, 120, 91, .16); color: var(--panpan-status-danger, #D9785B); }
+.pp-status--completed { background: rgba(168, 184, 154, .22); color: #627255; }
+.pp-status--closed { background: transparent; color: var(--panpan-text-tertiary, #A79686); }

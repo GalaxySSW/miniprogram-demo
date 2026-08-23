@@ -17,6 +17,7 @@
     "pages/pact/pact",
     "pages/pebble/pebble",
     "pages/history/history",
+    "pages/case-detail/case-detail",
     "pages/review/review",
     "pages/profile/profile"
   ],

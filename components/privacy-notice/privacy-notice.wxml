@@ -1,0 +1,10 @@
+<view class="pp-privacy {{quiet ? 'pp-privacy--quiet' : ''}}" data-qa="{{qaId}}" data-scope="{{scope}}">
+  <view class="pp-privacy__scope" data-qa="{{qaId}}-scope">
+    <view class="pp-privacy__dot" style="background: {{scopeColor}};"></view>
+    <text>{{scopeLabel}}</text>
+  </view>
+  <view class="pp-privacy__copy">
+    <text class="pp-privacy__text">{{text}}</text>
+    <text wx:if="{{detail}}" class="pp-privacy__detail">{{detail}}</text>
+  </view>
+</view>

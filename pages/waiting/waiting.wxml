@@ -1,14 +1,24 @@
-<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
+<view class="col waiting-page">
 
-  <text class="kicker">审理中</text>
-  <view class="h2 mt16" bindlongpress="unlockAbsent">等 TA 来说说</view>
+  <view class="row waiting-header">
+    <text class="faint qa-waiting-back" bindtap="back">‹ 返回</text>
+    <text class="kicker">审理中</text>
+  </view>
+
+  <view class="h2 mt16 qa-waiting-title" bindlongpress="unlockAbsent">等 TA 来说说</view>
   <view class="sub mt8">{{hint}}</view>
+
+  <view wx:if="{{syncState === 'offline'}}" class="card mt24 state-card qa-waiting-offline">
+    <view class="sub">本庭会保留这份本地进度。</view>
+    <view class="faint mt8">连接云端后才能自动更新 TA 是否应诉。</view>
+    <view class="btn btn-ghost mt24 qa-waiting-retry" bindtap="retry">重新查看</view>
+  </view>
 
   <view class="center mt64">
     <cat mood="sleep" breathe="{{true}}" />
   </view>
 
-  <view class="mt64 col" style="gap: 36rpx;">
+  <view class="mt64 col timeline-list qa-waiting-stepper">
     <view wx:for="{{steps}}" wx:key="key" class="row" style="gap: 24rpx;">
       <view style="width: 36rpx; height: 36rpx; border-radius: 50%; border: 3rpx solid {{item.done ? '#7E9B72' : '#E1DACE'}}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
         <text wx:if="{{item.done}}" style="color: #7E9B72; font-size: 22rpx;">✓</text>
@@ -17,26 +27,26 @@
     </view>
   </view>
 
-  <view wx:if="{{pebbleWaiting}}" class="card mt48" style="border-left: 6rpx solid #B0793F;" bindtap="goPebble">
+  <view wx:if="{{pebbleWaiting}}" class="card mt48 accent-card qa-waiting-pebble" bindtap="goPebble">
     <view class="sub" style="color: #1A1918;">TA 递来了 {{pebbleWaiting}} 颗石子。</view>
     <view class="faint mt8">还没准备好说话，但想让你知道 TA 还在 →</view>
   </view>
 
   <view class="grow" style="min-height: 48rpx;"></view>
 
-  <view wx:if="{{code}}" class="card">
+  <view wx:if="{{code}}" class="card qa-waiting-code">
     <view class="row" style="justify-content: space-between; align-items: center;">
       <view class="col">
         <view class="faint">TA 还没进来？把口令再发一次</view>
         <view style="font-size: 40rpx; font-weight: 500; letter-spacing: 8rpx;" class="mt8">{{code}}</view>
       </view>
-      <view class="pill pill-honey" bindtap="copyCode">复制</view>
+      <view class="pill pill-honey qa-waiting-copy" bindtap="copyCode">复制</view>
     </view>
   </view>
 
-  <view class="col mt24" style="gap: 20rpx;">
-    <view wx:if="{{canAbsent}}" class="btn btn-ghost" bindtap="absent">TA 一直没来 · 申请缺席审判</view>
-    <view class="center"><text class="faint" bindtap="goHome">先回首页，有进展本庭会记着</text></view>
+  <view class="col action-stack mt24">
+    <view wx:if="{{canAbsent}}" class="btn btn-ghost qa-waiting-absent" bindtap="absent">TA 一直没来 · 申请缺席审判</view>
+    <view class="center"><text class="faint qa-waiting-home" bindtap="goHome">先回首页，有进展本庭会记着</text></view>
   </view>
 
 </view>

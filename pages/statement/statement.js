@@ -27,6 +27,10 @@ Page({
     canSubmit: false
   },
 
+  goBack() {
+    wx.navigateBack({ delta: 1, fail: () => wx.reLaunch({ url: '/pages/home/home' }) })
+  },
+
   onLoad() {
     const c = app.globalData.caseData
     this.setData({ hasEvidence: !!c.screenshotText })
@@ -77,6 +81,7 @@ Page({
 
   // —— 按住说话 ——
   recStart() {
+    if (this.data.recording || this.data.transcribing || this.data.submitting) return
     this.setData({ recording: true })
     voice.start()
   },
@@ -100,7 +105,7 @@ Page({
   },
 
   submit() {
-    if (this.data.submitting) return
+    if (this.data.submitting || this.data.transcribing || this.data.recording) return
     if (!this.data.canSubmit) {
       return wx.showToast({ title: '至少说一句吧', icon: 'none' })
     }

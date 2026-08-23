@@ -1,0 +1,7 @@
+<view class="pp-invite pp-invite--{{state}}" data-qa="{{qaId}}" data-state="{{state}}">
+  <view class="pp-invite__status"><view class="pp-invite__dot"></view><text>{{state}}</text></view>
+  <text class="pp-invite__title">{{displayTitle}}</text>
+  <text class="pp-invite__description">{{displayDescription}}</text>
+  <view wx:if="{{inviteCode}}" class="pp-invite__code" data-qa="{{qaId}}-code"><text>{{inviteCode}}</text><button wx:if="{{showCopy}}" class="pp-invite__copy" data-qa="{{qaId}}-copy" bindtap="onCopy">复制</button></view>
+  <button wx:if="{{primaryText && state !== 'sent' && state !== 'accepted'}}" class="pp-invite__primary" data-qa="{{qaId}}-primary" bindtap="onPrimary">{{state === 'sending' ? '生成中…' : primaryText}}</button>
+</view>

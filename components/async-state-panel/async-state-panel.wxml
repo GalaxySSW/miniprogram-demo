@@ -1,0 +1,6 @@
+<view class="pp-async pp-async--{{state}}" data-qa="{{qaId}}" data-state="{{state}}">
+  <view class="pp-async__mark" aria-hidden="true"><view class="pp-async__mark-dot"></view></view>
+  <text class="pp-async__title">{{stateTitle}}</text>
+  <text wx:if="{{stateDescription}}" class="pp-async__description">{{stateDescription}}</text>
+  <button wx:if="{{showRetry || state === 'error' || state === 'timeout' || state === 'offline'}}" class="pp-async__retry" data-qa="{{qaId}}-retry" bindtap="onRetry">{{retryText}}</button>
+</view>

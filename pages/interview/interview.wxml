@@ -1,18 +1,23 @@
-<view style="height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; background: #FAF7F2;">
+<view class="interview-page">
 
   <!-- 常驻保密提示：背对背的信任全靠这一条 -->
-  <view class="row" style="gap: 12rpx; padding: 20rpx 50rpx; border-bottom: 1rpx solid #E1DACE;">
+  <view class="row interview-header">
+    <text class="faint qa-interview-back" bindtap="back">‹ 返回</text>
     <text class="pill pill-honey">对 TA 保密</text>
     <text class="faint grow">这段对话 TA 永远看不到</text>
     <text wx:if="{{!loading && !done}}" class="faint">{{asked}}/3</text>
   </view>
 
-  <scroll-view scroll-y scroll-into-view="{{scrollTo}}" scroll-with-animation
-    style="flex: 1; padding: 32rpx 50rpx;">
+  <scroll-view scroll-y scroll-into-view="{{scrollTo}}" scroll-with-animation class="interview-scroll">
 
-    <view wx:if="{{loading}}" class="col" style="align-items: center; padding-top: 120rpx;">
+    <view wx:if="{{loading}}" class="col qa-interview-loading" style="align-items: center; padding-top: 120rpx;">
       <cat mood="calm" breathe="{{true}}" />
       <view class="faint mt32">{{mode === 'supplement' ? '判官正在重读这桩案子…' : '判官正在读你的陈述，想一句该问的话…'}}</view>
+    </view>
+
+    <view wx:elif="{{error}}" class="card state-card qa-interview-error">
+      <view class="sub">{{error}}</view>
+      <view class="btn btn-ghost mt24 qa-interview-retry" bindtap="retryTurn">重试这一轮</view>
     </view>
 
     <block wx:else>
@@ -20,7 +25,7 @@
         {{mode === 'supplement' ? '说说哪里没说到，本庭重新审一次' : '本庭想再跟你聊几句，问完就开庭'}}
       </view>
 
-      <view wx:for="{{messages}}" wx:key="id" id="{{item.id}}"
+      <view wx:for="{{messages}}" wx:key="id" id="{{item.id}}" class="qa-interview-message"
         style="display: flex; margin-top: 32rpx; justify-content: {{item.who === 'judge' ? 'flex-start' : 'flex-end'}};">
 
         <!-- 判官 -->
@@ -66,8 +71,8 @@
         </view>
       </view>
 
-      <view wx:if="{{done}}" style="display: flex; justify-content: center; margin-top: 56rpx;">
-        <view class="btn btn-primary" style="padding: 0 64rpx;" bindtap="toTrial">{{mode === 'supplement' ? '请求重审' : '请求开庭'}}</view>
+      <view wx:if="{{done}}" class="interview-done">
+        <view class="btn btn-primary qa-interview-trial" bindtap="toTrial">{{mode === 'supplement' ? '请求重审' : '请求开庭'}}</view>
       </view>
 
       <view style="height: 48rpx;"></view>
@@ -75,26 +80,23 @@
   </scroll-view>
 
   <!-- 输入区 -->
-  <view wx:if="{{!loading && !done}}" style="border-top: 1rpx solid #E1DACE; padding: 20rpx 50rpx 36rpx;">
+  <view wx:if="{{!loading && !done && !error}}" class="interview-input-bar">
     <view style="white-space: nowrap; overflow-x: auto;">
       <text wx:for="{{chips}}" wx:key="index" class="chip" data-text="{{item}}" bindtap="pickChip">{{item}}</text>
     </view>
 
-    <view class="row mt8" style="gap: 16rpx;">
-      <input class="grow" value="{{input}}" bindinput="onInput" bindconfirm="send"
+    <view class="row mt8 input-row">
+      <input class="grow qa-interview-answer" value="{{input}}" bindinput="onInput" bindconfirm="send"
         placeholder="{{thinking ? '判官正在想…' : '说说看，几个字也行'}}" placeholder-class="field-ph" confirm-type="send"
         style="background: #FFFFFF; border: 1rpx solid #E1DACE; border-radius: 999rpx; padding: 20rpx 32rpx; font-size: 28rpx;" />
-      <view bindtap="send"
-        style="flex-shrink: 0; width: 96rpx; height: 76rpx; border-radius: 999rpx; background: {{thinking ? '#C0B8A8' : '#1A1918'}}; color: #FAF7F2; display: flex; align-items: center; justify-content: center; font-size: 26rpx;">发送</view>
+      <view bindtap="send" class="send-button qa-interview-send">发送</view>
     </view>
 
     <view class="row mt16" style="gap: 24rpx;">
-      <view class="grow" bindtouchstart="recStart" bindtouchend="recEnd" bindtouchcancel="recEnd"
-        style="height: 72rpx; border-radius: 999rpx; display: flex; align-items: center; justify-content: center; font-size: 26rpx; background: {{recording ? '#B0793F' : '#FFFFFF'}}; color: {{recording ? '#FAF7F2' : '#6E685F'}}; border: 1rpx solid {{recording ? '#B0793F' : '#E1DACE'}};">
+      <view class="grow voice-button qa-interview-voice {{recording ? 'voice-recording' : ''}}" bindtouchstart="recStart" bindtouchend="recEnd" bindtouchcancel="recEnd">
         {{transcribing ? '正在听写…' : (recording ? '松开结束' : '🎙 按住说话')}}
       </view>
-      <view bindtap="skip"
-        style="flex-shrink: 0; height: 72rpx; padding: 0 32rpx; border-radius: 999rpx; display: flex; align-items: center; font-size: 24rpx; color: #9C958A;">这个先不说</view>
+      <view bindtap="skip" class="skip-button qa-interview-skip">这个先不说</view>
     </view>
   </view>
 

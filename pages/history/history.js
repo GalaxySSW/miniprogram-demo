@@ -1,6 +1,5 @@
 // 卷宗：案件历史，状态胶囊两色（复盘中蜜色 / 已和好抹茶）
 // 点开旧案时按案件 ID 从云端读回那一份判决，避免显示当前内存里的别的案子
-const app = getApp()
 const casedb = require('../../utils/casedb.js')
 
 const MOCK = [
@@ -11,13 +10,22 @@ const MOCK = [
 Page({
   data: {
     cases: MOCK,
-    fromCloud: false
+    fromCloud: false,
+    loading: true,
+    error: ''
   },
   onShow() {
+    this.setData({ loading: true, error: '' })
     casedb.myCases().then(list => {
-      if (!list || !list.length) return
+      if (list === null && appGlobalCloudReady()) {
+        return this.setData({ loading: false, error: '卷宗暂时没调出来，请重试。' })
+      }
+      if (!list || !list.length) {
+        return this.setData({ loading: false, fromCloud: false, cases: MOCK })
+      }
       this.setData({
         fromCloud: true,
+        loading: false,
         cases: list.map(c => ({
           docId: c._id,
           id: c.caseId,
@@ -31,29 +39,26 @@ Page({
           canReview: c.status === 'closed' && !c.review
         }))
       })
-    })
+    }).catch(() => this.setData({ loading: false, error: '卷宗暂时没调出来，请重试。' }))
   },
   openCase(e) {
     const docId = e.currentTarget.dataset.docid
-    if (!docId) return wx.navigateTo({ url: '/pages/verdict/verdict' })
-
-    // 读回这一份案件自己的判决书，而不是内存里的当前案
-    wx.showLoading({ title: '正在调卷' })
-    casedb.getCase(docId).then(c => {
-      wx.hideLoading()
-      if (!c) return wx.navigateTo({ url: '/pages/verdict/verdict' })
-      app.globalData.caseData.docId = docId
-      app.globalData.caseData.id = c.caseId
-      app.globalData.caseData.pact = c.pact
-      if (c.verdict) app.globalData.verdict = c.verdict
-      wx.navigateTo({ url: '/pages/verdict/verdict' })
-    }).catch(() => {
-      wx.hideLoading()
-      wx.navigateTo({ url: '/pages/verdict/verdict' })
-    })
+    if (!docId) return wx.navigateTo({ url: '/pages/case-detail/case-detail?source=history' })
+    wx.navigateTo({ url: `/pages/case-detail/case-detail?docId=${encodeURIComponent(docId)}&source=history` })
   },
   goReview(e) {
     const docId = e.currentTarget.dataset.docid || ''
     wx.navigateTo({ url: `/pages/review/review?docId=${docId}` })
+  },
+  retry() {
+    this.onShow()
+  },
+  goHome() {
+    wx.reLaunch({ url: '/pages/home/home' })
   }
 })
+
+function appGlobalCloudReady() {
+  const app = getApp()
+  return !!(app && app.globalData && app.globalData.cloudReady)
+}

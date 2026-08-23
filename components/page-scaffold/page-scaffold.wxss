@@ -1,0 +1,18 @@
+.pp-scaffold {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 32rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
+  background: var(--panpan-bg-page, #FFF9F1);
+  color: var(--panpan-text-primary, #2B2118);
+}
+.pp-scaffold--compact { padding-top: 20rpx; }
+.pp-scaffold__header { margin-bottom: 40rpx; }
+.pp-scaffold__header--centered { text-align: center; }
+.pp-scaffold__topline { min-height: 40rpx; display: flex; align-items: center; gap: 16rpx; }
+.pp-scaffold__back { margin: 0; padding: 0; border: 0; background: transparent; color: var(--panpan-brand-cocoa, #5B4636); font-size: 26rpx; line-height: 40rpx; }
+.pp-scaffold__back::after { border: 0; }
+.pp-scaffold__eyebrow { color: var(--panpan-brand-cocoa, #5B4636); font-size: 26rpx; line-height: 40rpx; font-weight: 600; letter-spacing: .08em; }
+.pp-scaffold__title { display: block; margin-top: 16rpx; font-size: 64rpx; line-height: 80rpx; font-weight: 600; }
+.pp-scaffold__subtitle { display: block; margin-top: 12rpx; color: var(--panpan-text-secondary, #806F60); font-size: 32rpx; line-height: 52rpx; }
+.pp-scaffold__content { min-height: 1rpx; }
+.pp-scaffold__footer { margin-top: 40rpx; }

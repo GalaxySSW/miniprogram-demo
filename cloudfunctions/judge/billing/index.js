@@ -42,7 +42,8 @@ function billingEnvelope({ requestId, quote, status, charged = 0, balance = null
 }
 
 function billingMode() {
-  return String(process.env.BILLING_MODE || 'shadow').toLowerCase()
+  // 黑客松验收以真实账本为准；本地需要演示时显式设置 BILLING_MODE=mock。
+  return String(process.env.BILLING_MODE || 'enforced').toLowerCase()
 }
 
 function isBillable(action) {

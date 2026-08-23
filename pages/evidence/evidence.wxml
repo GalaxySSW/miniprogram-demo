@@ -1,29 +1,45 @@
-<view class="col" style="min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx 50rpx;">
-
-  <text class="kicker">立案 · 第一步</text>
-  <view class="h2 mt16">呈上证据</view>
-  <view class="sub mt8">把你们的聊天截图交给本庭。判官会自己看懂谁说了什么，你不用打字复述。</view>
-
-  <view class="mt48" style="display: flex; flex-wrap: wrap; gap: 20rpx;">
-    <view wx:for="{{images}}" wx:key="index" style="position: relative; width: 196rpx; height: 196rpx;">
-      <image src="{{item}}" mode="aspectFill" style="width: 100%; height: 100%; border-radius: 24rpx; border: 1rpx solid #E1DACE;" />
-      <view bindtap="removeImage" data-idx="{{index}}"
-        style="position: absolute; top: -12rpx; right: -12rpx; width: 44rpx; height: 44rpx; border-radius: 50%; background: #1A1918; color: #FAF7F2; display: flex; align-items: center; justify-content: center; font-size: 24rpx;">×</view>
-    </view>
-    <view wx:if="{{images.length < 9}}" bindtap="chooseImage"
-      style="width: 196rpx; height: 196rpx; border: 1rpx dashed #C0B8A8; border-radius: 24rpx; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #FFFFFF;">
-      <text style="font-size: 56rpx; color: #C0B8A8; font-weight: 300; line-height: 1;">+</text>
-      <text class="faint mt8">{{images.length}}/9</text>
-    </view>
+<view class="evidence-page">
+  <view class="page-header">
+    <button id="qa-evidence-back" class="page-back" bindtap="goBack">‹</button>
+    <text class="page-title">呈上证据</text>
+    <view class="page-capsule"><text>•••</text><text class="page-capsule-divider"></text><text>○</text></view>
   </view>
 
-  <view class="faint mt24">截图只有判官会看，判决后可一键销毁。</view>
+  <view class="evidence-content">
+    <view class="step-indicator">
+      <text class="step-label">立案 · 第一步</text>
+      <text class="evidence-title">呈上证据</text>
+      <text class="evidence-subtitle">把你们的聊天截图交给本庭。判官会自己看懂谁说了什么，你不用打字复述。</text>
+    </view>
 
-  <view class="grow"></view>
+    <view class="evidence-upload-card">
+      <view class="evidence-upload-heading">
+        <text class="evidence-upload-title">聊天截图</text>
+        <text class="evidence-upload-count">{{images.length}}/9</text>
+      </view>
+      <view class="evidence-grid">
+        <view wx:for="{{images}}" wx:key="index" class="evidence-image-wrap">
+          <image src="{{item}}" mode="aspectFill" class="evidence-image" />
+          <button id="qa-evidence-remove-{{index}}" class="evidence-remove" bindtap="removeImage" data-idx="{{index}}">×</button>
+        </view>
+        <button wx:if="{{images.length < 9}}" id="qa-evidence-picker" class="evidence-add" bindtap="chooseImage" disabled="{{reading}}">
+          <text class="evidence-add-icon">＋</text>
+          <text class="evidence-add-label">添加图片</text>
+        </button>
+      </view>
+      <text class="evidence-hint">最多 9 张，支持从聊天记录或相册选择</text>
+    </view>
 
-  <view class="btn {{reading ? 'btn-disabled' : 'btn-primary'}}" bindtap="next">
-    {{reading ? '判官正在看证据…' : '下一步 · 我来陈述'}}
+    <view id="qa-evidence-privacy" class="privacy-notice">
+      <text class="privacy-icon">▣</text>
+      <text>截图只有判官会看，判决后可一键销毁。</text>
+    </view>
+
+    <view class="evidence-actions">
+      <button id="qa-evidence-next" class="btn {{reading ? 'btn-disabled' : 'btn-primary'}}" loading="{{reading}}" disabled="{{reading}}" bindtap="next">
+        {{reading ? '判官正在看证据…' : '下一步 · 我来陈述'}}
+      </button>
+      <button id="qa-evidence-skip" class="evidence-skip" bindtap="skip" disabled="{{reading}}">没有截图，跳过这一步</button>
+    </view>
   </view>
-  <view class="center mt24"><text class="faint" bindtap="skip">没有截图，跳过这一步</text></view>
-
 </view>

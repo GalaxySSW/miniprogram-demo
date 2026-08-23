@@ -1,0 +1,4 @@
+<view class="pp-bar {{fixed ? 'pp-bar--fixed' : ''}} {{safeArea ? 'pp-bar--safe' : ''}}" data-qa="{{qaId}}">
+  <button wx:if="{{showSecondary && secondaryText}}" class="pp-bar__button pp-bar__button--secondary" data-qa="{{qaId}}-secondary" disabled="{{secondaryDisabled}}" bindtap="onSecondary">{{secondaryText}}</button>
+  <button class="pp-bar__button pp-bar__button--primary {{(primaryDisabled || loading) ? 'pp-bar__button--disabled' : ''}}" data-qa="{{qaId}}-primary" disabled="{{primaryDisabled || loading}}" bindtap="onPrimary">{{loading ? loadingText : primaryText}}</button>
+</view>

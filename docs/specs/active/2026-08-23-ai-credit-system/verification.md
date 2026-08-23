@@ -42,7 +42,8 @@
 - MCP 首页→证据页：7/7 通过，报告见 [home-evidence-smoke.md](../../qa/credit-system/home-evidence-smoke.md)。
 - MCP statement 输入：6/6 通过，报告见 [statement-input-smoke.md](../../qa/credit-system/statement-input-smoke.md)。
 - MCP 截图：已保存 [statement-input-smoke.png](../../qa/credit-system/statement-input-smoke.png)。
-- MCP 健康检查：connected，WebSocket 9420，日志监听正常；最近 120 秒无控制台日志。
+- MCP 健康检查：已恢复，WebSocket 9420 可达；本轮连接初始化曾因控制台日志启用超时，重试后 automator 会话建立成功。
+- MCP 关键入口冒烟：Home、History、Case Detail、Profile 均已通过；Profile 积分卡在 `billing-account` 尚未部署时正确显示“暂不可用”。
 - 真机/双设备：未执行。
 
 ## 证据
@@ -59,9 +60,21 @@
 
 ## 下一步
 
-1. 在微信云函数环境安装依赖并配置 `CLOUDBASE_ENV_ID`/服务端认证和 `ADMIN_OPENIDS`。
-2. 建立 `ai_accounts`、`ai_usage`、`ai_credit_ledger`、`ai_admin_audit`、`ai_plans` 集合和必要索引。
-3. 先用测试 OPENID 发放少量积分，再以 `BILLING_MODE=enforced` 验证 `intake` 的预扣、结算和失败释放。
+1. 上传新增的 `billing-account` 云函数；2026-08-23 使用 CloudBase CLI 重试 2 次，均因 `getCloudAPISignedHeader` 返回 `ret=1000 system error` 失败，尚未部署。
+2. 在微信云函数环境配置 `CLOUDBASE_ENV_ID`/服务端认证和 `ADMIN_OPENIDS`；当前本地未发现管理员 OPENID，不能安全写入白名单。
+3. 建立 `ai_accounts`、`ai_usage`、`ai_credit_ledger`、`ai_admin_audit`、`ai_plans` 集合和必要索引；当前 CLI 仅提供云函数命令，没有数据库集合/索引命令，需通过 CloudBase 控制台或已有初始化函数完成。
+4. 先用测试 OPENID 发放少量积分，再以 `BILLING_MODE=enforced` 验证 `intake` 的预扣、结算和失败释放。
+
+## 本轮环境联调记录（2026-08-23）
+
+| 项目 | 结果 | 证据/阻塞 |
+|---|---|---|
+| CloudBase 环境查询 | 已确认 | `cloud1-d5gwslwa351e26c8e` |
+| 已部署云函数 | 已确认 | `casedb`、`judge`、`probefn`；没有 `billing-account` |
+| `billing-account` 上传 | 阻塞 | 两次均为 `getCloudAPISignedHeader` / `ret=1000 system error` |
+| MCP 运行时连接 | 已恢复 | 开启自动拉起后，9420 已监听；首次日志初始化超时，重试后连接成功 |
+| `ADMIN_OPENIDS` | 未配置 | `whoami` 临时云函数已在本地创建，尚未上传；取得管理员 OPENID 后再配置 |
+| 积分集合与索引 | 未创建 | 当前 CLI 未提供数据库管理命令 |
 4. 最后执行管理员 action 和并发请求验证；完成后才考虑默认切换到 `enforced`。
 
 ## 结论

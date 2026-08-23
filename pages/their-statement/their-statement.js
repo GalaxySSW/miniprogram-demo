@@ -10,7 +10,9 @@ Page({
     moodIdx: -1,
     submitting: false,
     recording: false,
-    transcribing: false
+    transcribing: false,
+    voiceError: '',
+    submitError: ''
   },
   onInput(e) {
     this.setData({ text: e.detail.value })
@@ -19,7 +21,7 @@ Page({
     this.setData({ moodIdx: e.currentTarget.dataset.idx })
   },
   recStart() {
-    this.setData({ recording: true })
+    this.setData({ recording: true, voiceError: '' })
     voice.start()
   },
   recEnd() {
@@ -29,28 +31,38 @@ Page({
       this.setData({ transcribing: false })
       if (!text) {
         if (voice.handle(error)) return
-        return wx.showToast({ title: voice.tip(error), icon: 'none', duration: 2200 })
+        this.setData({ voiceError: voice.tip(error) })
+        return
       }
       this.setData({ text: (this.data.text || '') + text })
     })
   },
+  retryVoice() {
+    this.setData({ voiceError: '' })
+  },
   submit() {
     if (this.data.submitting) return
-    this.setData({ submitting: true })
+    this.setData({ submitting: true, submitError: '' })
 
     const c = app.globalData.caseData
     c.theirStatement = {
       text: this.data.text,
       mood: this.data.moods[this.data.moodIdx] || ''
     }
-    wx.showToast({ title: '我听见了', icon: 'none', duration: 1400 })
-
     const done = () => {
       c.status = 'responded'
+      wx.showToast({ title: '我听见了', icon: 'none', duration: 1400 })
       // 证词齐了，先背对背追问，再开庭
       setTimeout(() => wx.redirectTo({ url: '/pages/interview/interview?side=b' }), 1400)
     }
-    if (c.docId) casedb.respond(c.docId, c.theirStatement, c.demoMode).then(done)
+    if (c.docId) casedb.respond(c.docId, c.theirStatement, c.demoMode).then(result => {
+      if (app.globalData.cloudReady && !result) return this.setData({ submitting: false, submitError: '这段陈述没有保存成功，原文仍保留在本页。' })
+      done()
+    }).catch(() => this.setData({ submitting: false, submitError: '这段陈述没有保存成功，原文仍保留在本页。' }))
     else done()
+  },
+  retrySubmit() { this.submit() },
+  back() {
+    wx.navigateBack({ delta: 1, fail: () => wx.reLaunch({ url: '/pages/home/home' }) })
   }
 })

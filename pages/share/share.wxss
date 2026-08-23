@@ -1,1 +1,10 @@
-/* pages/share/share.wxss */
+.share-page { min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx; }
+.share-header { justify-content: space-between; min-height: 44rpx; }
+.invite-card { padding: 40rpx; background: #FFFDF9; }
+.share-button { width: 100%; padding: 0; }
+.share-native-button { width: 100%; height: 100%; background: transparent; color: #FFF9F1; font-size: 30rpx; font-weight: 500; letter-spacing: 4rpx; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1; }
+.share-native-button::after { border: 0; }
+.invite-code-card { border-left: 6rpx solid #B0793F; }
+.state-card { background: #FFFDF9; }
+.privacy-note { display: flex; align-items: center; gap: 16rpx; }
+.action-stack { gap: 24rpx; }

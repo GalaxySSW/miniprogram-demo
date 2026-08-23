@@ -27,16 +27,17 @@
 
 ## 评审整合后的最终判断
 
-最新只读评审确认：页面路由层已经覆盖 19/19，当前缺口不在“再增加几个业务页面”，而在三个层面：
+最新只读评审确认：现有页面路由覆盖 19/19，但产品还缺一个承接“案件状态与下一步”的 P0 页面。当前缺口集中在四个层面：
 
 1. 跨页面系统状态没有成为一级设计对象。
 2. 组件还没有形成状态、权限和隐私契约。
 3. Figma 已有品牌 Design System 基础，但 UI Screens、Prototype 和交付标注还没有完整落地。
+4. 积分账本已经具备服务端能力，但用户侧余额、调用前预估和黑客松真实扣费门槛还没有纳入产品闭环。
 
 因此本功能最终采用以下范围：
 
 - 不新增独立 Landing Page。
-- 不把案件详情页作为当前 P0 新路由；首轮由 `history` 的状态卡片和现有目标页面承载案件详情表达。
+- 新增 `case-detail` 作为 P0 案件状态中枢；History 负责列表，Case Detail 负责单案状态、隐私范围和下一步。
 - 将 `waiting`、`pact` 纳入双设备正式流程 P0；本地 Mock 演示可暂时跳过 `waiting`。
 - 将 `reply`、`poster` 定为 P1 增强能力。
 - 把系统态、组件契约和 Figma UI Contract 纳入正式交付，而不是只画正常态页面。
@@ -59,9 +60,19 @@
 ### 3. 案件列表与案件详情表达层
 
 - 保留并升级 `pages/history/history`，展示真实案件状态、案由、约定和复盘状态。
-- 首轮不新增案件详情路由，升级 `pages/history/history` 的案件卡片、状态摘要和下一步路由。
+- 新增 `pages/case-detail/case-detail` P0 页面，负责单个案件的状态摘要、双方进度、共同结果和下一步操作。
+- `history` 只负责全部案件列表和筛选/删除入口；点击案件时必须携带 `docId` 进入 `case-detail`。
 - 已有 `waiting`、`verdict`、`pact`、`review` 页面分别承载对应状态的详细内容。
-- 后续若历史案件状态复杂到无法由卷宗卡片和目标页承载，再把案件详情页作为 P2 独立路由评估。
+- `case-detail` 不展示双方私密原话、截图原图和模型输入；共同结果仍由 `verdict`、`pact`、`review` 等目标页承载。
+
+### 4. 案件详情页职责
+
+- 输入：`docId`，可选 `source=home|history|inbox|share`、`mode=owner|member|joint`、`side=me|ta`。
+- 读取：通过 `casedb.getCase(docId)` 获取安全投影，由 `case-router` 计算案件状态和下一步。
+- 输出：案件状态、我/TA/双方进度、共同可见摘要、当前主操作和恢复入口。
+- 跳转：`evidence`、`preview`、`share`、`waiting`、`trial`、`verdict`、`pact`、`review`、`pebble` 等目标页。
+- 失败：案件不存在、无权限、版本冲突或数据不完整时，显示 `RecoveryPanel`，提供重试、回卷宗和回 Home。
+- 返回：从 Home 进入时回 Home；从 History 进入时回 History；页面栈为空时回 Home。
 
 ### 4. 统一返回链路
 
@@ -165,6 +176,7 @@ Home → 卷宗 → 状态摘要卡
 - `home`、`evidence`、`statement`、`accept`、`preview`、`share`
 - `respond`、`their-statement`、`interview`、`trial`、`verdict`、`pact`
 - `waiting`：双设备正式流程 P0；本地 Mock 演示可跳过
+- `case-detail`：案件状态与下一步的 P0 中枢
 - 以上页面的隐私、异步、失败、恢复、双方状态和返回链路
 
 ### P0：本地 Mock 演示
@@ -178,8 +190,6 @@ Home → 卷宗 → 状态摘要卡
 - 站内提醒、订阅消息授权、异常网络和权限拒绝的精细化表达。
 
 ### P2：后续评估
-
-- 独立案件详情页。
 - 更丰富的关系生命周期工具、无障碍和深色模式。
 
 ## 数据、权限与隐私边界
