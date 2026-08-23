@@ -46,7 +46,7 @@
       <view class="faint mt24">本庭只记你们之间反复出现的事，不记你们各自是什么样的人。</view>
     </block>
     <view wx:else class="card mt24">
-      <view class="sub">还没有反复出现的模式。等到同一件事第二次开庭，本庭才会记住它。</view>
+      <view class="sub">同一件事第二次开庭，本庭才会记住它。</view>
     </view>
   </view>
 
@@ -54,7 +54,7 @@
 
   <view class="card mt48">
     <text class="pill pill-honey">隐私承诺</text>
-    <view class="sub mt16">聊天截图与陈述原文在判决后 7 天自动销毁；上面的记录随时可以一键清空。</view>
+    <view class="sub mt16">截图与陈述原文判决后 7 天自动销毁。</view>
   </view>
 
 </view>

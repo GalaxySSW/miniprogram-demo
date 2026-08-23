@@ -1,11 +1,7 @@
 <view class="col preview-page">
 
-  <view class="row preview-header">
-    <text class="kicker">发出前 · 最后确认</text>
-  </view>
-
   <view class="h2 mt16">用你自己的话开口</view>
-  <view class="sub mt8">TA 先看到的是这句话，不是本庭的通知。可以直接改成你想说的。</view>
+  <view class="sub mt8">TA 先看到的是这句话，可以改成你想说的。</view>
 
   <view class="card mt32 preview-editor accent-card">
     <textarea value="{{note}}" bindinput="onNoteInput" auto-height maxlength="60"
@@ -31,7 +27,7 @@
           class="field field-brief qa-preview-brief" />
       </block>
     </view>
-    <view class="faint mt8">只说是哪件事，不带情绪也不带指责。TA 不会看到你的原话，但至少知道要聊什么。</view>
+    <view class="faint mt8">只说是哪件事，不带情绪也不带指责。</view>
   </view>
 
   <view class="hairline mt48 privacy-section">

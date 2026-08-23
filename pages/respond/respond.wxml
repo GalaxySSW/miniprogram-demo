@@ -1,9 +1,5 @@
 <view class="col respond-page">
 
-  <view class="row respond-header">
-    <text class="kicker">应诉</text>
-  </view>
-
   <view wx:if="{{loading}}" class="card mt48 state-card qa-respond-loading qa-invite-state">
     <view class="faint">正在调出传票内容…</view>
   </view>
@@ -16,7 +12,7 @@
   <block wx:else>
 
   <view wx:if="{{note}}" class="mt48 qa-respond-note">
-    <text class="kicker">TA 想先跟你说</text>
+    <text class="kicker">TA 想说</text>
     <view class="card mt16" style="border-left: 6rpx solid #B0793F; padding: 40rpx;">
       <view style="font-size: 32rpx; line-height: 1.8;">{{note}}</view>
     </view>

@@ -2,7 +2,7 @@
 
   <text class="kicker">结案长图</text>
   <view class="h2 mt16">存下来，或者发出去</view>
-  <view class="sub mt8">9:16 竖版，图里只有脱敏后的金句和误会指数——具体是哪件事、谁说了什么，都不在上面。</view>
+  <view class="sub mt8">图里只有金句和误会指数，说过的话都不在上面。</view>
 
   <view class="mt48 center">
     <view wx:if="{{building}}" class="card col" style="align-items: center; padding: 120rpx 40rpx;">

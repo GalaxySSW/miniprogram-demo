@@ -1,14 +1,13 @@
 <view class="evidence-page">
   <view class="page-header">
     <view id="qa-evidence-back" class="page-back" bindtap="goBack">‹</view>
-    <text class="page-title">呈上证据</text>
   </view>
 
   <view class="evidence-content">
     <view class="step-indicator">
       <text class="step-label">立案 · 第一步</text>
       <text class="evidence-title">呈上证据</text>
-      <text class="evidence-subtitle">把你们的聊天截图交给本庭。判官会自己看懂谁说了什么，你不用打字复述。</text>
+      <text class="evidence-subtitle">判官会自己看懂谁说了什么。</text>
     </view>
 
     <view class="evidence-upload-card">
@@ -26,7 +25,6 @@
           <text class="evidence-add-label">添加图片</text>
         </button>
       </view>
-      <text class="evidence-hint">最多 9 张，支持从聊天记录或相册选择</text>
     </view>
 
     <view id="qa-evidence-privacy" class="privacy-notice">

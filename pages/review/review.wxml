@@ -31,7 +31,7 @@
 
   <block wx:else>
     <view class="card mt24">
-      <view class="sub">本庭会把这次结果记进你们的模式里。下次为同一件事开庭时，我不会再开同一个方子。</view>
+      <view class="sub">下次为同一件事开庭时，本庭不会再开同一个方子。</view>
     </view>
     <view class="grow"></view>
     <view class="btn btn-ghost" bindtap="goHome">回首页</view>

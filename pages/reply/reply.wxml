@@ -2,7 +2,7 @@
 
   <text class="kicker">即时援助</text>
   <view class="h2 mt16">先回 TA 一句</view>
-  <view class="sub mt8">一句温和、不升级的话，先把这一刻接住。发不发、怎么改，都由你。</view>
+  <view class="sub mt8">发不发、怎么改，都由你。</view>
 
   <view wx:if="{{stance}}" class="card mt24 row" style="gap: 20rpx; padding: 28rpx 32rpx; border-left: 6rpx solid #B0793F;">
     <view class="grow" style="font-size: 26rpx; line-height: 1.8;">{{stance}}</view>
@@ -17,7 +17,6 @@
     <view class="mt24" style="font-size: 32rpx; line-height: 1.9;">{{suggestion}}</view>
   </view>
 
-  <view class="faint mt24">这句话不带指责、不下结论，也给了下一次好好谈的时间。</view>
 
   <view class="grow"></view>
 

@@ -1,17 +1,12 @@
 <view class="col accept-page">
 
-  <view class="row accept-header">
-    <text class="kicker">受理确认</text>
-  </view>
-
   <view class="mt32 center">
     <cat mood="calm" style="display: inline-block;" />
   </view>
 
   <view class="card mt32 accept-case-card">
-    <text class="kicker">受理通知</text>
-    <view class="h2 mt16">本庭已受理</view>
-    <view class="faint mt16">案号 {{caseId}}</view>
+    <view class="h2">本庭已受理</view>
+    <view class="faint mt8">案号 {{caseId}}</view>
     <view wx:if="{{sealed}}" class="seal seal-drop" style="position: absolute; top: -30rpx; right: 30rpx;">
       <text>已受理</text>
     </view>
@@ -19,7 +14,7 @@
 
   <!-- 本庭听到的：发传票前的最后一次校对 -->
   <view class="mt48 qa-accept-heard">
-    <text class="kicker">本庭听到的是这样</text>
+    <text class="kicker">本庭听到的</text>
 
     <view wx:if="{{loading}}" class="card mt16 state-card qa-accept-loading">
       <view class="faint">判官正在把你说的话理一遍…</view>
@@ -48,11 +43,6 @@
         <text class="faint qa-accept-amend qa-accept-edit" bindtap="amend">听岔了？我再补充一点 →</text>
       </view>
     </block>
-  </view>
-
-  <view class="privacy-note mt24 qa-accept-privacy">
-    <text class="pill pill-matcha">仅你可见</text>
-    <text class="faint grow">这段复述只给你校对，TA 不会看到你的原话。</text>
   </view>
 
   <view class="grow" style="min-height: 48rpx;"></view>

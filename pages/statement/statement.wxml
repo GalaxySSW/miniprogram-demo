@@ -1,19 +1,18 @@
 <view class="statement-page">
   <view class="page-header">
     <view id="qa-statement-back" class="page-back" bindtap="goBack">‹</view>
-    <text class="page-title">慢慢说，本庭在听</text>
   </view>
 
   <view class="statement-content">
     <view class="statement-step">
       <text class="step-label">立案 · 第二步</text>
       <text class="statement-title">慢慢说，本庭在听</text>
-      <text class="statement-subtitle">一次只问一句，想到什么说什么。可以打字，也可以按住下面的按钮说。</text>
+      <text class="statement-subtitle">一次只问一句，想到什么说什么。</text>
     </view>
 
     <view wx:if="{{hasEvidence}}" id="qa-statement-evidence-read" class="statement-evidence-card">
       <text class="pill pill-matcha">已阅</text>
-      <text class="statement-evidence-copy">你的聊天截图判官已经看过了，下面只说你的感受就行。</text>
+      <text class="statement-evidence-copy">截图判官已经看过了，说说你的感受。</text>
     </view>
 
     <view class="statement-questions">

@@ -5,7 +5,7 @@
   </view>
 
   <view class="h2 mt16">递给 TA</view>
-  <view class="sub mt8">这句话会出现在你们的聊天里，TA 点开就是应诉页。</view>
+  <view class="sub mt8">这句话会出现在你们的聊天里。</view>
 
   <view class="card mt32 invite-card qa-share-invite">
     <view class="row" style="gap: 24rpx;">

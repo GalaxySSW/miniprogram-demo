@@ -35,7 +35,7 @@
       </view>
       <view class="col grow">
         <view style="font-size: 28rpx;">过几天，让本庭来问问</view>
-        <view class="faint mt8">不勾也没关系。本庭会一直记着这件事，下次为同一件事开庭时自然会提。</view>
+        <view class="faint mt8">不勾也没关系，本庭会一直记着。</view>
       </view>
     </view>
 
@@ -47,7 +47,7 @@
   <block wx:elif="{{stage === 'wait'}}">
     <text class="kicker">本庭约定</text>
     <view class="h2 mt16">等 TA 点个头</view>
-    <view class="sub mt8">约定要两个人都同意才算数。TA 那边会看到这一件。</view>
+    <view class="sub mt8">约定要两个人都同意才算数。</view>
 
     <view class="card mt48" style="border-left: 6rpx solid #B0793F;">
       <view style="font-size: 32rpx; font-weight: 500;">{{chosen.title}}</view>
@@ -68,7 +68,7 @@
   <block wx:elif="{{stage === 'confirm'}}">
     <text class="kicker">本庭约定</text>
     <view class="h2 mt16">TA 定了这一件</view>
-    <view class="sub mt8">你点头，本案就了结。还没想好也没关系，可以先递颗石子。</view>
+    <view class="sub mt8">你点头，本案就了结。</view>
 
     <view class="card mt48" style="border-left: 6rpx solid #B0793F;">
       <view style="font-size: 32rpx; font-weight: 500;">{{chosen.title}}</view>
