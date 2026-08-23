@@ -53,7 +53,7 @@ function isBillable(action) {
 
 function createCloudBaseLedger(context) {
   try {
-    return require('./cloudbase').createCloudBaseLedger({ context })
+    return require('./billing-cloudbase').createCloudBaseLedger({ context })
   } catch (error) {
     const wrapped = new Error(`账本适配器不可用: ${error.message}`)
     wrapped.code = 'BILLING_ADAPTER_UNAVAILABLE'

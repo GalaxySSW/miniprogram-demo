@@ -1,5 +1,5 @@
 const assert = require('assert')
-const { createLedger } = require('./ledger')
+const { createLedger } = require('./billing-ledger')
 
 function run() {
   const ledger = createLedger({ userA: { available: 10 } })
