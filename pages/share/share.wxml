@@ -1,7 +1,6 @@
 <view class="col share-page">
 
   <view class="row share-header">
-    <text class="faint qa-share-back" bindtap="back">‹ 返回</text>
     <text class="kicker">传票</text>
   </view>
 

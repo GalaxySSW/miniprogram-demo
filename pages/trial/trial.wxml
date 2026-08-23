@@ -1,7 +1,6 @@
 <view class="col trial-page">
 
   <view class="row trial-header">
-    <text class="faint qa-trial-back" bindtap="back">‹ 返回</text>
     <text class="kicker">开庭</text>
   </view>
 

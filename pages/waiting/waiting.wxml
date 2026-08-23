@@ -1,7 +1,6 @@
 <view class="col waiting-page">
 
   <view class="row waiting-header">
-    <text class="faint qa-waiting-back" bindtap="back">‹ 返回</text>
     <text class="kicker">审理中</text>
   </view>
 

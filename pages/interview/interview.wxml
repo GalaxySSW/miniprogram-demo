@@ -2,7 +2,6 @@
 
   <!-- 常驻保密提示：背对背的信任全靠这一条 -->
   <view class="row interview-header">
-    <text class="faint qa-interview-back" bindtap="back">‹ 返回</text>
     <text class="pill pill-honey">对 TA 保密</text>
     <text class="faint grow">这段对话 TA 永远看不到</text>
     <text wx:if="{{!loading && !done}}" class="faint">{{asked}}/3</text>

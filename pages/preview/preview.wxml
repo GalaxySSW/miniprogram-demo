@@ -1,7 +1,6 @@
 <view class="col preview-page">
 
   <view class="row preview-header">
-    <text class="faint qa-preview-back" bindtap="back">‹ 返回</text>
     <text class="kicker">发出前 · 最后确认</text>
   </view>
 

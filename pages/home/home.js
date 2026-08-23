@@ -1,32 +1,31 @@
 const app = getApp()
 const casedb = require('../../utils/casedb.js')
-const notify = require('../../utils/notify.js')
 
 Page({
   data: {
-    quotes: [],
-    pending: null,   // 缓着没发传票的案子，随时可以捡回来
-    news: [],         // 站内提醒：TA 应诉了 / 判决出来了 / 递来石子 / 该复盘了
-    recentCases: [],
+    activeCase: null,
+    completedCount: 0,
     starting: false
   },
-  onLoad() {
-    this.setData({ quotes: app.globalData.quotes })
-  },
   onShow() {
-    notify.fetch().then(items => this.setData({ news: items || [] }))
     casedb.myCases().then(list => {
       if (!list) return
-      this.setData({ recentCases: list.slice(0, 3).map(c => ({
-        docId: c._id,
-        id: c.caseId,
-        title: c.topic ? `${c.topic}案` : (c.status === 'created' ? '待应诉' : '一桩案件'),
-        statusText: c.review ? '已复盘' : (c.verdict ? '判决已出' : (c.status === 'closed' ? '待复盘' : '审理中'))
-      })) })
+      const completedCount = list.filter(c => c.status === 'closed' || c.review || c.verdict).length
+      const active = list.find(c => c.status !== 'closed' && !c.review && !c.verdict)
+      this.setData({
+        completedCount,
+        activeCase: active ? this.toHomeCase(active) : null
+      })
     })
     const c = app.globalData.caseData
     if (c.docId && (c.status === 'pending' || c.status === 'accepted')) {
-      this.setData({ pending: { id: c.id } })
+      this.setData({ activeCase: this.toHomeCase({
+        _id: c.docId,
+        caseId: c.id,
+        status: c.status,
+        topic: c.topic || '',
+        note: c.note || ''
+      }) })
     } else {
       // 云端还挂着没发出去的案子也要捡回来
       casedb.myCases().then(list => {
@@ -36,23 +35,32 @@ Page({
           app.globalData.caseData.docId = open._id
           app.globalData.caseData.id = open.caseId
           app.globalData.caseData.note = open.note || ''
-          this.setData({ pending: { id: open.caseId } })
+          this.setData({ activeCase: this.toHomeCase(open) })
         }
       })
     }
   },
-  openNews(e) {
-    const item = this.data.news[e.currentTarget.dataset.idx]
-    if (!item) return
-    notify.markSeen(item)
-    const g = app.globalData.caseData
-    g.docId = item.docId
-    g.id = item.caseId
-    wx.navigateTo({ url: `/pages/case-detail/case-detail?docId=${encodeURIComponent(item.docId)}&source=inbox` })
+  toHomeCase(c) {
+    const statusText = c.status === 'created' && !c.hasB ? '待对方加入'
+      : c.status === 'created' ? '等待调解'
+        : c.status === 'accepted' ? '已加入'
+          : '调解中'
+    return {
+      docId: c._id,
+      id: c.caseId || '未命名案件',
+      shortId: this.compactCaseId(c.caseId),
+      title: c.topic ? `「 ${c.topic} 」` : (c.note || '一桩还没说清楚的事'),
+      statusText,
+      actionText: '继续调解'
+    }
   },
-
+  compactCaseId(id) {
+    const value = String(id || '').replace(/\s+/g, ' ').trim()
+    const match = value.match(/(20\d{2}).*?(\d{4})/)
+    return match ? `NO. ${match[1]}${match[2]}` : (value || 'NO. —')
+  },
   resume() {
-    const docId = app.globalData.caseData.docId
+    const docId = (this.data.activeCase && this.data.activeCase.docId) || app.globalData.caseData.docId
     wx.navigateTo({ url: docId ? `/pages/case-detail/case-detail?docId=${encodeURIComponent(docId)}&source=home` : '/pages/preview/preview' })
   },
   startCase() {
@@ -105,9 +113,4 @@ Page({
   goProfile() {
     wx.navigateTo({ url: '/pages/profile/profile' })
   },
-  openRecent(e) {
-    const docId = e.currentTarget.dataset.docid
-    if (!docId) return
-    wx.navigateTo({ url: `/pages/case-detail/case-detail?docId=${encodeURIComponent(docId)}&source=home` })
-  }
 })

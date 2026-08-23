@@ -37,6 +37,11 @@
 - [ ] T16 MCP 行为验证；证据：按 AGENTS 规定记录入口、操作、预期路由/数据、实际结果和截图；截图串行。
 - [ ] T17 视觉 QA；证据：Token/Typography/组件/390×844 页面截图与 Figma 只读导出对照。
 - [ ] T18 真机/双设备/云端分层验证；证据：单独标记 `Real verified` 或 `Blocked`，不从 Mock 推导真实能力。
+- [x] T18.1 固定资产策略；Logo/Mascot/icon 本地化，证据/语音/运行时图片保留云端路径；见 `visual-gap-matrix.md`。
+- [x] T18.2 Home 首轮视觉校对；主 CTA 满宽、案件主题单行省略、存在进行中案件时隐藏次级传票入口；已完成 MCP snapshot 与串行截图。
+- [x] T18.2a 宿主导航校对；默认导航页移除页面内返回，自定义页保留单一固定尺寸返回，并移除仿制系统胶囊。
+- [ ] T18.3 逐页补齐顶部/底部安全区与长文案溢出策略；先 P0，再 P1。
+- [ ] T18.4 逐页替换 CSS 猫咪、Unicode/Emoji 固定 icon，并记录缺少正式 Figma 资产的页面。
 - [x] T14 静态检查；证据：全量 `node --check`、JSON 解析、WXML 标签检查、`git diff --check` 已通过。
 - [ ] T15 Mock 冒烟；Home → Evidence → Statement 首段已通过，P0 全链路、失败恢复、草稿保留和 Case Detail 不串案仍待补齐。
 - [x] T16 MCP 行为验证；已完成重启恢复、Home 路由/元素断言、Home → Evidence → Statement 路由断言和 Statement 输入数据断言；截图按串行规则执行。

@@ -25,6 +25,14 @@
 - `app.wxss` 已完成一轮运行时 Token 审计：移动端 Figma 使用 `#FAF7F2/#FFFDF9/#1A1918/#3B2919/#E1DACE`，Handoff 看板色保留为文档参考，不直接作为运行时主色。
 - `app.globalData.caseData` 只适合短期流程上下文，不能作为历史案件和 `case-detail` 的唯一来源；案件详情必须以 `docId` 安全读取。
 
+## 资产与溢出决策（2026-08-23）
+
+- 固定 Logo、Mascot、状态 icon 统一作为本地静态素材提交；不把 Figma MCP 的临时 URL 直接写入 WXML/WXSS。
+- 用户上传的聊天截图、证据图片和语音继续走云存储/受控临时 URL；Poster canvas 先生成本地临时文件，用户明确保存或分享时再决定是否上传。
+- 文案默认允许换行；案号、状态、案件主题、按钮和底部隐私文案必须有 `min-width: 0`、`overflow`、`text-overflow` 或可滚动策略，禁止撑破横向容器。
+- 自定义导航页必须把顶部/底部安全区纳入布局；微信系统胶囊属于运行时宿主 UI，需用 DevTools 截图人工确认不遮挡关键字。
+- 默认导航页只使用微信原生返回；页面 WXML 不再重复绘制 `‹ 返回`/`‹ 首页`。只有 `navigationStyle: custom` 的 `evidence/statement` 保留固定尺寸的页面内返回控件，且不再仿制右上角系统胶囊。
+
 ## 设计证据的解释
 
 Figma 导出中存在两种颜色上下文，后续实现不得混用：

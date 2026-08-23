@@ -1,84 +1,59 @@
 <view class="home-page">
-  <view class="home-topbar">
-    <view class="home-brand">
-      <view class="home-brand-mark">判</view>
-      <view class="home-brand-copy">
+  <view class="home-main">
+    <view class="home-topbar">
+      <view class="home-brand">
+        <image class="home-brand-mascot" src="/assets/brand/panpan-mascot.svg" mode="aspectFit" />
         <text class="home-brand-name">判判</text>
-        <text class="home-brand-caption">案例档案室</text>
       </view>
     </view>
-    <view class="home-nav">
-      <button id="qa-home-history" class="home-nav-button" bindtap="goHistory">卷宗</button>
-      <button id="qa-home-profile" class="home-nav-button" bindtap="goProfile">我的</button>
-    </view>
-  </view>
-
-  <view class="home-hero">
-    <text class="home-hero-title">有些结，不必一个人苦苦去解。</text>
-    <text class="home-hero-copy">判判是一个 AI 情感调解 Agent。在这里，我们客观听取双方的真实想法，在情绪与偏见中，翻译出那些被误读的爱意与渴望。</text>
-  </view>
-
-  <view class="home-companion">
-    <cat mood="calm" motion="breathe" size="small" />
-  </view>
-
-  <button id="qa-home-primary" class="btn btn-primary home-start-button" loading="{{starting}}" disabled="{{starting}}" bindtap="startCase">
-    {{starting ? '正在开启…' : '开启一次情感调解对话'}}
-  </button>
-
-  <view wx:if="{{pending || recentCases.length || news.length}}" class="home-cases">
-    <view class="home-rule"></view>
-    <view class="home-section-heading">
-      <text class="home-section-title">当前进行中的调解</text>
-      <text class="home-section-link" bindtap="goHistory">查看卷宗 →</text>
+    <view class="home-archive-row">
+      <text id="qa-home-history" class="home-archive-link" bindtap="goHistory">案例档案室</text>
     </view>
 
-    <view wx:if="{{pending}}" id="qa-home-pending" class="home-case-row home-case-row-action" bindtap="resume">
-      <view class="home-case-main">
-        <view class="home-case-meta">
-          <text class="home-case-number">{{pending.id}}</text>
-          <text class="pill pill-honey">待发传票</text>
+    <view class="home-hero">
+      <text class="home-hero-title">有些结，不必一个人苦苦去解。</text>
+      <text class="home-hero-copy">判判是一个 AI 情感调解 Agent。在这里，我们客观听取双方的真实想法，在情绪和偏见中，为你翻译出那些被误读的爱意与渴望。</text>
+    </view>
+
+    <view class="home-companion">
+      <image class="home-companion-mascot" src="/assets/brand/panpan-mascot.svg" mode="aspectFit" />
+      <view id="qa-home-primary" class="home-start-button {{starting ? 'home-start-button-disabled' : ''}}" bindtap="startCase">
+        {{starting ? '正在开启…' : '开启一次情感调解对话'}}
+      </view>
+    </view>
+
+    <view wx:if="{{activeCase || completedCount}}" class="home-cases">
+      <view class="home-rule"></view>
+      <view class="home-section-heading">
+        <view class="home-section-title-group">
+          <text class="home-section-title">当前进行中的调解</text>
+          <text wx:if="{{activeCase}}" class="home-case-number">{{activeCase.shortId}}</text>
         </view>
-        <text class="home-case-title">还有一桩案子等着你</text>
+        <text wx:if="{{activeCase}}" class="home-case-status">{{activeCase.statusText}}</text>
       </view>
-      <text class="home-case-action">继续调解 →</text>
-    </view>
 
-    <view wx:for="{{recentCases}}" wx:key="docId" id="qa-home-case-{{index}}" class="home-case-row home-case-row-action" bindtap="openRecent" data-docid="{{item.docId}}">
-      <view class="home-case-main">
-        <view class="home-case-meta">
-          <text class="home-case-number">{{item.id}}</text>
-          <text class="pill pill-honey">{{item.statusText}}</text>
+      <view wx:if="{{activeCase}}" id="qa-home-pending" class="home-case-row home-case-row-action" bindtap="resume">
+        <text class="home-case-title">{{activeCase.title}}</text>
+        <text class="home-case-action">{{activeCase.actionText}} →</text>
+      </view>
+
+      <view wx:if="{{completedCount}}" class="home-completed-row">
+        <text class="home-completed-label">已成功解开的情感纠纷</text>
+        <view class="home-completed-value">
+          <view class="home-success-dot"></view>
+          <text>{{completedCount}} 次和解</text>
         </view>
-        <text class="home-case-title">{{item.title}}</text>
       </view>
-      <text class="home-case-action">查看详情 →</text>
     </view>
 
-    <view wx:for="{{news}}" wx:key="index" id="qa-home-news-{{index}}" class="home-news-row" bindtap="openNews" data-idx="{{index}}">
-      <view class="home-news-dot"></view>
-      <view class="home-news-copy">
-        <text class="home-news-title">{{item.text}}</text>
-        <text class="home-news-sub">{{item.caseId}} · 点开看看</text>
-      </view>
-      <text class="home-news-badge">新</text>
+    <view wx:else class="home-empty-hint">从一段说不清的误会开始，让本庭先听听你的感受。</view>
+
+    <view wx:if="{{!activeCase && !completedCount}}" class="home-secondary-actions">
+      <button id="qa-home-summons" class="home-secondary-button" bindtap="gotSummons">我收到了传票</button>
     </view>
-
-    <view class="home-rule"></view>
-  </view>
-
-  <view class="home-empty-hint" wx:else>从一段说不清的误会开始，让本庭先听听你的感受。</view>
-
-  <view class="home-secondary-actions">
-    <button id="qa-home-summons" class="btn btn-ghost home-secondary-button" bindtap="gotSummons">我收到了传票</button>
   </view>
 
   <view class="home-footer">
     <text>判判严格保护隐私，未经双方授权不会公开任何聊天细节</text>
-    <swiper wx:if="{{quotes.length}}" class="home-quotes" vertical autoplay circular interval="3000" duration="600">
-      <swiper-item wx:for="{{quotes}}" wx:key="index">
-        <view class="home-quote">「{{item}}」</view>
-      </swiper-item>
-    </swiper>
   </view>
 </view>

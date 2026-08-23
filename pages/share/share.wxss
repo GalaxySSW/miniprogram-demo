@@ -1,4 +1,4 @@
-.share-page { min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx; }
+.share-page { min-height: 100vh; box-sizing: border-box; padding: calc(24rpx + env(safe-area-inset-top)) 50rpx calc(60rpx + env(safe-area-inset-bottom)); }
 .share-header { justify-content: space-between; min-height: 44rpx; }
 .invite-card { padding: 40rpx; background: #FFFDF9; }
 .share-button { width: 100%; padding: 0; }

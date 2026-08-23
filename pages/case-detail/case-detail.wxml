@@ -1,6 +1,5 @@
 <view class="col case-detail-page">
   <view class="row case-detail-header">
-    <text class="faint qa-case-detail-back" bindtap="back">‹ 返回</text>
     <text class="kicker">案件详情</text>
     <text class="faint qa-case-detail-history" bindtap="goHistory">卷宗</text>
   </view>

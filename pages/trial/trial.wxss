@@ -1,4 +1,4 @@
-.trial-page { min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx; justify-content: center; align-items: center; }
+.trial-page { min-height: 100vh; box-sizing: border-box; padding: calc(24rpx + env(safe-area-inset-top)) 50rpx calc(60rpx + env(safe-area-inset-bottom)); justify-content: center; align-items: center; }
 .trial-header { position: absolute; top: 24rpx; left: 50rpx; right: 50rpx; justify-content: space-between; }
 .trial-step-list { gap: 32rpx; width: 100%; max-width: 520rpx; }
 .trial-error { background: #FFFDF9; width: 100%; }

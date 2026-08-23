@@ -1,7 +1,6 @@
 <view class="col their-statement-page">
 
   <view class="row statement-header">
-    <text class="faint qa-their-statement-back" bindtap="back">‹ 返回</text>
     <text class="kicker">你的陈述</text>
   </view>
 

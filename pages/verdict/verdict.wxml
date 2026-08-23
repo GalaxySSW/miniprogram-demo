@@ -1,7 +1,6 @@
 <view class="col verdict-page">
 
   <view class="row verdict-header">
-    <text class="faint qa-verdict-back" bindtap="back">‹ 返回</text>
     <text class="kicker">判决书</text>
   </view>
 

@@ -1,8 +1,7 @@
 <view class="evidence-page">
   <view class="page-header">
-    <button id="qa-evidence-back" class="page-back" bindtap="goBack">‹</button>
+    <view id="qa-evidence-back" class="page-back" bindtap="goBack">‹</view>
     <text class="page-title">呈上证据</text>
-    <view class="page-capsule"><text>•••</text><text class="page-capsule-divider"></text><text>○</text></view>
   </view>
 
   <view class="evidence-content">

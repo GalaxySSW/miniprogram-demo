@@ -1,4 +1,4 @@
-.waiting-page { min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx; }
+.waiting-page { min-height: 100vh; box-sizing: border-box; padding: calc(24rpx + env(safe-area-inset-top)) 50rpx calc(60rpx + env(safe-area-inset-bottom)); }
 .waiting-header { justify-content: space-between; min-height: 44rpx; }
 .timeline-list { gap: 36rpx; }
 .accent-card { border-left: 6rpx solid #B0793F; }

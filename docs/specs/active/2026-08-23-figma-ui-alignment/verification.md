@@ -15,6 +15,10 @@
 - `docs/specs/active/2026-08-23-figma-ui-alignment/tasks.md`
 - `docs/specs/active/2026-08-23-figma-ui-alignment/verification.md`
 - `components/recovery-panel/recovery-panel.wxml`（修复真实编译错误）
+- `assets/brand/panpan-mascot.svg`、`assets/brand/panpan-logo-lockup.svg`、`assets/brand/panpan-logo-lockup-full.svg`（本地固定品牌资产）
+- `pages/home/home.wxml/.wxss/.js/.json`（Home 首轮视觉与交互结构）
+- `visual-gap-matrix.md`（逐页差异与资产策略）
+- 默认导航页与两个 custom navigation 页的返回/系统胶囊校对。
 
 明确没有修改：
 
@@ -96,6 +100,10 @@
 | Evidence → Statement | 跳过截图进入陈述页 | `pages/statement/statement`；`#qa-statement-field-what`、隐私提示、提交按钮可见 | 通过 |
 | Statement input | 输入写入页面状态并渐进披露 | 输入后 `answers.what` 等于测试文本，`#qa-statement-field-hurt` 出现 | 通过 |
 | 串行截图 | 获取真实模拟器视觉证据 | Home 桌面截图与 Statement MCP 截图成功；Statement 截图显示问题卡、隐私提示、CTA、语音 dock | 通过 |
+| Home 二轮截图 | 主 CTA 满宽、长案情不撑破、进行中案件隐藏次级入口 | `#qa-home-primary` 为 `386×59px`；案件标题单行省略；`/tmp/home-figma-compare-v2.png` 已生成 | 通过 |
+| 导航双返回扫描 | 默认导航页不再出现页面内返回；custom 页只有一套固定返回 | 静态 `navigation-back-scan: ok (20 routes)`；MCP `accept/evidence/statement` 抽查通过；custom 页无 `.page-capsule` | 通过 |
+| 20 route 导航回归 | 20 个 route 均可 reLaunch，最终路由可断言 | `mp_runScenario` 21/21 steps passed；最终 `pages/profile/profile` 断言通过，随后单独 `reLaunch pages/home/home` 稳定返回 Home | 通过 |
+| DevTools 健康检查 | 连接、WS、automator 正常且无新增错误 | `devtoolsOnline=true`、`wsReachable=true`、`automatorConnected=true`、`needsRecovery=false`、warnings/errors 为空 | 通过 |
 
 阻塞/边界：P0 后续页面、P1 页面、真机/双设备和真实云端能力仍未验证；本轮没有发送新的外部 AI 请求，也没有把模拟器结果表述为真实敏感数据可用。
 

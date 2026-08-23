@@ -1,7 +1,6 @@
 <view class="col history-page">
 
   <view class="row history-header">
-    <text class="faint qa-history-home" bindtap="goHome">‹ 首页</text>
     <text class="kicker">卷宗</text>
   </view>
 

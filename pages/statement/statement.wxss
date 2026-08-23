@@ -7,8 +7,8 @@
 }
 
 .page-header {
-  height: 88rpx;
-  padding: 0 40rpx;
+  height: 176rpx;
+  padding: 88rpx 40rpx 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -17,6 +17,7 @@
 .page-back {
   width: 52rpx;
   height: 52rpx;
+  box-sizing: border-box;
   padding: 0;
   margin: 0;
   border: 0;
@@ -27,7 +28,7 @@
   line-height: 44rpx;
   text-align: left;
 }
-.page-back::after { border: 0; }
+.page-back { display: flex; align-items: center; justify-content: flex-start; }
 .page-title { flex: 1; margin-left: 8rpx; font-size: 34rpx; font-weight: 500; line-height: 1.4; }
 .page-capsule {
   min-width: 92rpx;
@@ -45,7 +46,7 @@
 }
 .page-capsule-divider { width: 1rpx; height: 22rpx; background: rgba(0, 0, 0, .12); }
 
-.statement-content { padding: 24rpx 48rpx 300rpx; }
+.statement-content { padding: 24rpx 48rpx calc(300rpx + env(safe-area-inset-bottom)); overflow: hidden; }
 .statement-step { display: flex; flex-direction: column; gap: 12rpx; }
 .step-label { color: #6E685F; font-size: 22rpx; line-height: 1.5; }
 .statement-title { font-size: 44rpx; font-weight: 500; line-height: 1.35; }
@@ -119,7 +120,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 16rpx 48rpx 32rpx;
+  padding: 16rpx 48rpx calc(32rpx + env(safe-area-inset-bottom));
   box-sizing: border-box;
   border-top: 1rpx solid #E1DACE;
   background: rgba(250, 247, 242, .98);

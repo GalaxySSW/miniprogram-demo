@@ -1,8 +1,7 @@
 <view class="statement-page">
   <view class="page-header">
-    <button id="qa-statement-back" class="page-back" bindtap="goBack">‹</button>
+    <view id="qa-statement-back" class="page-back" bindtap="goBack">‹</view>
     <text class="page-title">慢慢说，本庭在听</text>
-    <view class="page-capsule"><text>•••</text><text class="page-capsule-divider"></text><text>○</text></view>
   </view>
 
   <view class="statement-content">

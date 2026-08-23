@@ -1,7 +1,6 @@
 <view class="col respond-page">
 
   <view class="row respond-header">
-    <text class="faint qa-respond-back" bindtap="back">‹ 返回</text>
     <text class="kicker">应诉</text>
   </view>
 

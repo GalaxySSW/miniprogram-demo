@@ -1,7 +1,6 @@
 <view class="col pact-page">
 
   <view class="row pact-header">
-    <text class="faint qa-pact-back" bindtap="back">‹ 返回</text>
     <text class="kicker">本庭约定</text>
   </view>
 

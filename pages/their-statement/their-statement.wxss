@@ -1,7 +1,7 @@
-.their-statement-page { min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 220rpx; }
+.their-statement-page { min-height: 100vh; box-sizing: border-box; padding: calc(24rpx + env(safe-area-inset-top)) 50rpx calc(220rpx + env(safe-area-inset-bottom)); overflow: hidden; }
 .statement-header { justify-content: space-between; min-height: 44rpx; }
 .statement-editor { background: #FFFDF9; }
 .statement-field { min-height: 200rpx; }
 .privacy-note { display: flex; align-items: center; gap: 16rpx; }
-.voice-bar { position: fixed; left: 0; right: 0; bottom: 0; padding: 20rpx 50rpx 40rpx; background: #FFF9F1; border-top: 1rpx solid #E8D9C8; }
+.voice-bar { position: fixed; left: 0; right: 0; bottom: 0; padding: 20rpx 50rpx calc(40rpx + env(safe-area-inset-bottom)); background: #FAF7F2; border-top: 1rpx solid #E1DACE; }
 .voice-hint { margin-bottom: 12rpx; }

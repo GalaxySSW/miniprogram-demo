@@ -1,4 +1,4 @@
-.history-page { min-height: 100vh; box-sizing: border-box; padding: 24rpx 50rpx 60rpx; }
+.history-page { min-height: 100vh; box-sizing: border-box; padding: calc(24rpx + env(safe-area-inset-top)) 50rpx calc(60rpx + env(safe-area-inset-bottom)); }
 .history-header { justify-content: space-between; min-height: 44rpx; }
 .history-list { gap: 24rpx; }
 .state-card { background: #FFFDF9; }

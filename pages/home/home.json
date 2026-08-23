@@ -1,5 +1,4 @@
 {
-  "usingComponents": { "cat": "/components/cat/cat" },
   "navigationBarTitleText": "爱情判官",
   "navigationStyle": "custom"
 }

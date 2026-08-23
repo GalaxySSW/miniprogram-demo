@@ -1,7 +1,6 @@
 <view class="col accept-page">
 
   <view class="row accept-header">
-    <text class="faint qa-accept-back" bindtap="back">‹ 返回</text>
     <text class="kicker">受理确认</text>
   </view>
 
