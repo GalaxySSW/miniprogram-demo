@@ -349,32 +349,41 @@ exports.main = async (event) => {
       const res = await db.collection('cases')
         .where(_.or([{ aOpenid: OPENID }, { bOpenid: OPENID }]))
         .orderBy('createdAt', 'desc').limit(10).get()
+
+      // 每桩案子只提醒一件最要紧的事，按优先级取一条；否则多案多状态会在首页堆成一摞
       const items = []
       for (const d of res.data) {
         const isA = d.aOpenid === OPENID
-        // 通知要持久到「被看过」为止，不能挂在某个转瞬即逝的状态上
-        if (isA && d.bStatement && !d.verdict) {
-          items.push({ docId: d._id, caseId: d.caseId, kind: 'responded', text: 'TA 已经应诉了，可以开庭' })
-        }
-        if (d.verdict) {
-          items.push({ docId: d._id, caseId: d.caseId, kind: 'verdict', text: '判决书已经出来了' })
-        }
-        if (d.verdict && !d.pact) {
-          items.push({ docId: d._id, caseId: d.caseId, kind: 'pact', text: '判完了，还差一个约定' })
-        }
+        let item = null
         if (d.pact && (d.pact.confirmedBy || []).indexOf(OPENID) < 0) {
-          items.push({ docId: d._id, caseId: d.caseId, kind: 'pact', text: `TA 定了「${d.pact.title}」，等你点头` })
+          item = { kind: 'pact', text: `TA 定了「${d.pact.title}」，等你点头` }
+        } else if (d.pact && d.pact.wantReview && !d.review &&
+                   d.pact.reviewAt && new Date(d.pact.reviewAt) <= new Date()) {
+          item = { kind: 'review', text: '你们让本庭过几天问问，时候到了' }
+        } else if (isA && d.bStatement && !d.verdict) {
+          item = { kind: 'responded', text: 'TA 已经应诉了，可以开庭' }
+        } else if (d.verdict && !d.pact) {
+          item = { kind: 'verdict', text: '判决书出来了，看完落个约定' }
         }
-        // 定时回访会变成打卡考核，也会在人过得好的时候把注意力拉回冲突。
-        // 只有用户自己勾选了「过几天提醒我们」，本庭才开口。
-        if (d.pact && d.pact.wantReview && !d.review) {
-          const due = d.pact.reviewAt && new Date(d.pact.reviewAt) <= new Date()
-          if (due) items.push({ docId: d._id, caseId: d.caseId, kind: 'review', text: '你们让本庭过几天问问，时候到了' })
-        }
-        const peb = await db.collection('pebbles')
-          .where({ caseDocId: d._id, fromOpenid: _.neq(OPENID), received: false }).count()
-        if (peb.total) {
-          items.push({ docId: d._id, caseId: d.caseId, kind: 'pebble', text: `TA 递来了 ${peb.total} 颗石子` })
+        if (item) items.push({ docId: d._id, caseId: d.caseId, ...item })
+        if (items.length >= 3) break
+      }
+
+      // 石子按情侣汇总成一条，不逐案重复
+      if (items.length < 3) {
+        const key = await myCoupleKey(OPENID)
+        if (key) {
+          const peb = await db.collection('pebbles')
+            .where({ coupleKey: key, fromOpenid: _.neq(OPENID), received: false }).count()
+          if (peb.total) {
+            const anyCase = res.data.find(d => d.coupleKey === key)
+            items.push({
+              docId: anyCase ? anyCase._id : '',
+              caseId: anyCase ? anyCase.caseId : '',
+              kind: 'pebble',
+              text: `TA 递来了 ${peb.total} 颗石子`
+            })
+          }
         }
       }
       return { ok: true, result: items }

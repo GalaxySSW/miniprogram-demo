@@ -7,7 +7,7 @@
     <view class="statement-step">
       <text class="step-label">立案 · 第二步</text>
       <text class="statement-title">慢慢说，本庭在听</text>
-      <text class="statement-subtitle">一次只问一句，想到什么说什么。</text>
+      <text class="statement-subtitle">一次只问一句。</text>
     </view>
 
     <view wx:if="{{hasEvidence}}" id="qa-statement-evidence-read" class="statement-evidence-card">
@@ -20,7 +20,7 @@
         <view wx:if="{{index < shown}}" id="qa-statement-question-{{index}}" class="statement-card reveal {{activeKey == item.key ? 'is-active' : ''}}">
           <view class="statement-card-heading">
             <text class="statement-question">{{item.q}}</text>
-            <text class="statement-progress">{{index + 1}}/3</text>
+            <text class="statement-progress">{{index + 1}}/{{questions.length}}</text>
           </view>
           <textarea id="qa-statement-field-{{item.key}}" class="statement-field" placeholder="{{item.ph}}" placeholder-class="field-ph"
             value="{{answers[item.key]}}" data-key="{{item.key}}"

@@ -33,22 +33,28 @@ Page({
 
   onLoad() {
     const c = app.globalData.caseData
-    this.setData({ hasEvidence: !!c.screenshotText })
+    const prev = c.myStatement || {}
 
-    // 从受理页「听岔了，我再补充」回来时，把之前写的原样恢复，别让人重打一遍
-    const prev = c.myStatement
-    if (prev && (prev.what || prev.hurt || prev.wish)) {
-      const answers = {}
-      QUESTIONS.forEach(q => { if (prev[q.key]) answers[q.key] = prev[q.key] })
-      const filled = Object.keys(answers).length
-      this.setData({
-        answers,
-        extraText: prev.extra || '',
-        extra: !!prev.extra,
-        shown: Math.min(QUESTIONS.length, Math.max(1, filled + 1)),
-        canSubmit: filled > 0
-      })
-    }
+    // 第一步已经用语音/打字说过经过，这里就不再重复问「发生了什么」，
+    // 直接进引导性的两问；那段经过仍会随陈述一起提交
+    const askWhat = !prev.what
+    const questions = askWhat ? QUESTIONS : QUESTIONS.filter(q => q.key !== 'what')
+
+    const answers = {}
+    questions.forEach(q => { if (prev[q.key]) answers[q.key] = prev[q.key] })
+    if (!askWhat) this.ventWhat = prev.what   // 藏起来，提交时带上
+
+    const filled = Object.keys(answers).length
+    this.setData({
+      questions,
+      hasEvidence: !!c.screenshotText,
+      answers,
+      extraText: prev.extra || '',
+      extra: !!prev.extra,
+      shown: Math.min(questions.length, Math.max(1, filled + 1)),
+      canSubmit: filled > 0 || !askWhat,
+      activeKey: questions[0].key
+    })
   },
 
   onInput(e) {
@@ -64,16 +70,16 @@ Page({
 
   // 当前这句写了东西，就把下一句放出来
   refresh() {
-    const { answers, shown } = this.data
-    const filled = QUESTIONS.filter(q => (answers[q.key] || '').trim()).length
+    const { answers, shown, questions } = this.data
+    const filled = questions.filter(q => (answers[q.key] || '').trim()).length
     this.setData({
-      shown: Math.min(QUESTIONS.length, Math.max(shown, filled + 1)),
-      canSubmit: filled > 0
+      shown: Math.min(questions.length, Math.max(shown, filled + 1)),
+      canSubmit: filled > 0 || !!this.ventWhat
     })
   },
 
   showNext() {
-    this.setData({ shown: Math.min(QUESTIONS.length, this.data.shown + 1) })
+    this.setData({ shown: Math.min(this.data.questions.length, this.data.shown + 1) })
   },
   addExtra() {
     this.setData({ extra: true, activeKey: 'extra' })
@@ -113,6 +119,7 @@ Page({
 
     const c = app.globalData.caseData
     c.myStatement = {
+      ...(this.ventWhat ? { what: this.ventWhat } : {}),
       ...this.data.answers,
       extra: this.data.extraText,
       screenshots: c.screenshotText || ''
