@@ -4,6 +4,8 @@
 
 微信小程序 · 黑客松 MVP。UI 遵循「线稿猫 · 奶油纸 · 平面无衬线」设计规范（UI v2）。
 
+交互 Deck：<https://galaxyssw.github.io/panpan/deck/>（单文件自包含，也可直接下载 [deck/index.html](deck/index.html) 本地打开）
+
 ## 当前状态
 
 - ✅ 19 个页面已注册，主流程可用本地 mock 数据演示：
