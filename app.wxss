@@ -118,6 +118,9 @@ button.btn::after { border: none; }
   border-radius: var(--panpan-radius-pill);
   font-size: 20rpx;
   font-weight: 500;
+  line-height: 32rpx;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .pill-honey { background: rgba(221, 187, 122, 0.2); color: var(--panpan-brand-cocoa); }
 .pill-matcha { background: rgba(168, 184, 154, 0.22); color: #627255; }

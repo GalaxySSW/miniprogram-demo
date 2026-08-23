@@ -45,6 +45,7 @@ Page({
     this.setData({ submitting: true, submitError: '' })
 
     const c = app.globalData.caseData
+    const localDemo = !!c.demoMode
     c.theirStatement = {
       text: this.data.text,
       mood: this.data.moods[this.data.moodIdx] || ''
@@ -56,9 +57,14 @@ Page({
       setTimeout(() => wx.redirectTo({ url: '/pages/interview/interview?side=b' }), 1400)
     }
     if (c.docId) casedb.respond(c.docId, c.theirStatement, c.demoMode).then(result => {
-      if (app.globalData.cloudReady && !result) return this.setData({ submitting: false, submitError: '这段陈述没有保存成功，原文仍保留在本页。' })
+      if (app.globalData.cloudReady && !result && !localDemo) {
+        return this.setData({ submitting: false, submitError: '这段陈述没有保存成功，原文仍保留在本页。' })
+      }
       done()
-    }).catch(() => this.setData({ submitting: false, submitError: '这段陈述没有保存成功，原文仍保留在本页。' }))
+    }).catch(() => {
+      if (localDemo) return done()
+      this.setData({ submitting: false, submitError: '这段陈述没有保存成功，原文仍保留在本页。' })
+    })
     else done()
   },
   retrySubmit() { this.submit() },
