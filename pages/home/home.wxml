@@ -24,12 +24,12 @@
 
     <view wx:if="{{activeCase || completedCount}}" class="home-cases">
       <view class="home-rule"></view>
-      <view class="home-section-heading">
+      <view wx:if="{{activeCase}}" class="home-section-heading">
         <view class="home-section-title-group">
           <text class="home-section-title">当前进行中的调解</text>
-          <text wx:if="{{activeCase}}" class="home-case-number">{{activeCase.shortId}}</text>
+          <text class="home-case-number">{{activeCase.shortId}}</text>
         </view>
-        <text wx:if="{{activeCase}}" class="home-case-status">{{activeCase.statusText}}</text>
+        <text class="home-case-status">{{activeCase.statusText}}</text>
       </view>
 
       <view wx:if="{{activeCase}}" id="qa-home-pending" class="home-case-row home-case-row-action" bindtap="resume">
@@ -48,7 +48,7 @@
 
     <view wx:else class="home-empty-hint">从一段说不清的误会开始，让本庭先听听你的感受。</view>
 
-    <view wx:if="{{!activeCase && !completedCount}}" class="home-secondary-actions">
+    <view class="home-secondary-actions">
       <button id="qa-home-summons" class="home-secondary-button" bindtap="gotSummons">我收到了传票</button>
     </view>
   </view>

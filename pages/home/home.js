@@ -8,37 +8,32 @@ Page({
     starting: false
   },
   onShow() {
+    const c = app.globalData.caseData
+
     casedb.myCases().then(list => {
-      if (!list) return
-      const completedCount = list.filter(c => c.status === 'closed' || c.review || c.verdict).length
-      const active = list.find(c => c.status !== 'closed' && !c.review && !c.verdict)
+      if (!list) {
+        // 云端取不到时，只有本地确实存着一桩没发出去的案子才显示
+        const localPending = c.docId && (c.status === 'pending' || c.status === 'accepted')
+        this.setData({ activeCase: localPending ? this.toHomeCase({
+          _id: c.docId, caseId: c.id, status: c.status, topic: c.topic || '', note: c.note || ''
+        }) : null })
+        return
+      }
+
+      const completedCount = list.filter(x => x.status === 'closed' || x.review).length
+      // 只算真正还没走完的：判决已出但还没落约定的也算完成，不该一直挂在首页催人
+      const active = list.find(x => x.status !== 'closed' && !x.review && !x.verdict)
+
+      if (active) {
+        app.globalData.caseData.docId = active._id
+        app.globalData.caseData.id = active.caseId
+        if (active.note) app.globalData.caseData.note = active.note
+      }
       this.setData({
         completedCount,
         activeCase: active ? this.toHomeCase(active) : null
       })
     })
-    const c = app.globalData.caseData
-    if (c.docId && (c.status === 'pending' || c.status === 'accepted')) {
-      this.setData({ activeCase: this.toHomeCase({
-        _id: c.docId,
-        caseId: c.id,
-        status: c.status,
-        topic: c.topic || '',
-        note: c.note || ''
-      }) })
-    } else {
-      // 云端还挂着没发出去的案子也要捡回来
-      casedb.myCases().then(list => {
-        if (!list) return
-        const open = list.find(x => x.side === 'a' && x.status === 'created' && !x.hasB)
-        if (open) {
-          app.globalData.caseData.docId = open._id
-          app.globalData.caseData.id = open.caseId
-          app.globalData.caseData.note = open.note || ''
-          this.setData({ activeCase: this.toHomeCase(open) })
-        }
-      })
-    }
   },
   toHomeCase(c) {
     const statusText = c.status === 'created' && !c.hasB ? '待对方加入'

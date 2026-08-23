@@ -44,16 +44,28 @@ function post(path, payload, headers, timeout) {
     }, res => {
       let data = ''
       res.on('data', c => { data += c })
-      res.on('end', () => resolve(data))
+      res.on('aborted', () => reject(Object.assign(new Error('响应被中断'), { transient: true })))
+      res.on('error', err => reject(Object.assign(err, { transient: true })))
+      res.on('end', () => {
+        // 连接中途断掉时 end 照样会触发，但 res.complete 为 false——
+        // 不检查这个就会把半截 JSON 当成完整响应，报「Unexpected end of JSON input」
+        if (res.complete === false) {
+          return reject(Object.assign(new Error('响应不完整'), { transient: true }))
+        }
+        resolve(data)
+      })
     })
-    req.on('error', reject)
-    req.on('timeout', () => { req.destroy(); reject(new Error('AI 接口超时')) })
+    req.on('error', err => reject(Object.assign(err, { transient: true })))
+    req.on('timeout', () => {
+      req.destroy()
+      reject(Object.assign(new Error('AI 接口超时'), { transient: true }))
+    })
     req.write(payload)
     req.end()
   })
 }
 
-async function chat(messages, model, wantJSON) {
+async function chatOnce(messages, model, wantJSON) {
   const body = JSON.stringify({
     model: model || MODEL,
     messages,
@@ -65,10 +77,46 @@ async function chat(messages, model, wantJSON) {
     'Content-Type': 'application/json',
     'Content-Length': Buffer.byteLength(body)
   })
-  const json = JSON.parse(raw)
-  if (json.error) throw new Error(json.error.message || 'upstream_error')
+
+  let json
+  try {
+    json = JSON.parse(raw)
+  } catch (e) {
+    // 响应体截断，值得重试一次
+    throw Object.assign(new Error('响应解析失败: ' + String(raw).slice(-80)), { transient: true })
+  }
+  if (json.error) {
+    const msg = json.error.message || 'upstream_error'
+    // 中转站的负载类错误是暂时的；模型不存在之类的不必重试
+    const transient = !msg || /饱和|负载|busy|overload|rate|timeout|超时/i.test(msg)
+    throw Object.assign(new Error(msg), { transient })
+  }
+  if (!json.choices || !json.choices[0]) {
+    throw Object.assign(new Error('上游未返回内容'), { transient: true })
+  }
   const content = json.choices[0].message.content
-  return wantJSON === false ? content : parseJSON(content)
+  if (wantJSON === false) return content
+  try {
+    return parseJSON(content)
+  } catch (e) {
+    // 模型偶尔会吐出被截断的 JSON，重来一次通常就好
+    throw Object.assign(new Error('模型输出不是完整 JSON'), { transient: true })
+  }
+}
+
+// 中转站的截断、限流、偶发空响应都属于可重试的暂时性失败
+async function chat(messages, model, wantJSON) {
+  let last
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      return await chatOnce(messages, model, wantJSON)
+    } catch (e) {
+      last = e
+      if (!e.transient || attempt === 2) break
+      console.warn(`[chat] 第 ${attempt} 次失败（${e.message}），重试`)
+    }
+  }
+  throw last
 }
 
 // whisper 语音转写：手写 multipart，避免引入依赖
