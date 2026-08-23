@@ -29,7 +29,7 @@
         </view>
       </block>
 
-      <button wx:if="{{shown < 3}}" id="qa-statement-next-question" class="statement-more" bindtap="showNext">还想多说一点？再来一句 →</button>
+      <view wx:if="{{shown < 3}}" id="qa-statement-next-question" class="statement-more" bindtap="showNext">还想多说一点？再来一句 →</view>
 
       <view wx:if="{{extra}}" id="qa-statement-extra" class="statement-card reveal {{activeKey == 'extra' ? 'is-active' : ''}}">
         <text class="statement-question">还想补充的</text>
@@ -37,7 +37,7 @@
           value="{{extraText}}" data-key="extra"
           bindinput="onExtraInput" bindfocus="onFocus" auto-height maxlength="800" />
       </view>
-      <button wx:elif="{{shown >= 3}}" id="qa-statement-add-extra" class="statement-more" bindtap="addExtra">＋ 再补一句</button>
+      <view wx:elif="{{shown >= 3}}" id="qa-statement-add-extra" class="statement-more" bindtap="addExtra">＋ 再补一句</view>
     </view>
 
     <view id="qa-statement-privacy" class="privacy-notice statement-privacy">
@@ -45,10 +45,9 @@
       <text>你说的这些，TA 不会看到原话。</text>
     </view>
 
-    <button id="qa-statement-submit" class="btn {{canSubmit && !submitting ? 'btn-primary' : 'btn-disabled'}} statement-submit"
-      loading="{{submitting}}" disabled="{{!canSubmit || submitting || transcribing || recording}}" bindtap="submit">
+    <view id="qa-statement-submit" class="btn {{canSubmit && !submitting ? 'btn-primary' : 'btn-disabled'}} statement-submit" bindtap="submit">
       {{submitting ? '本庭正在接住你的话…' : (canSubmit ? '呈上本庭' : '先说一句，本庭才好接')}}
-    </button>
+    </view>
   </view>
 
   <view class="statement-voice-dock">

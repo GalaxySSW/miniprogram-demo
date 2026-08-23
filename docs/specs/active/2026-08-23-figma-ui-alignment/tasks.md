@@ -40,6 +40,7 @@
 - [x] T18.1 固定资产策略；Logo/Mascot/icon 本地化，证据/语音/运行时图片保留云端路径；见 `visual-gap-matrix.md`。
 - [x] T18.2 Home 首轮视觉校对；主 CTA 满宽、案件主题单行省略、存在进行中案件时隐藏次级传票入口；已完成 MCP snapshot 与串行截图。
 - [x] T18.2a 宿主导航校对；默认导航页移除页面内返回，自定义页保留单一固定尺寸返回，并移除仿制系统胶囊。
+- [x] T18.2b Statement 首屏溢出修复；原生 button 改为固定布局 view，textarea/长文案增加边界。
 - [ ] T18.3 逐页补齐顶部/底部安全区与长文案溢出策略；先 P0，再 P1。
 - [ ] T18.4 逐页替换 CSS 猫咪、Unicode/Emoji 固定 icon，并记录缺少正式 Figma 资产的页面。
 - [x] T14 静态检查；证据：全量 `node --check`、JSON 解析、WXML 标签检查、`git diff --check` 已通过。

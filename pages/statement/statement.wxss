@@ -46,7 +46,7 @@
 }
 .page-capsule-divider { width: 1rpx; height: 22rpx; background: rgba(0, 0, 0, .12); }
 
-.statement-content { padding: 24rpx 48rpx calc(300rpx + env(safe-area-inset-bottom)); overflow: hidden; }
+.statement-content { padding: 24rpx 48rpx 240rpx; overflow: hidden; }
 .statement-step { display: flex; flex-direction: column; gap: 12rpx; }
 .step-label { color: #6E685F; font-size: 22rpx; line-height: 1.5; }
 .statement-title { font-size: 44rpx; font-weight: 500; line-height: 1.35; }
@@ -64,6 +64,7 @@
   background: #FFFDF9;
 }
 .statement-evidence-copy { flex: 1; color: #6E685F; font-size: 22rpx; line-height: 1.6; }
+.statement-evidence-copy { min-width: 0; overflow-wrap: break-word; }
 
 .statement-questions { display: flex; flex-direction: column; gap: 24rpx; margin-top: 40rpx; }
 .statement-card {
@@ -72,10 +73,11 @@
   border: 1rpx solid #E1DACE;
   border-radius: 20rpx;
   background: #FFFDF9;
+  overflow: hidden;
 }
 .statement-card.is-active { border-color: #B0793F; }
-.statement-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16rpx; }
-.statement-question { flex: 1; font-size: 28rpx; font-weight: 500; line-height: 1.55; }
+.statement-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16rpx; min-width: 0; }
+.statement-question { flex: 1; min-width: 0; overflow-wrap: break-word; font-size: 28rpx; font-weight: 500; line-height: 1.55; }
 .statement-progress { flex-shrink: 0; color: #9C958A; font-size: 21rpx; line-height: 1.6; }
 .statement-field {
   width: 100%;
@@ -86,8 +88,13 @@
   color: #1A1918;
   font-size: 26rpx;
   line-height: 1.7;
+  max-height: 240rpx;
+  overflow-y: auto;
 }
 .statement-more {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
   padding: 0;
   border: 0;
   background: transparent;
@@ -114,6 +121,17 @@
 .statement-privacy { margin-top: 32rpx; }
 .privacy-icon { color: #C9573F; font-size: 24rpx; line-height: 1; }
 .statement-submit { width: 100%; margin-top: 32rpx; }
+.statement-submit {
+  box-sizing: border-box;
+  min-height: 96rpx;
+  height: 96rpx;
+  padding: 0;
+  border-radius: 999rpx;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .statement-voice-dock {
   position: fixed;
@@ -129,6 +147,8 @@
 .statement-voice-hint { display: block; margin-bottom: 12rpx; color: #9C958A; font-size: 20rpx; line-height: 1.5; text-align: center; }
 .voice-button {
   height: 88rpx;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;

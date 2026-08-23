@@ -59,3 +59,11 @@
 - 自定义导航页：仅 `evidence`、`statement` 保留页面内返回；返回控件改为固定尺寸 `view`，避免原生 button 默认宽度撑开标题。
 - `evidence/statement` 的页面内仿制 `.page-capsule` 已移除，右上角交给微信宿主菜单。
 - 静态扫描结果：`navigation-back-scan: ok (20 routes)`；MCP 抽查 `accept`、`evidence`、`statement` 均无重复返回/胶囊节点。
+
+## Statement 溢出修复（2026-08-23）
+
+- 原因：微信原生 `<button>` 的默认宽度覆盖了页面级 `width: 100%`，导致渐进按钮和提交按钮只有约 184px。
+- 修复：将纯布局交互按钮改为 `view`，保留 `qa-*`、tap handler 和 JS 幂等校验；提交按钮恢复为内容容器宽度。
+- 防回归：textarea 增加最大高度和滚动；长问题/说明允许断行；提交按钮单行省略；语音按钮显式 `width: 100%`。
+- MCP 结构化证据：`#qa-statement-next-question` 与 `#qa-statement-submit` 均为 `376px` 宽，`.statement-voice-dock` 为 `430px` 宽。
+- 视觉截图注意：截图通道在复核时被并发页面状态切换到 `verdict`，因此未将该张截图作为 statement 证据；结构化尺寸和静态检查通过，需在单独人工 statement 页面上再做一次截图确认。

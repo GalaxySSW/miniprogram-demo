@@ -104,6 +104,7 @@
 | 导航双返回扫描 | 默认导航页不再出现页面内返回；custom 页只有一套固定返回 | 静态 `navigation-back-scan: ok (20 routes)`；MCP `accept/evidence/statement` 抽查通过；custom 页无 `.page-capsule` | 通过 |
 | 20 route 导航回归 | 20 个 route 均可 reLaunch，最终路由可断言 | `mp_runScenario` 21/21 steps passed；最终 `pages/profile/profile` 断言通过，随后单独 `reLaunch pages/home/home` 稳定返回 Home | 通过 |
 | DevTools 健康检查 | 连接、WS、automator 正常且无新增错误 | `devtoolsOnline=true`、`wsReachable=true`、`automatorConnected=true`、`needsRecovery=false`、warnings/errors 为空 | 通过 |
+| Statement 溢出修复 | 渐进按钮、提交按钮、语音按钮不撑破内容区；长输入可滚动 | MCP 结构化尺寸：提交/渐进按钮 `376px`，语音 dock `430px`；`node --check` 和 `git diff --check` 通过 | 通过（截图需单独人工复核） |
 
 阻塞/边界：P0 后续页面、P1 页面、真机/双设备和真实云端能力仍未验证；本轮没有发送新的外部 AI 请求，也没有把模拟器结果表述为真实敏感数据可用。
 
