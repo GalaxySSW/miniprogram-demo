@@ -46,8 +46,8 @@
 }
 .page-capsule-divider { width: 1rpx; height: 22rpx; background: rgba(0, 0, 0, .12); }
 
-.evidence-content { padding: 24rpx 48rpx 48rpx; }
-.evidence-content { overflow: hidden; }
+.evidence-content { padding-bottom: 200rpx; padding: 24rpx 48rpx 48rpx; }
+.evidence-content { padding-bottom: 200rpx; overflow: hidden; }
 .step-indicator { display: flex; flex-direction: column; gap: 12rpx; }
 .step-label { color: #6E685F; font-size: 22rpx; line-height: 1.5; }
 .evidence-title { font-size: 44rpx; font-weight: 500; line-height: 1.35; }
@@ -140,10 +140,16 @@
 }
 .vent-result { display: flex; flex-direction: column; }
 .vent-text { font-size: 28rpx; line-height: 1.8; }
+.vent-input { width: 100%; min-height: 220rpx; font-size: 28rpx; line-height: 1.8; }
+.vent-bar {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  padding: 20rpx 50rpx calc(36rpx + env(safe-area-inset-bottom));
+  background: #FAF7F2; border-top: 1rpx solid #E1DACE;
+}
 .vent-mic {
-  height: 132rpx; border-radius: 24rpx;
+  height: 96rpx; border-radius: 999rpx;
   background: #1A1918; color: #FAF7F2;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8rpx;
+  display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 16rpx;
 }
 .vent-mic-on { background: #B0793F; }
 .vent-mic-icon { font-size: 40rpx; line-height: 1; }

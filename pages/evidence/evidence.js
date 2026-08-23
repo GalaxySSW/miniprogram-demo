@@ -29,6 +29,9 @@ Page({
       this.setData({ ventText: (this.data.ventText ? this.data.ventText + ' ' : '') + text })
     })
   },
+  onVentInput(e) {
+    this.setData({ ventText: e.detail.value })
+  },
   clearVent() {
     this.setData({ ventText: '' })
   },
