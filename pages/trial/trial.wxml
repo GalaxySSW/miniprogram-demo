@@ -7,8 +7,6 @@
   <cat mood="sleep" breathe="{{true}}" />
 
   <view class="h2 mt48">开庭中</view>
-  <view class="sub mt8">两边的话，本庭都要再听一遍。</view>
-
   <view class="mt64 col trial-step-list qa-trial-step">
     <view wx:for="{{steps}}" wx:key="index" class="row" style="gap: 24rpx;">
       <view style="width: 36rpx; height: 36rpx; border-radius: 50%; border: 3rpx solid {{item.done ? '#7E9B72' : '#E1DACE'}}; display: flex; align-items: center; justify-content: center;">

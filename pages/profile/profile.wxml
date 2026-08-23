@@ -12,7 +12,6 @@
   <view wx:if="{{pactTried}}" class="card mt48">
     <text class="pill pill-matcha">本庭约定</text>
     <view class="sub mt16" style="color: #1A1918;">你们一起试过 {{pactTried}} 件小事，其中 {{pactDone}} 件真的做到了。</view>
-    <view class="faint mt8">做不到也没关系，本庭会换个更小的方子。</view>
   </view>
 
   <view class="mt48">
@@ -31,10 +30,10 @@
           <view wx:if="{{item.lastPact}}" class="faint mt8">试过「{{item.lastPact}}」· {{item.lastResult || '待复盘'}}</view>
         </view>
       </view>
-      <view class="faint mt24">本庭只记你们之间反复出现的事，不记你们各自是什么样的人。</view>
+      <view class="faint mt24">只记反复出现的事，不记谁是什么样的人。</view>
     </block>
     <view wx:else class="card mt24">
-      <view class="sub">同一件事第二次开庭，本庭才会记住它。</view>
+      <view class="sub">同一件事第二次开庭才会记住。</view>
     </view>
   </view>
 
@@ -42,7 +41,6 @@
     <view class="row" style="justify-content: space-between; align-items: center;">
       <view class="col">
         <text style="font-size: 28rpx; font-weight: 500;">递石子</text>
-        <text class="faint mt8">说不出话的时候，递一个不用解释的信号</text>
       </view>
       <text class="faint">→</text>
     </view>

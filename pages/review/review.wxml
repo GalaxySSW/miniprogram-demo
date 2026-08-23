@@ -26,12 +26,10 @@
     </view>
     <view class="grow"></view>
     <view class="btn btn-primary" bindtap="submit">告诉本庭</view>
-    <view class="faint center mt16">你的回答只用来给你们换个更合适的方法</view>
   </block>
 
   <block wx:else>
     <view class="card mt24">
-      <view class="sub">下次为同一件事开庭时，本庭不会再开同一个方子。</view>
     </view>
     <view class="grow"></view>
     <view class="btn btn-ghost" bindtap="goHome">回首页</view>

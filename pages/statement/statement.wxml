@@ -12,7 +12,7 @@
 
     <view wx:if="{{hasEvidence}}" id="qa-statement-evidence-read" class="statement-evidence-card">
       <text class="pill pill-matcha">已阅</text>
-      <text class="statement-evidence-copy">截图判官已经看过了，说说你的感受。</text>
+      <text class="statement-evidence-copy">截图已阅，说说你的感受。</text>
     </view>
 
     <view class="statement-questions">

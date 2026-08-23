@@ -2,7 +2,7 @@
 
   <text class="kicker">冷战通道</text>
   <view class="h2 mt16">说不出话，就递颗石子</view>
-  <view class="sub mt8">不用解释，也不用讲道理。它只说一件事：我还在。</view>
+  <view class="sub mt8">不用解释，只说一件事：我还在。</view>
 
   <!-- 往来记录 -->
   <view wx:if="{{loading}}" class="faint center mt64">正在看看石子堆…</view>
@@ -31,7 +31,7 @@
   </block>
 
   <view wx:else class="card mt48">
-    <view class="sub">还没有石子。递出第一颗，TA 那边就会看到。</view>
+    <view class="sub">还没有石子。</view>
   </view>
 
   <!-- 往来够两轮，判官才轻声问一句 -->
@@ -68,7 +68,6 @@
         <input value="{{songText}}" bindinput="onSongInput" maxlength="40"
           placeholder="写个歌名就行，比如「暖暖 - 梁静茹」" placeholder-class="field-ph"
           style="background: #FAF7F2; border: 1rpx solid #E1DACE; border-radius: 24rpx; padding: 24rpx 28rpx; font-size: 28rpx;" />
-        <view class="faint mt8">TA 会看到这个名字，不会看到你为什么选它。</view>
       </view>
 
       <view wx:else class="mt24">

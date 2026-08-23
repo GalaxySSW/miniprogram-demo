@@ -35,7 +35,6 @@
       </view>
       <view class="col grow">
         <view style="font-size: 28rpx;">过几天，让本庭来问问</view>
-        <view class="faint mt8">不勾也没关系，本庭会一直记着。</view>
       </view>
     </view>
 
@@ -47,8 +46,6 @@
   <block wx:elif="{{stage === 'wait'}}">
     <text class="kicker">本庭约定</text>
     <view class="h2 mt16">等 TA 点个头</view>
-    <view class="sub mt8">约定要两个人都同意才算数。</view>
-
     <view class="card mt48" style="border-left: 6rpx solid #B0793F;">
       <view style="font-size: 32rpx; font-weight: 500;">{{chosen.title}}</view>
       <view class="sub mt16">{{chosen.desc}}</view>
@@ -88,8 +85,6 @@
   <block wx:else>
     <view class="center mt64"><cat mood="happy" style="display: inline-block;" /></view>
     <view class="h2 center mt32">本案了结</view>
-    <view class="sub center mt8">你们都点头了。本庭把这件事记下了。</view>
-
     <view class="card mt48" style="border-left: 6rpx solid #7E9B72;">
       <view style="font-size: 32rpx; font-weight: 500;">{{chosen.title}}</view>
       <view class="sub mt16">{{chosen.desc}}</view>
@@ -104,7 +99,7 @@
   </block>
 
   <view wx:if="{{stage !== 'choose'}}" class="hairline mt64 pact-footer">
-    <view class="faint center qa-pact-pebble" bindtap="goPebble">说不出话的时候，还可以递颗石子 →</view>
+    <view class="faint center qa-pact-pebble" bindtap="goPebble">递颗石子 →</view>
   </view>
 
 </view>

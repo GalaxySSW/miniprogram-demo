@@ -39,7 +39,6 @@
   <view wx:if="{{absent}}" class="reveal card mt24 qa-verdict-absent" style="border-left: 6rpx solid #B0793F;">
     <text class="pill pill-honey">缺席审判</text>
     <view class="sub mt16" style="color: #1A1918;">TA 还没有到庭，这份判决只听了一面之词。</view>
-    <view class="faint mt8">等 TA 来了会重审，以下只是推测。</view>
   </view>
 
   <view class="hairline mt32"></view>
@@ -51,7 +50,6 @@
     </view>
     <view class="sub mt16" style="color: #1A1918;">关于「{{v.topic}}」，你们已经是第 {{v.memory.count}} 次开庭。</view>
     <view wx:if="{{v.memory.lastPact}}" class="faint mt8">上次的约定是「{{v.memory.lastPact}}」，复盘结果：{{v.memory.lastResult || '待复盘'}}。</view>
-    <view class="faint mt8">本庭记的是你们之间反复出现的这件事，不是谁的性格。</view>
   </view>
 
   <view class="reveal mt48 qa-verdict-section" style="animation-delay: 0.3s">
@@ -73,7 +71,6 @@
       <view class="faint mt16">经翻译，实为</view>
       <view class="sub mt8" style="color: #1A1918;">{{v.hisMeaning}}</view>
     </view>
-    <view class="faint center mt16">两片证词，拼成同一件事的全貌</view>
   </view>
 
   <view wx:if="{{v.herNeed || v.hisNeed}}" class="reveal mt48" style="animation-delay: 1.15s">
@@ -92,7 +89,6 @@
     <text class="kicker">你们正在转的圈</text>
     <view class="card mt16" style="border-left: 6rpx solid #B0793F;">
       <view class="sub" style="color: #1A1918;">{{v.loop}}</view>
-      <view class="faint mt8">这个圈没有谁先动手，两个人都在里面。</view>
     </view>
   </view>
 
@@ -120,7 +116,6 @@
   <view class="reveal mt48" style="animation-delay: 2.1s">
     <text class="kicker">本庭判决</text>
     <view class="card mt16" style="position: relative; padding: 48rpx 40rpx;">
-      <view class="faint">经本庭审理查明：</view>
       <view style="font-size: 36rpx; font-weight: 500; line-height: 1.6;" class="mt16">{{v.verdictTitle}}</view>
       <view class="sub mt16" style="color: #1A1918;">{{v.ruling}}</view>
       <view wx:if="{{sealed}}" class="seal seal-drop" style="position: absolute; top: -30rpx; right: 24rpx;">
@@ -171,7 +166,6 @@
     <view class="center mt16">
       <text class="faint qa-verdict-supplement" bindtap="supplement">判得不对？我还有话要补充 →</text>
     </view>
-    <view class="faint center qa-verdict-privacy">分享卡片只含判决金句，不含任何隐私</view>
     <view class="center mt16"><text class="faint qa-verdict-history" bindtap="goHistory">回卷宗查看</text></view>
   </view>
 

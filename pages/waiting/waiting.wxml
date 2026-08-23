@@ -8,8 +8,6 @@
   <view class="sub mt8">{{hint}}</view>
 
   <view wx:if="{{syncState === 'offline'}}" class="card mt24 state-card qa-waiting-offline">
-    <view class="sub">本庭会保留这份本地进度。</view>
-    <view class="faint mt8">连接云端后才能自动更新 TA 是否应诉。</view>
     <view class="btn btn-ghost mt24 qa-waiting-retry" bindtap="retry">重新查看</view>
   </view>
 
@@ -28,7 +26,6 @@
 
   <view wx:if="{{pebbleWaiting}}" class="card mt48 accent-card qa-waiting-pebble" bindtap="goPebble">
     <view class="sub" style="color: #1A1918;">TA 递来了 {{pebbleWaiting}} 颗石子。</view>
-    <view class="faint mt8">还没准备好说话，但想让你知道 TA 还在 →</view>
   </view>
 
   <view class="grow" style="min-height: 48rpx;"></view>

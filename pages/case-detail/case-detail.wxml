@@ -40,7 +40,6 @@
 
   <view class="privacy-note mt24 qa-case-detail-privacy">
     <text class="pill pill-matcha">隐私边界</text>
-    <text class="faint grow">双方原话彼此隔离，卷宗只保留共同结果和必要状态。</text>
   </view>
 
   <view class="grow"></view>

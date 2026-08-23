@@ -2,7 +2,7 @@
 
   <text class="kicker">结案长图</text>
   <view class="h2 mt16">存下来，或者发出去</view>
-  <view class="sub mt8">图里只有金句和误会指数，说过的话都不在上面。</view>
+  <view class="sub mt8">只含金句与误会指数。</view>
 
   <view class="mt48 center">
     <view wx:if="{{building}}" class="card col" style="align-items: center; padding: 120rpx 40rpx;">
@@ -22,7 +22,6 @@
 
   <view wx:if="{{imgPath}}" class="col" style="gap: 24rpx;">
     <view class="btn btn-primary" bindtap="save">保存到相册</view>
-    <view class="faint center">保存后可以发朋友圈，或者直接发给 TA</view>
   </view>
 
 

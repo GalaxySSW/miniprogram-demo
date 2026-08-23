@@ -7,7 +7,7 @@
     <view class="step-indicator">
       <text class="step-label">立案 · 第一步</text>
       <text class="evidence-title">呈上证据</text>
-      <text class="evidence-subtitle">判官会自己看懂谁说了什么。</text>
+      <text class="evidence-subtitle">判官看得懂谁说了什么。</text>
     </view>
 
     <view class="evidence-upload-card">

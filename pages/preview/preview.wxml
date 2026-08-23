@@ -1,8 +1,6 @@
 <view class="col preview-page">
 
   <view class="h2 mt16">用你自己的话开口</view>
-  <view class="sub mt8">TA 先看到的是这句话，可以改成你想说的。</view>
-
   <view class="card mt32 preview-editor accent-card">
     <textarea value="{{note}}" bindinput="onNoteInput" auto-height maxlength="60"
       placeholder="写一句你自己的话" placeholder-class="field-ph"
@@ -20,33 +18,23 @@
       <block wx:else>
         <view wx:if="{{briefError}}" class="state-card qa-preview-brief-error">
           <view class="sub">{{briefError}}</view>
-          <view class="faint mt8">你仍然可以手动写一句案由。</view>
         </view>
         <textarea value="{{brief}}" bindinput="onBriefInput" auto-height maxlength="60"
           placeholder="关于……这件事" placeholder-class="field-ph"
           class="field field-brief qa-preview-brief" />
       </block>
     </view>
-    <view class="faint mt8">只说是哪件事，不带情绪也不带指责。</view>
   </view>
 
   <view class="hairline mt48 privacy-section">
     <view class="card qa-preview-privacy">
-      <text class="pill pill-matcha">TA 能看到</text>
-      <view class="mt24 col" style="gap: 16rpx;">
-        <view class="sub">· 你上面写的这句话</view>
-        <view class="sub">· 上面那句案由</view>
-        <view class="sub">· 案号，和一只等着 TA 的猫猫判官</view>
-        <view class="sub">· 三条承诺：不评输赢、互相保密、共见判决</view>
+      <view class="row" style="gap: 16rpx; align-items: flex-start;">
+        <text class="pill pill-matcha">能看到</text>
+        <view class="sub grow">你写的这句话、案由、案号</view>
       </view>
-    </view>
-
-    <view class="card mt24">
-      <text class="pill pill-honey">TA 看不到</text>
-      <view class="mt24 col" style="gap: 16rpx;">
-        <view class="sub">· 你的陈述原话，一个字都不会</view>
-        <view class="sub">· 你上传的任何截图</view>
-        <view class="sub">· 你选择「先回一句」的事</view>
+      <view class="row mt16" style="gap: 16rpx; align-items: flex-start;">
+        <text class="pill pill-honey">看不到</text>
+        <view class="sub grow">你的陈述原话、你上传的截图</view>
       </view>
     </view>
   </view>

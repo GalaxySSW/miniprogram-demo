@@ -5,7 +5,7 @@
   </view>
 
   <view class="h2 mt16">这件事，你怎么看？</view>
-  <view class="sub mt8">随便说，说多说少都行。TA 不会看到原话。</view>
+  <view class="sub mt8"></view>
 
   <view class="card mt48 statement-editor qa-their-statement-input qa-their-statement">
     <textarea placeholder="示例：那天真的是临时加班。回到家看到她脸色不对，我就不知道怎么开口了……"
@@ -15,7 +15,7 @@
 
   <view class="privacy-note mt24 qa-their-statement-privacy">
     <text class="pill pill-matcha">对 TA 保密</text>
-    <text class="faint grow">TA 不会看到这段原话，判官只会用它理解这件事。</text>
+    <text class="faint grow">TA 看不到这段原话。</text>
   </view>
 
   <view wx:if="{{submitError}}" class="card mt24 state-card qa-their-statement-submit-error">

@@ -25,7 +25,7 @@
 
     <view class="home-hero">
       <text class="home-hero-title">有些结，不必一个人苦苦去解。</text>
-      <text class="home-hero-copy">判判是一个 AI 情感调解 Agent。在这里，我们客观听取双方的真实想法，在情绪和偏见中，为你翻译出那些被误读的爱意与渴望。</text>
+      <text class="home-hero-copy">客观听两边的话，把误读的部分翻译回来。</text>
     </view>
 
     <view class="home-companion">
@@ -58,8 +58,6 @@
         </view>
       </view>
     </view>
-
-    <view wx:else class="home-empty-hint">从一段说不清的误会开始，让本庭先听听你的感受。</view>
 
     <view class="home-secondary-actions">
       <button id="qa-home-summons" class="home-secondary-button" bindtap="gotSummons">我收到了传票</button>
