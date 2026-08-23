@@ -7,7 +7,7 @@
     <view class="step-indicator">
       <text class="step-label">立案 · 第一步</text>
       <text class="evidence-title">先说说这件事</text>
-      <text class="evidence-subtitle">按住，想到什么说什么。</text>
+      <text class="evidence-subtitle">想到什么说什么。</text>
     </view>
 
     <!-- 主输入区：打字和说话都可以，说的内容也落到这里，可再编辑 -->
