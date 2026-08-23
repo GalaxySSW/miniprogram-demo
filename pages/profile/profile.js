@@ -7,6 +7,9 @@ const casedb = require('../../utils/casedb.js')
 const credits = require('../../utils/credits.js')
 
 Page({
+  goPebble() {
+    wx.navigateTo({ url: '/pages/pebble/pebble' })
+  },
   data: {
     together: false,
     pactDone: 0,

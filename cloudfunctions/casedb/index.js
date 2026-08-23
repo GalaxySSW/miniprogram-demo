@@ -112,7 +112,7 @@ exports.main = async (event) => {
       const doc = await db.collection('cases').doc(event._id).get()
       if (doc.data.aOpenid !== OPENID) return { ok: false, error: '不是你的案子' }
       await db.collection('cases').doc(event._id).update({
-        data: { aStatement: event.statement || {} }
+        data: { aStatement: _.set(event.statement || {}) }
       })
       return { ok: true, result: { updated: true } }
     }
@@ -145,7 +145,7 @@ exports.main = async (event) => {
         data: {
           bOpenid: responder,
           coupleKey: coupleKeyOf(merged),
-          bStatement: event.statement || {},
+          bStatement: _.set(event.statement || {}),
           status: 'responded'
         }
       })
@@ -173,7 +173,7 @@ exports.main = async (event) => {
 
     if (action === 'saveVerdict') {
       await db.collection('cases').doc(event._id).update({
-        data: { verdict: event.verdict, status: 'tried' }
+        data: { verdict: _.set(event.verdict || {}), status: 'tried' }
       })
       return { ok: true, result: { status: 'tried' } }
     }
@@ -209,7 +209,7 @@ exports.main = async (event) => {
       const doc = await db.collection('cases').doc(event._id).get()
       // 只是「我选了这一件」，还不算结案——要等 TA 也点头
       await db.collection('cases').doc(event._id).update({
-        data: { pact: { ...event.pact, confirmedBy: [OPENID], wantReview, reviewAt } }
+        data: { pact: _.set({ ...event.pact, confirmedBy: [OPENID], wantReview, reviewAt }) }
       })
       // 把这次试的方法记进模式，供下次开庭参考
       if (doc.data.coupleKey && doc.data.topic) {
@@ -233,7 +233,7 @@ exports.main = async (event) => {
         ? true
         : !!(d.aOpenid && d.bOpenid && list.indexOf(d.aOpenid) >= 0 && list.indexOf(d.bOpenid) >= 0)
 
-      const patch = { pact: { ...p, confirmedBy: list } }
+      const patch = { pact: _.set({ ...p, confirmedBy: list }) }
       if (both) patch.status = 'closed'
       await db.collection('cases').doc(event._id).update({ data: patch })
 
@@ -250,7 +250,7 @@ exports.main = async (event) => {
       const result = ['做到了', '没做到', '情况变了'].includes(event.result) ? event.result : '没做到'
       const doc = await db.collection('cases').doc(event._id).get()
       await db.collection('cases').doc(event._id).update({
-        data: { review: { result, at: new Date() } }
+        data: { review: _.set({ result, at: new Date() }) }
       })
       if (doc.data.coupleKey && doc.data.topic) {
         await db.collection('patterns')
@@ -389,7 +389,7 @@ exports.main = async (event) => {
 
     if (action === 'destroy') {
       await db.collection('cases').doc(event._id).update({
-        data: { aStatement: {}, bStatement: {}, destroyed: true }
+        data: { aStatement: _.set({}), bStatement: _.set({}), destroyed: true }
       })
       return { ok: true, result: { destroyed: true } }
     }

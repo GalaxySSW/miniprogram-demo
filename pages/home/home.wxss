@@ -240,3 +240,29 @@
   line-height: 32rpx;
   text-align: center;
 }
+
+
+/* 入口靠左：右上角被微信胶囊按钮占着，任何内容放那儿都会被遮 */
+.home-nav {
+  display: flex; align-items: center; gap: 16rpx;
+  margin-top: 12rpx; padding-right: 200rpx;
+}
+.home-nav-link { font-size: 24rpx; color: var(--panpan-text-tertiary); }
+.home-nav-sep { font-size: 24rpx; color: var(--panpan-text-tertiary); opacity: 0.5; }
+
+/* 新进展提醒 */
+.home-news {
+  display: flex; align-items: flex-start; gap: 16rpx;
+  margin-top: 24rpx; padding: 24rpx 28rpx;
+  background: var(--panpan-surface-card, #FFFFFF);
+  border: 1rpx solid var(--panpan-border-subtle, #E1DACE);
+  border-left: 6rpx solid #C9573F;
+  border-radius: 24rpx;
+}
+.home-news-dot {
+  width: 12rpx; height: 12rpx; border-radius: 50%;
+  background: #C9573F; margin-top: 12rpx; flex-shrink: 0;
+}
+.home-news-body { display: flex; flex-direction: column; gap: 6rpx; flex: 1; }
+.home-news-text { font-size: 26rpx; font-weight: 500; }
+.home-news-meta { font-size: 20rpx; color: var(--panpan-text-tertiary); }

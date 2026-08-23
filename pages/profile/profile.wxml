@@ -15,19 +15,7 @@
     <view class="faint mt8">做不到也没关系，本庭会换个更小的方子。</view>
   </view>
 
-  <view class="card mt24">
-    <view class="row" style="justify-content: space-between; align-items: center;">
-      <text class="pill pill-honey">AI 积分</text>
-      <text wx:if="{{creditLoading}}" class="faint">读取中…</text>
-      <text wx:elif="{{creditAccount && creditAccount.status === 'active'}}" style="font-size: 34rpx; font-weight: 600;">{{creditAccount.available}} 分</text>
-      <text wx:elif="{{creditAccount && creditAccount.initialized === false}}" class="faint">待配置</text>
-      <text wx:else class="faint">暂不可用</text>
-    </view>
-    <view class="sub mt16">AI 调用前会显示预计消耗；额度由后台按账号配置。</view>
-    <view wx:if="{{creditAccount && creditAccount.reserved}}" class="faint mt8">处理中预留 {{creditAccount.reserved}} 分</view>
-  </view>
-
-  <view class="mt64">
+  <view class="mt48">
     <view class="row" style="justify-content: space-between; align-items: baseline;">
       <text class="kicker">本庭记得</text>
       <text wx:if="{{patterns.length}}" class="faint" bindtap="forget">让本庭忘掉</text>
@@ -47,6 +35,16 @@
     </block>
     <view wx:else class="card mt24">
       <view class="sub">同一件事第二次开庭，本庭才会记住它。</view>
+    </view>
+  </view>
+
+  <view class="card mt32" bindtap="goPebble">
+    <view class="row" style="justify-content: space-between; align-items: center;">
+      <view class="col">
+        <text style="font-size: 28rpx; font-weight: 500;">递石子</text>
+        <text class="faint mt8">说不出话的时候，递一个不用解释的信号</text>
+      </view>
+      <text class="faint">→</text>
     </view>
   </view>
 

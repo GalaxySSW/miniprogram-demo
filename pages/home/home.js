@@ -1,13 +1,16 @@
 const app = getApp()
 const casedb = require('../../utils/casedb.js')
+const notify = require('../../utils/notify.js')
 
 Page({
   data: {
+    news: [],          // 新进展提醒：TA 应诉了 / 判决出来了 / 递来石子 / 该复盘了
     activeCase: null,
     completedCount: 0,
     starting: false
   },
   onShow() {
+    notify.fetch().then(items => this.setData({ news: items || [] }))
     const c = app.globalData.caseData
 
     casedb.myCases().then(list => {
@@ -102,6 +105,22 @@ Page({
       }
     })
   },
+  openNews(e) {
+    const item = this.data.news[e.currentTarget.dataset.idx]
+    if (!item) return
+    notify.markSeen(item)
+    const g = app.globalData.caseData
+    g.docId = item.docId
+    g.id = item.caseId
+    wx.navigateTo({ url: {
+      responded: '/pages/trial/trial',
+      verdict: '/pages/verdict/verdict',
+      pact: '/pages/pact/pact',
+      pebble: '/pages/pebble/pebble',
+      review: '/pages/review/review'
+    }[item.kind] || '/pages/history/history' })
+  },
+
   goHistory() {
     wx.navigateTo({ url: '/pages/history/history' })
   },

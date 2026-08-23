@@ -6,8 +6,21 @@
         <text class="home-brand-name">判判</text>
       </view>
     </view>
-    <view class="home-archive-row">
-      <text id="qa-home-history" class="home-archive-link" bindtap="goHistory">案例档案室</text>
+
+    <!-- 入口放在品牌下方左侧：右上角是微信胶囊按钮的地盘，放那儿会被压住 -->
+    <view class="home-nav">
+      <text id="qa-home-history" class="home-nav-link" bindtap="goHistory">档案室</text>
+      <text class="home-nav-sep">·</text>
+      <text id="qa-home-profile" class="home-nav-link" bindtap="goProfile">我的</text>
+    </view>
+
+    <!-- 有新进展就顶在最上面：TA 应诉了 / 判决出来了 / 递来石子 / 该复盘了 -->
+    <view wx:for="{{news}}" wx:key="index" class="home-news" bindtap="openNews" data-idx="{{index}}">
+      <view class="home-news-dot"></view>
+      <view class="home-news-body">
+        <text class="home-news-text">{{item.text}}</text>
+        <text class="home-news-meta">{{item.caseId}} · 点开看看</text>
+      </view>
     </view>
 
     <view class="home-hero">
