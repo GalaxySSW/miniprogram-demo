@@ -35,7 +35,7 @@
       </view>
     </view>
 
-    <view wx:if="{{activeCase || completedCount}}" class="home-cases">
+    <view wx:if="{{activeCase}}" class="home-cases">
       <view class="home-rule"></view>
       <view wx:if="{{activeCase}}" class="home-section-heading">
         <view class="home-section-title-group">
@@ -50,14 +50,6 @@
         <text class="home-case-action">{{activeCase.actionText}} →</text>
       </view>
 
-      <view wx:if="{{completedCount}}" class="home-completed-row" bindtap="goHistory">
-        <text class="home-completed-label">已成功解开的情感纠纷</text>
-        <view class="home-completed-value">
-          <view class="home-success-dot"></view>
-          <text>{{completedCount}} 次和解</text>
-          <text class="home-completed-arrow">→</text>
-        </view>
-      </view>
     </view>
 
     <view class="home-secondary-actions">
